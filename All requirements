@@ -1,0 +1,12 @@
+I want it in a single html working  my agency name is trekwanders Make a complete fully functional with firebase travelling Website same as giving design also login and signup system and also i can set email who is user and admin from firebase if admin so can add new trip in website in trending or upcoming and past section and image title rating comment content video links etc and you can add what ever you want so amaze me i want fully functional with all features   // firebase-config.js
+const firebaseConfig = {
+  apiKey: "AIzaSyAL5e-5eQfgf1nI6hWTnhwLFgK0Cp89aa0",
+  authDomain: "aviator-pr01.firebaseapp.com",
+  databaseURL: "https://aviator-pr01-default-rtdb.firebaseio.com",
+  projectId: "aviator-pr01",
+  storageBucket: "aviator-pr01.firebasestorage.app",
+  messagingSenderId: "290788041297",
+  appId: "1:290788041297:web:168f99d1532997fb778e70",
+  measurementId: "G-ENCBTT4BL8"
+};
+firebase.initializeApp(firebaseConfig);
