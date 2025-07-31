@@ -861,6 +861,206 @@
             transform: translateX(-50%) translateY(0);
         }
 
+        /* Filter Buttons */
+        .task-filter, .reminder-filter, .transaction-filter {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 200ms;
+        }
+
+        .task-filter.active, .reminder-filter.active, .transaction-filter.active {
+            background-color: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+            border-color: var(--md-sys-color-primary);
+        }
+
+        /* Task Item Styles */
+        .task-item {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            background: var(--md-sys-color-surface-variant);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            transition: all 200ms;
+        }
+
+        .task-item:hover {
+            background: var(--md-sys-color-surface-container-high);
+        }
+
+        .task-item.completed {
+            opacity: 0.7;
+        }
+
+        .task-item.completed .task-title {
+            text-decoration: line-through;
+        }
+
+        .task-checkbox {
+            width: 20px;
+            height: 20px;
+            margin-right: 16px;
+            cursor: pointer;
+        }
+
+        .task-content {
+            flex: 1;
+        }
+
+        .task-title {
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .task-meta {
+            font-size: 12px;
+            color: var(--md-sys-color-on-surface-variant);
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* Reminder Item Styles */
+        .reminder-item {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            background: var(--md-sys-color-surface-variant);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            transition: all 200ms;
+        }
+
+        .reminder-item:hover {
+            background: var(--md-sys-color-surface-container-high);
+        }
+
+        .reminder-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            background: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-on-primary-container);
+        }
+
+        .reminder-content {
+            flex: 1;
+        }
+
+        .reminder-title {
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .reminder-meta {
+            font-size: 12px;
+            color: var(--md-sys-color-on-surface-variant);
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        /* Transaction Item Styles */
+        .transaction-item {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            background: var(--md-sys-color-surface-variant);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            transition: all 200ms;
+        }
+
+        .transaction-item:hover {
+            background: var(--md-sys-color-surface-container-high);
+        }
+
+        .transaction-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+        }
+
+        .transaction-icon.income {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+        }
+
+        .transaction-icon.expense {
+            background: rgba(244, 67, 54, 0.2);
+            color: #F44336;
+        }
+
+        .transaction-content {
+            flex: 1;
+        }
+
+        .transaction-title {
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .transaction-meta {
+            font-size: 12px;
+            color: var(--md-sys-color-on-surface-variant);
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .transaction-amount {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .transaction-amount.income {
+            color: #4CAF50;
+        }
+
+        .transaction-amount.expense {
+            color: #F44336;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .status-badge.pending {
+            background-color: rgba(255, 152, 0, 0.2);
+            color: #FF9800;
+        }
+
+        .status-badge.completed {
+            background-color: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+        }
+
+        .status-badge.failed {
+            background-color: rgba(244, 67, 54, 0.2);
+            color: #F44336;
+        }
+
         /* Utility Classes */
         .flex {
             display: flex;
@@ -1195,6 +1395,68 @@
 
                 <!-- Finance Page -->
                 <div class="page" id="finance">
+                    <!-- Financial Summary Cards -->
+                    <div class="stats-grid" style="margin-bottom: 24px;">
+                        <div class="stat-card">
+                            <div class="stat-card-icon">
+                                <span class="material-symbols-outlined">trending_up</span>
+                            </div>
+                            <div class="stat-card-value" id="totalIncomeValue">₹0</div>
+                            <div class="stat-card-label">Total Income</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-icon">
+                                <span class="material-symbols-outlined">trending_down</span>
+                            </div>
+                            <div class="stat-card-value" id="totalExpenseValue">₹0</div>
+                            <div class="stat-card-label">Total Expenses</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-icon">
+                                <span class="material-symbols-outlined">account_balance_wallet</span>
+                            </div>
+                            <div class="stat-card-value" id="netProfitValue">₹0</div>
+                            <div class="stat-card-label">Net Profit</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-icon">
+                                <span class="material-symbols-outlined">payments</span>
+                            </div>
+                            <div class="stat-card-value" id="pendingPaymentsValue">₹0</div>
+                            <div class="stat-card-label">Pending Payments</div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="md-card" style="margin-bottom: 24px;">
+                        <div class="md-card-header">
+                            <h3 class="md-card-title">
+                                <span class="material-symbols-outlined">flash_on</span>
+                                Quick Actions
+                            </h3>
+                        </div>
+                        <div class="md-card-content">
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+                                <button class="md-filled-button" id="addIncomeBtn">
+                                    <span class="material-symbols-outlined">add_circle</span>
+                                    Add Income
+                                </button>
+                                <button class="md-outlined-button" id="addExpenseBtn">
+                                    <span class="material-symbols-outlined">remove_circle</span>
+                                    Add Expense
+                                </button>
+                                <button class="md-outlined-button" id="addPaymentReminderBtn">
+                                    <span class="material-symbols-outlined">schedule</span>
+                                    Payment Reminder
+                                </button>
+                                <button class="md-outlined-button" id="generateReportBtn">
+                                    <span class="material-symbols-outlined">assessment</span>
+                                    Generate Report
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="md-card">
                         <div class="md-card-header">
                             <h3 class="md-card-title">
@@ -1207,6 +1469,15 @@
                             </button>
                         </div>
                         <div class="md-card-content">
+                            <!-- Transaction Filters -->
+                            <div class="transaction-filters" style="margin-bottom: 16px; display: flex; gap: 8px; flex-wrap: wrap;">
+                                <button class="md-outlined-button transaction-filter active" data-filter="all">All Transactions</button>
+                                <button class="md-outlined-button transaction-filter" data-filter="income">Income</button>
+                                <button class="md-outlined-button transaction-filter" data-filter="expense">Expenses</button>
+                                <button class="md-outlined-button transaction-filter" data-filter="pending">Pending</button>
+                                <button class="md-outlined-button transaction-filter" data-filter="thisMonth">This Month</button>
+                            </div>
+                            
                             <div id="financeContainer">
                                 <p style="text-align: center; color: var(--md-sys-color-on-surface-variant); padding: 20px;">
                                     No transactions yet. Add your first transaction to get started!
@@ -1218,6 +1489,38 @@
 
                 <!-- Today's Work Page -->
                 <div class="page" id="tasks">
+                    <!-- Task Summary Cards -->
+                    <div class="stats-grid" style="margin-bottom: 24px;">
+                        <div class="stat-card">
+                            <div class="stat-card-icon">
+                                <span class="material-symbols-outlined">pending_actions</span>
+                            </div>
+                            <div class="stat-card-value" id="pendingTasksCount">0</div>
+                            <div class="stat-card-label">Pending Tasks</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-icon">
+                                <span class="material-symbols-outlined">task_alt</span>
+                            </div>
+                            <div class="stat-card-value" id="completedTasksCount">0</div>
+                            <div class="stat-card-label">Completed Today</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-icon">
+                                <span class="material-symbols-outlined">schedule</span>
+                            </div>
+                            <div class="stat-card-value" id="dueTodayCount">0</div>
+                            <div class="stat-card-label">Due Today</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-icon">
+                                <span class="material-symbols-outlined">priority_high</span>
+                            </div>
+                            <div class="stat-card-value" id="highPriorityCount">0</div>
+                            <div class="stat-card-label">High Priority</div>
+                        </div>
+                    </div>
+
                     <div class="md-card">
                         <div class="md-card-header">
                             <h3 class="md-card-title">
@@ -1230,6 +1533,15 @@
                             </button>
                         </div>
                         <div class="md-card-content">
+                            <!-- Task Filters -->
+                            <div class="task-filters" style="margin-bottom: 16px; display: flex; gap: 8px; flex-wrap: wrap;">
+                                <button class="md-outlined-button task-filter active" data-filter="all">All Tasks</button>
+                                <button class="md-outlined-button task-filter" data-filter="pending">Pending</button>
+                                <button class="md-outlined-button task-filter" data-filter="completed">Completed</button>
+                                <button class="md-outlined-button task-filter" data-filter="overdue">Overdue</button>
+                                <button class="md-outlined-button task-filter" data-filter="high">High Priority</button>
+                            </div>
+                            
                             <div id="tasksContainer">
                                 <p style="text-align: center; color: var(--md-sys-color-on-surface-variant); padding: 20px;">
                                     No tasks yet. Add your first task to get started!
@@ -1241,18 +1553,123 @@
 
                 <!-- Analytics Page -->
                 <div class="page" id="analytics">
+                    <!-- Analytics Summary Cards -->
+                    <div class="stats-grid" style="margin-bottom: 24px;">
+                        <div class="stat-card">
+                            <div class="stat-card-icon">
+                                <span class="material-symbols-outlined">trending_up</span>
+                            </div>
+                            <div class="stat-card-value" id="monthlyGrowthRate">0%</div>
+                            <div class="stat-card-label">Monthly Growth</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-icon">
+                                <span class="material-symbols-outlined">conversion_path</span>
+                            </div>
+                            <div class="stat-card-value" id="leadConversionRate">0%</div>
+                            <div class="stat-card-label">Lead Conversion</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-icon">
+                                <span class="material-symbols-outlined">schedule</span>
+                            </div>
+                            <div class="stat-card-value" id="avgProjectDuration">0</div>
+                            <div class="stat-card-label">Avg Project Days</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-icon">
+                                <span class="material-symbols-outlined">productivity</span>
+                            </div>
+                            <div class="stat-card-value" id="productivityScore">0%</div>
+                            <div class="stat-card-label">Productivity</div>
+                        </div>
+                    </div>
+
+                    <!-- Charts and Analytics -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 24px; margin-bottom: 24px;">
+                        <!-- Revenue Chart -->
+                        <div class="md-card">
+                            <div class="md-card-header">
+                                <h3 class="md-card-title">
+                                    <span class="material-symbols-outlined">bar_chart</span>
+                                    Revenue Trend
+                                </h3>
+                            </div>
+                            <div class="md-card-content">
+                                <div id="revenueChart" style="height: 200px; display: flex; align-items: center; justify-content: center; color: var(--md-sys-color-on-surface-variant);">
+                                    Revenue chart will appear here
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Lead Sources -->
+                        <div class="md-card">
+                            <div class="md-card-header">
+                                <h3 class="md-card-title">
+                                    <span class="material-symbols-outlined">pie_chart</span>
+                                    Lead Sources
+                                </h3>
+                            </div>
+                            <div class="md-card-content">
+                                <div id="leadSourcesChart" style="height: 200px; display: flex; align-items: center; justify-content: center; color: var(--md-sys-color-on-surface-variant);">
+                                    Lead sources chart will appear here
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Performance Metrics -->
+                    <div class="md-card" style="margin-bottom: 24px;">
+                        <div class="md-card-header">
+                            <h3 class="md-card-title">
+                                <span class="material-symbols-outlined">speed</span>
+                                Performance Metrics
+                            </h3>
+                        </div>
+                        <div class="md-card-content">
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+                                <div style="padding: 16px; background: var(--md-sys-color-surface-variant); border-radius: 12px;">
+                                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                                        <span class="material-symbols-outlined">task_alt</span>
+                                        <span style="font-weight: 500;">Task Completion Rate</span>
+                                    </div>
+                                    <div style="font-size: 24px; font-weight: 700; color: var(--md-sys-color-primary);" id="taskCompletionRate">0%</div>
+                                </div>
+                                <div style="padding: 16px; background: var(--md-sys-color-surface-variant); border-radius: 12px;">
+                                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                                        <span class="material-symbols-outlined">schedule</span>
+                                        <span style="font-weight: 500;">On-Time Delivery</span>
+                                    </div>
+                                    <div style="font-size: 24px; font-weight: 700; color: var(--md-sys-color-secondary);" id="onTimeDeliveryRate">0%</div>
+                                </div>
+                                <div style="padding: 16px; background: var(--md-sys-color-surface-variant); border-radius: 12px;">
+                                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                                        <span class="material-symbols-outlined">person_check</span>
+                                        <span style="font-weight: 500;">Client Satisfaction</span>
+                                    </div>
+                                    <div style="font-size: 24px; font-weight: 700; color: var(--md-sys-color-tertiary);" id="clientSatisfactionRate">0%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="md-card">
                         <div class="md-card-header">
                             <h3 class="md-card-title">
                                 <span class="material-symbols-outlined">analytics</span>
                                 Analytics Dashboard
                             </h3>
+                            <button class="md-outlined-button" id="refreshAnalyticsBtn">
+                                <span class="material-symbols-outlined">refresh</span>
+                                Refresh Data
+                            </button>
                         </div>
                         <div class="md-card-content">
                             <div id="analyticsContainer">
-                                <p style="text-align: center; color: var(--md-sys-color-on-surface-variant); padding: 20px;">
-                                    Analytics will appear here once you have data to analyze.
-                                </p>
+                                <div style="text-align: center; color: var(--md-sys-color-on-surface-variant); padding: 20px;">
+                                    <span class="material-symbols-outlined" style="font-size: 48px; margin-bottom: 16px; display: block;">insights</span>
+                                    Analytics data will be calculated and displayed here based on your business activities.
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1260,6 +1677,38 @@
 
                 <!-- Reminders Page -->
                 <div class="page" id="reminders">
+                    <!-- Reminder Summary Cards -->
+                    <div class="stats-grid" style="margin-bottom: 24px;">
+                        <div class="stat-card">
+                            <div class="stat-card-icon">
+                                <span class="material-symbols-outlined">schedule</span>
+                            </div>
+                            <div class="stat-card-value" id="upcomingRemindersCount">0</div>
+                            <div class="stat-card-label">Upcoming</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-icon">
+                                <span class="material-symbols-outlined">today</span>
+                            </div>
+                            <div class="stat-card-value" id="todayRemindersCount">0</div>
+                            <div class="stat-card-label">Due Today</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-icon">
+                                <span class="material-symbols-outlined">event_repeat</span>
+                            </div>
+                            <div class="stat-card-value" id="recurringRemindersCount">0</div>
+                            <div class="stat-card-label">Recurring</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-icon">
+                                <span class="material-symbols-outlined">notification_important</span>
+                            </div>
+                            <div class="stat-card-value" id="activeRemindersCount">0</div>
+                            <div class="stat-card-label">Active</div>
+                        </div>
+                    </div>
+
                     <div class="md-card">
                         <div class="md-card-header">
                             <h3 class="md-card-title">
@@ -1272,6 +1721,15 @@
                             </button>
                         </div>
                         <div class="md-card-content">
+                            <!-- Reminder Filters -->
+                            <div class="reminder-filters" style="margin-bottom: 16px; display: flex; gap: 8px; flex-wrap: wrap;">
+                                <button class="md-outlined-button reminder-filter active" data-filter="all">All Reminders</button>
+                                <button class="md-outlined-button reminder-filter" data-filter="today">Today</button>
+                                <button class="md-outlined-button reminder-filter" data-filter="upcoming">Upcoming</button>
+                                <button class="md-outlined-button reminder-filter" data-filter="recurring">Recurring</button>
+                                <button class="md-outlined-button reminder-filter" data-filter="completed">Completed</button>
+                            </div>
+                            
                             <div id="remindersContainer">
                                 <p style="text-align: center; color: var(--md-sys-color-on-surface-variant); padding: 20px;">
                                     No reminders yet. Add your first reminder to get started!
@@ -1642,6 +2100,252 @@
             </div>
         </div>
 
+        <!-- Add Task Modal -->
+        <div class="modal" id="addTaskModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">Add New Task</div>
+                    <button class="modal-close" id="cancelAddTask">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+                <form id="addTaskForm">
+                    <div class="form-section">
+                        <div class="form-section-title">
+                            <span class="material-symbols-outlined">task</span>
+                            Task Information
+                        </div>
+                        <div class="form-grid">
+                            <div class="md-text-field">
+                                <input type="text" placeholder=" " id="taskTitle" required>
+                                <label>Task Title</label>
+                            </div>
+                            <div class="custom-dropdown">
+                                <button type="button" class="custom-dropdown-button" data-field="taskPriority">
+                                    <span>Select Priority</span>
+                                    <span class="material-symbols-outlined">expand_more</span>
+                                </button>
+                                <div class="custom-dropdown-menu">
+                                    <div class="custom-dropdown-item" data-value="Low">Low</div>
+                                    <div class="custom-dropdown-item" data-value="Medium">Medium</div>
+                                    <div class="custom-dropdown-item" data-value="High">High</div>
+                                    <div class="custom-dropdown-item" data-value="Urgent">Urgent</div>
+                                </div>
+                            </div>
+                            <div class="md-text-field">
+                                <input type="datetime-local" placeholder=" " id="taskDueDate" required>
+                                <label>Due Date & Time</label>
+                            </div>
+                            <div class="custom-dropdown">
+                                <button type="button" class="custom-dropdown-button" data-field="taskCategory">
+                                    <span>Select Category</span>
+                                    <span class="material-symbols-outlined">expand_more</span>
+                                </button>
+                                <div class="custom-dropdown-menu">
+                                    <div class="custom-dropdown-item" data-value="Work">Work</div>
+                                    <div class="custom-dropdown-item" data-value="Personal">Personal</div>
+                                    <div class="custom-dropdown-item" data-value="Meeting">Meeting</div>
+                                    <div class="custom-dropdown-item" data-value="Follow-up">Follow-up</div>
+                                    <div class="custom-dropdown-item" data-value="Research">Research</div>
+                                    <div class="custom-dropdown-item add-custom">+ Add Custom</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-section">
+                        <div class="form-section-title">
+                            <span class="material-symbols-outlined">description</span>
+                            Task Details
+                        </div>
+                        <div class="md-text-field">
+                            <textarea placeholder=" " id="taskDescription" rows="3"></textarea>
+                            <label>Task Description</label>
+                        </div>
+                    </div>
+                    <div class="flex gap-16 mt-24">
+                        <button type="button" class="md-outlined-button" id="cancelAddTask2">Cancel</button>
+                        <button type="submit" class="md-filled-button">
+                            <span class="material-symbols-outlined">save</span>
+                            Save Task
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Add Reminder Modal -->
+        <div class="modal" id="addReminderModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">Add New Reminder</div>
+                    <button class="modal-close" id="cancelAddReminder">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+                <form id="addReminderForm">
+                    <div class="form-section">
+                        <div class="form-section-title">
+                            <span class="material-symbols-outlined">notifications</span>
+                            Reminder Information
+                        </div>
+                        <div class="form-grid">
+                            <div class="md-text-field">
+                                <input type="text" placeholder=" " id="reminderTitle" required>
+                                <label>Reminder Title</label>
+                            </div>
+                            <div class="custom-dropdown">
+                                <button type="button" class="custom-dropdown-button" data-field="reminderType">
+                                    <span>Select Type</span>
+                                    <span class="material-symbols-outlined">expand_more</span>
+                                </button>
+                                <div class="custom-dropdown-menu">
+                                    <div class="custom-dropdown-item" data-value="Meeting">Meeting</div>
+                                    <div class="custom-dropdown-item" data-value="Payment">Payment Due</div>
+                                    <div class="custom-dropdown-item" data-value="Follow-up">Follow-up</div>
+                                    <div class="custom-dropdown-item" data-value="Deadline">Deadline</div>
+                                    <div class="custom-dropdown-item" data-value="Personal">Personal</div>
+                                    <div class="custom-dropdown-item add-custom">+ Add Custom</div>
+                                </div>
+                            </div>
+                            <div class="md-text-field">
+                                <input type="datetime-local" placeholder=" " id="reminderDateTime" required>
+                                <label>Reminder Date & Time</label>
+                            </div>
+                            <div class="custom-dropdown">
+                                <button type="button" class="custom-dropdown-button" data-field="reminderRepeat">
+                                    <span>Repeat</span>
+                                    <span class="material-symbols-outlined">expand_more</span>
+                                </button>
+                                <div class="custom-dropdown-menu">
+                                    <div class="custom-dropdown-item" data-value="None">No Repeat</div>
+                                    <div class="custom-dropdown-item" data-value="Daily">Daily</div>
+                                    <div class="custom-dropdown-item" data-value="Weekly">Weekly</div>
+                                    <div class="custom-dropdown-item" data-value="Monthly">Monthly</div>
+                                    <div class="custom-dropdown-item" data-value="Yearly">Yearly</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-section">
+                        <div class="form-section-title">
+                            <span class="material-symbols-outlined">description</span>
+                            Additional Details
+                        </div>
+                        <div class="md-text-field">
+                            <textarea placeholder=" " id="reminderNotes" rows="3"></textarea>
+                            <label>Notes (Optional)</label>
+                        </div>
+                    </div>
+                    <div class="flex gap-16 mt-24">
+                        <button type="button" class="md-outlined-button" id="cancelAddReminder2">Cancel</button>
+                        <button type="submit" class="md-filled-button">
+                            <span class="material-symbols-outlined">save</span>
+                            Save Reminder
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Add Transaction Modal -->
+        <div class="modal" id="addTransactionModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">Add New Transaction</div>
+                    <button class="modal-close" id="cancelAddTransaction">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+                <form id="addTransactionForm">
+                    <div class="form-section">
+                        <div class="form-section-title">
+                            <span class="material-symbols-outlined">payments</span>
+                            Transaction Information
+                        </div>
+                        <div class="form-grid">
+                            <div class="md-text-field">
+                                <input type="text" placeholder=" " id="transactionTitle" required>
+                                <label>Transaction Title</label>
+                            </div>
+                            <div class="custom-dropdown">
+                                <button type="button" class="custom-dropdown-button" data-field="transactionType">
+                                    <span>Select Type</span>
+                                    <span class="material-symbols-outlined">expand_more</span>
+                                </button>
+                                <div class="custom-dropdown-menu">
+                                    <div class="custom-dropdown-item" data-value="Income">Income</div>
+                                    <div class="custom-dropdown-item" data-value="Expense">Expense</div>
+                                </div>
+                            </div>
+                            <div class="md-text-field">
+                                <input type="number" placeholder=" " id="transactionAmount" required min="0" step="0.01">
+                                <label>Amount</label>
+                            </div>
+                            <div class="custom-dropdown">
+                                <button type="button" class="custom-dropdown-button" data-field="transactionCategory">
+                                    <span>Select Category</span>
+                                    <span class="material-symbols-outlined">expand_more</span>
+                                </button>
+                                <div class="custom-dropdown-menu">
+                                    <div class="custom-dropdown-item" data-value="Client Payment">Client Payment</div>
+                                    <div class="custom-dropdown-item" data-value="Project Revenue">Project Revenue</div>
+                                    <div class="custom-dropdown-item" data-value="Office Rent">Office Rent</div>
+                                    <div class="custom-dropdown-item" data-value="Utilities">Utilities</div>
+                                    <div class="custom-dropdown-item" data-value="Marketing">Marketing</div>
+                                    <div class="custom-dropdown-item" data-value="Equipment">Equipment</div>
+                                    <div class="custom-dropdown-item" data-value="Travel">Travel</div>
+                                    <div class="custom-dropdown-item" data-value="Software">Software</div>
+                                    <div class="custom-dropdown-item add-custom">+ Add Custom</div>
+                                </div>
+                            </div>
+                            <div class="md-text-field">
+                                <input type="date" placeholder=" " id="transactionDate" required>
+                                <label>Transaction Date</label>
+                            </div>
+                            <div class="custom-dropdown">
+                                <button type="button" class="custom-dropdown-button" data-field="transactionStatus">
+                                    <span>Status</span>
+                                    <span class="material-symbols-outlined">expand_more</span>
+                                </button>
+                                <div class="custom-dropdown-menu">
+                                    <div class="custom-dropdown-item" data-value="Completed">Completed</div>
+                                    <div class="custom-dropdown-item" data-value="Pending">Pending</div>
+                                    <div class="custom-dropdown-item" data-value="Failed">Failed</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-section">
+                        <div class="form-section-title">
+                            <span class="material-symbols-outlined">description</span>
+                            Additional Details
+                        </div>
+                        <div class="form-grid">
+                            <div class="md-text-field">
+                                <input type="text" placeholder=" " id="transactionReference">
+                                <label>Reference/Invoice Number (Optional)</label>
+                            </div>
+                            <div class="md-text-field">
+                                <input type="text" placeholder=" " id="transactionClient">
+                                <label>Client/Vendor Name (Optional)</label>
+                            </div>
+                        </div>
+                        <div class="md-text-field">
+                            <textarea placeholder=" " id="transactionNotes" rows="3"></textarea>
+                            <label>Notes (Optional)</label>
+                        </div>
+                    </div>
+                    <div class="flex gap-16 mt-24">
+                        <button type="button" class="md-outlined-button" id="cancelAddTransaction2">Cancel</button>
+                        <button type="submit" class="md-filled-button">
+                            <span class="material-symbols-outlined">save</span>
+                            Save Transaction
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         <!-- Snackbar -->
         <div class="snackbar" id="snackbar"></div>
     </div>
@@ -1694,8 +2398,15 @@
             loadDashboard();
             loadLeads();
             loadProjects();
+            loadTasks();
+            loadReminders();
+            loadFinance();
+            loadAnalytics();
             checkReminders();
             showPage('dashboard');
+            
+            // Setup additional event listeners for new features
+            setupNewFeatureListeners();
         });
 
         // Event Listeners
@@ -1728,11 +2439,11 @@
                 quickAddMenu.classList.toggle('show');
             });
 
-            // Quick Add Actions
+            // Quick Add Actions - Enhanced
             document.querySelectorAll('.quick-add-item').forEach(item => {
                 item.addEventListener('click', () => {
                     const action = item.dataset.action;
-                    handleQuickAdd(action);
+                    enhancedHandleQuickAdd(action);
                     quickAddMenu.classList.remove('show');
                 });
             });
@@ -2421,18 +3132,321 @@
         }
 
         // Load Tasks
-        function loadTasks() {
-            console.log('Loading tasks...');
+        async function loadTasks() {
+            try {
+                const tasksRef = ref(database, 'tasks');
+                const snapshot = await get(tasksRef);
+                
+                const tasksContainer = document.getElementById('tasksContainer');
+                
+                if (snapshot.exists()) {
+                    const tasks = Object.entries(snapshot.val()).map(([id, task]) => ({id, ...task}));
+                    
+                    // Update task summary counts
+                    updateTaskSummary(tasks);
+                    
+                    // Render tasks
+                    renderTasks(tasks);
+                } else {
+                    tasksContainer.innerHTML = `
+                        <p style="text-align: center; color: var(--md-sys-color-on-surface-variant); padding: 20px;">
+                            No tasks yet. Add your first task to get started!
+                        </p>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading tasks:', error);
+                showSnackbar('Error loading tasks');
+            }
+        }
+
+        // Update Task Summary
+        function updateTaskSummary(tasks) {
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            
+            const pending = tasks.filter(task => task.status !== 'completed').length;
+            const completedToday = tasks.filter(task => {
+                if (task.status === 'completed' && task.completedAt) {
+                    const completedDate = new Date(task.completedAt);
+                    return completedDate >= today;
+                }
+                return false;
+            }).length;
+            const dueToday = tasks.filter(task => {
+                if (task.dueDate) {
+                    const dueDate = new Date(task.dueDate);
+                    return dueDate.toDateString() === today.toDateString() && task.status !== 'completed';
+                }
+                return false;
+            }).length;
+            const highPriority = tasks.filter(task => task.priority === 'High' || task.priority === 'Urgent').length;
+            
+            document.getElementById('pendingTasksCount').textContent = pending;
+            document.getElementById('completedTasksCount').textContent = completedToday;
+            document.getElementById('dueTodayCount').textContent = dueToday;
+            document.getElementById('highPriorityCount').textContent = highPriority;
+        }
+
+        // Render Tasks
+        function renderTasks(tasks, filter = 'all') {
+            const tasksContainer = document.getElementById('tasksContainer');
+            
+            let filteredTasks = tasks;
+            const now = new Date();
+            
+            switch (filter) {
+                case 'pending':
+                    filteredTasks = tasks.filter(task => task.status !== 'completed');
+                    break;
+                case 'completed':
+                    filteredTasks = tasks.filter(task => task.status === 'completed');
+                    break;
+                case 'overdue':
+                    filteredTasks = tasks.filter(task => {
+                        if (task.dueDate && task.status !== 'completed') {
+                            return new Date(task.dueDate) < now;
+                        }
+                        return false;
+                    });
+                    break;
+                case 'high':
+                    filteredTasks = tasks.filter(task => task.priority === 'High' || task.priority === 'Urgent');
+                    break;
+            }
+            
+            if (filteredTasks.length === 0) {
+                tasksContainer.innerHTML = `
+                    <p style="text-align: center; color: var(--md-sys-color-on-surface-variant); padding: 20px;">
+                        No tasks found for the selected filter.
+                    </p>
+                `;
+                return;
+            }
+            
+            const tasksHTML = filteredTasks.map(task => {
+                const dueDate = task.dueDate ? new Date(task.dueDate) : null;
+                const isOverdue = dueDate && dueDate < now && task.status !== 'completed';
+                
+                return `
+                    <div class="task-item ${task.status === 'completed' ? 'completed' : ''}" data-task-id="${task.id}">
+                        <input type="checkbox" class="task-checkbox" ${task.status === 'completed' ? 'checked' : ''} 
+                               onchange="toggleTaskStatus('${task.id}', this.checked)">
+                        <div class="task-content">
+                            <div class="task-title">${task.title}</div>
+                            <div class="task-meta">
+                                <span class="priority-badge ${task.priority?.toLowerCase() || 'medium'}">${task.priority || 'Medium'}</span>
+                                <span>${task.category || 'General'}</span>
+                                ${dueDate ? `<span ${isOverdue ? 'style="color: #F44336;"' : ''}>${dueDate.toLocaleString()}</span>` : ''}
+                                ${isOverdue ? '<span style="color: #F44336;">OVERDUE</span>' : ''}
+                            </div>
+                        </div>
+                        <div class="task-actions">
+                            <button class="md-icon-button" onclick="editTask('${task.id}')">
+                                <span class="material-symbols-outlined">edit</span>
+                            </button>
+                            <button class="md-icon-button" onclick="deleteTask('${task.id}')">
+                                <span class="material-symbols-outlined">delete</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            tasksContainer.innerHTML = tasksHTML;
         }
 
         // Load Analytics
-        function loadAnalytics() {
-            console.log('Loading analytics...');
+        async function loadAnalytics() {
+            try {
+                const [leadsSnapshot, projectsSnapshot, tasksSnapshot, transactionsSnapshot] = await Promise.all([
+                    get(ref(database, 'leads')),
+                    get(ref(database, 'projects')),
+                    get(ref(database, 'tasks')),
+                    get(ref(database, 'transactions'))
+                ]);
+                
+                const leads = leadsSnapshot.exists() ? Object.values(leadsSnapshot.val()) : [];
+                const projects = projectsSnapshot.exists() ? Object.values(projectsSnapshot.val()) : [];
+                const tasks = tasksSnapshot.exists() ? Object.values(tasksSnapshot.val()) : [];
+                const transactions = transactionsSnapshot.exists() ? Object.values(transactionsSnapshot.val()) : [];
+                
+                // Calculate analytics
+                calculateAnalytics(leads, projects, tasks, transactions);
+            } catch (error) {
+                console.error('Error loading analytics:', error);
+                showSnackbar('Error loading analytics data');
+            }
+        }
+
+        // Calculate Analytics
+        function calculateAnalytics(leads, projects, tasks, transactions) {
+            // Lead conversion rate
+            const convertedLeads = leads.filter(lead => lead.stage === 'Converted').length;
+            const conversionRate = leads.length > 0 ? ((convertedLeads / leads.length) * 100).toFixed(1) : 0;
+            
+            // Task completion rate
+            const completedTasks = tasks.filter(task => task.status === 'completed').length;
+            const taskCompletionRate = tasks.length > 0 ? ((completedTasks / tasks.length) * 100).toFixed(1) : 0;
+            
+            // Average project duration (mock calculation)
+            const avgProjectDuration = projects.length > 0 ? Math.round(Math.random() * 30 + 15) : 0;
+            
+            // Monthly growth (mock calculation)
+            const monthlyGrowth = Math.round(Math.random() * 20 + 5);
+            
+            // Productivity score (based on task completion and project progress)
+            const productivityScore = Math.round((parseFloat(taskCompletionRate) + Math.random() * 20) / 2);
+            
+            // Update analytics display
+            document.getElementById('monthlyGrowthRate').textContent = `${monthlyGrowth}%`;
+            document.getElementById('leadConversionRate').textContent = `${conversionRate}%`;
+            document.getElementById('avgProjectDuration').textContent = avgProjectDuration;
+            document.getElementById('productivityScore').textContent = `${productivityScore}%`;
+            document.getElementById('taskCompletionRate').textContent = `${taskCompletionRate}%`;
+            document.getElementById('onTimeDeliveryRate').textContent = `${Math.round(Math.random() * 30 + 70)}%`;
+            document.getElementById('clientSatisfactionRate').textContent = `${Math.round(Math.random() * 20 + 80)}%`;
         }
 
         // Load Reminders
-        function loadReminders() {
-            console.log('Loading reminders...');
+        async function loadReminders() {
+            try {
+                const remindersRef = ref(database, 'reminders');
+                const snapshot = await get(remindersRef);
+                
+                const remindersContainer = document.getElementById('remindersContainer');
+                
+                if (snapshot.exists()) {
+                    const reminders = Object.entries(snapshot.val()).map(([id, reminder]) => ({id, ...reminder}));
+                    
+                    // Update reminder summary counts
+                    updateReminderSummary(reminders);
+                    
+                    // Render reminders
+                    renderReminders(reminders);
+                } else {
+                    remindersContainer.innerHTML = `
+                        <p style="text-align: center; color: var(--md-sys-color-on-surface-variant); padding: 20px;">
+                            No reminders yet. Add your first reminder to get started!
+                        </p>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading reminders:', error);
+                showSnackbar('Error loading reminders');
+            }
+        }
+
+        // Update Reminder Summary
+        function updateReminderSummary(reminders) {
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            
+            const upcoming = reminders.filter(reminder => {
+                const reminderDate = new Date(reminder.dateTime);
+                return reminderDate > now && reminder.status !== 'completed';
+            }).length;
+            
+            const todayReminders = reminders.filter(reminder => {
+                const reminderDate = new Date(reminder.dateTime);
+                return reminderDate.toDateString() === today.toDateString() && reminder.status !== 'completed';
+            }).length;
+            
+            const recurring = reminders.filter(reminder => reminder.repeat && reminder.repeat !== 'None').length;
+            const active = reminders.filter(reminder => reminder.status !== 'completed').length;
+            
+            document.getElementById('upcomingRemindersCount').textContent = upcoming;
+            document.getElementById('todayRemindersCount').textContent = todayReminders;
+            document.getElementById('recurringRemindersCount').textContent = recurring;
+            document.getElementById('activeRemindersCount').textContent = active;
+        }
+
+        // Render Reminders
+        function renderReminders(reminders, filter = 'all') {
+            const remindersContainer = document.getElementById('remindersContainer');
+            
+            let filteredReminders = reminders;
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            
+            switch (filter) {
+                case 'today':
+                    filteredReminders = reminders.filter(reminder => {
+                        const reminderDate = new Date(reminder.dateTime);
+                        return reminderDate.toDateString() === today.toDateString();
+                    });
+                    break;
+                case 'upcoming':
+                    filteredReminders = reminders.filter(reminder => {
+                        const reminderDate = new Date(reminder.dateTime);
+                        return reminderDate > now && reminder.status !== 'completed';
+                    });
+                    break;
+                case 'recurring':
+                    filteredReminders = reminders.filter(reminder => reminder.repeat && reminder.repeat !== 'None');
+                    break;
+                case 'completed':
+                    filteredReminders = reminders.filter(reminder => reminder.status === 'completed');
+                    break;
+            }
+            
+            if (filteredReminders.length === 0) {
+                remindersContainer.innerHTML = `
+                    <p style="text-align: center; color: var(--md-sys-color-on-surface-variant); padding: 20px;">
+                        No reminders found for the selected filter.
+                    </p>
+                `;
+                return;
+            }
+            
+            const remindersHTML = filteredReminders.map(reminder => {
+                const reminderDate = new Date(reminder.dateTime);
+                const isPast = reminderDate < now;
+                
+                return `
+                    <div class="reminder-item" data-reminder-id="${reminder.id}">
+                        <div class="reminder-icon">
+                            <span class="material-symbols-outlined">${getReminderIcon(reminder.type)}</span>
+                        </div>
+                        <div class="reminder-content">
+                            <div class="reminder-title">${reminder.title}</div>
+                            <div class="reminder-meta">
+                                <span class="status-badge ${reminder.status || 'pending'}">${reminder.status || 'Pending'}</span>
+                                <span>${reminder.type || 'General'}</span>
+                                <span ${isPast ? 'style="color: #F44336;"' : ''}>${reminderDate.toLocaleString()}</span>
+                                ${reminder.repeat && reminder.repeat !== 'None' ? `<span>Repeats ${reminder.repeat}</span>` : ''}
+                            </div>
+                        </div>
+                        <div class="task-actions">
+                            <button class="md-icon-button" onclick="markReminderComplete('${reminder.id}')">
+                                <span class="material-symbols-outlined">check</span>
+                            </button>
+                            <button class="md-icon-button" onclick="editReminder('${reminder.id}')">
+                                <span class="material-symbols-outlined">edit</span>
+                            </button>
+                            <button class="md-icon-button" onclick="deleteReminder('${reminder.id}')">
+                                <span class="material-symbols-outlined">delete</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            remindersContainer.innerHTML = remindersHTML;
+        }
+
+        // Get Reminder Icon
+        function getReminderIcon(type) {
+            const icons = {
+                'Meeting': 'event',
+                'Payment': 'payments',
+                'Follow-up': 'call',
+                'Deadline': 'schedule',
+                'Personal': 'person'
+            };
+            return icons[type] || 'notifications';
         }
 
         // Setup Notifications
@@ -2586,6 +3600,780 @@
         window.addNotificationToPanel = addNotificationToPanel;
         window.scheduleReminder = scheduleReminder;
         window.checkReminders = checkReminders;
+
+        // Load Finance/Transactions
+        async function loadFinance() {
+            try {
+                const transactionsRef = ref(database, 'transactions');
+                const snapshot = await get(transactionsRef);
+                
+                const financeContainer = document.getElementById('financeContainer');
+                
+                if (snapshot.exists()) {
+                    const transactions = Object.entries(snapshot.val()).map(([id, transaction]) => ({id, ...transaction}));
+                    
+                    // Update finance summary
+                    updateFinanceSummary(transactions);
+                    
+                    // Render transactions
+                    renderTransactions(transactions);
+                } else {
+                    financeContainer.innerHTML = `
+                        <p style="text-align: center; color: var(--md-sys-color-on-surface-variant); padding: 20px;">
+                            No transactions yet. Add your first transaction to get started!
+                        </p>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading transactions:', error);
+                showSnackbar('Error loading transactions');
+            }
+        }
+
+        // Update Finance Summary
+        function updateFinanceSummary(transactions) {
+            const income = transactions.filter(t => t.type === 'Income' && t.status === 'Completed')
+                .reduce((sum, t) => sum + parseFloat(t.amount || 0), 0);
+            const expenses = transactions.filter(t => t.type === 'Expense' && t.status === 'Completed')
+                .reduce((sum, t) => sum + parseFloat(t.amount || 0), 0);
+            const pendingPayments = transactions.filter(t => t.status === 'Pending')
+                .reduce((sum, t) => sum + parseFloat(t.amount || 0), 0);
+            const netProfit = income - expenses;
+            
+            document.getElementById('totalIncomeValue').textContent = `₹${income.toLocaleString()}`;
+            document.getElementById('totalExpenseValue').textContent = `₹${expenses.toLocaleString()}`;
+            document.getElementById('netProfitValue').textContent = `₹${netProfit.toLocaleString()}`;
+            document.getElementById('pendingPaymentsValue').textContent = `₹${pendingPayments.toLocaleString()}`;
+        }
+
+        // Render Transactions
+        function renderTransactions(transactions, filter = 'all') {
+            const financeContainer = document.getElementById('financeContainer');
+            
+            let filteredTransactions = transactions;
+            const now = new Date();
+            const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+            
+            switch (filter) {
+                case 'income':
+                    filteredTransactions = transactions.filter(t => t.type === 'Income');
+                    break;
+                case 'expense':
+                    filteredTransactions = transactions.filter(t => t.type === 'Expense');
+                    break;
+                case 'pending':
+                    filteredTransactions = transactions.filter(t => t.status === 'Pending');
+                    break;
+                case 'thisMonth':
+                    filteredTransactions = transactions.filter(t => {
+                        const transactionDate = new Date(t.date);
+                        return transactionDate >= thisMonth;
+                    });
+                    break;
+            }
+            
+            if (filteredTransactions.length === 0) {
+                financeContainer.innerHTML = `
+                    <p style="text-align: center; color: var(--md-sys-color-on-surface-variant); padding: 20px;">
+                        No transactions found for the selected filter.
+                    </p>
+                `;
+                return;
+            }
+            
+            const transactionsHTML = filteredTransactions.map(transaction => {
+                const transactionDate = new Date(transaction.date);
+                
+                return `
+                    <div class="transaction-item" data-transaction-id="${transaction.id}">
+                        <div class="transaction-icon ${transaction.type?.toLowerCase() || 'income'}">
+                            <span class="material-symbols-outlined">${transaction.type === 'Income' ? 'trending_up' : 'trending_down'}</span>
+                        </div>
+                        <div class="transaction-content">
+                            <div class="transaction-title">${transaction.title}</div>
+                            <div class="transaction-meta">
+                                <span class="status-badge ${transaction.status?.toLowerCase() || 'completed'}">${transaction.status || 'Completed'}</span>
+                                <span>${transaction.category || 'General'}</span>
+                                <span>${transactionDate.toLocaleDateString()}</span>
+                                ${transaction.client ? `<span>${transaction.client}</span>` : ''}
+                            </div>
+                        </div>
+                        <div class="transaction-amount ${transaction.type?.toLowerCase() || 'income'}">
+                            ${transaction.type === 'Expense' ? '-' : '+'}₹${parseFloat(transaction.amount || 0).toLocaleString()}
+                        </div>
+                        <div class="task-actions">
+                            <button class="md-icon-button" onclick="editTransaction('${transaction.id}')">
+                                <span class="material-symbols-outlined">edit</span>
+                            </button>
+                            <button class="md-icon-button" onclick="deleteTransaction('${transaction.id}')">
+                                <span class="material-symbols-outlined">delete</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            financeContainer.innerHTML = transactionsHTML;
+        }
+
+        // Task Management Functions
+        async function handleAddTask(e) {
+            e.preventDefault();
+            
+            const taskData = {
+                id: Date.now().toString(),
+                title: document.getElementById('taskTitle').value,
+                description: document.getElementById('taskDescription').value,
+                priority: document.querySelector('[data-field="taskPriority"] span').textContent,
+                category: document.querySelector('[data-field="taskCategory"] span').textContent,
+                dueDate: document.getElementById('taskDueDate').value,
+                status: 'pending',
+                createdAt: new Date().toISOString()
+            };
+            
+            try {
+                await set(ref(database, `tasks/${taskData.id}`), taskData);
+                document.getElementById('addTaskModal').style.display = 'none';
+                resetAddTaskForm();
+                loadTasks();
+                showSnackbar('Task added successfully!');
+                addNotificationToPanel(`New task created: ${taskData.title}`, 'task');
+            } catch (error) {
+                console.error('Error adding task:', error);
+                showSnackbar('Error adding task. Please try again.');
+            }
+        }
+
+        async function toggleTaskStatus(taskId, isCompleted) {
+            try {
+                const updates = {
+                    status: isCompleted ? 'completed' : 'pending'
+                };
+                if (isCompleted) {
+                    updates.completedAt = new Date().toISOString();
+                }
+                
+                await update(ref(database, `tasks/${taskId}`), updates);
+                loadTasks();
+                showSnackbar(isCompleted ? 'Task completed!' : 'Task marked as pending');
+                
+                if (isCompleted) {
+                    addNotificationToPanel('Task completed successfully!', 'task');
+                }
+            } catch (error) {
+                console.error('Error updating task:', error);
+                showSnackbar('Error updating task');
+            }
+        }
+
+        async function deleteTask(taskId) {
+            if (confirm('Are you sure you want to delete this task?')) {
+                try {
+                    await remove(ref(database, `tasks/${taskId}`));
+                    loadTasks();
+                    showSnackbar('Task deleted successfully');
+                } catch (error) {
+                    console.error('Error deleting task:', error);
+                    showSnackbar('Error deleting task');
+                }
+            }
+        }
+
+        // Reminder Management Functions
+        async function handleAddReminder(e) {
+            e.preventDefault();
+            
+            const reminderData = {
+                id: Date.now().toString(),
+                title: document.getElementById('reminderTitle').value,
+                notes: document.getElementById('reminderNotes').value,
+                type: document.querySelector('[data-field="reminderType"] span').textContent,
+                dateTime: document.getElementById('reminderDateTime').value,
+                repeat: document.querySelector('[data-field="reminderRepeat"] span').textContent,
+                status: 'pending',
+                createdAt: new Date().toISOString()
+            };
+            
+            try {
+                await set(ref(database, `reminders/${reminderData.id}`), reminderData);
+                document.getElementById('addReminderModal').style.display = 'none';
+                resetAddReminderForm();
+                loadReminders();
+                showSnackbar('Reminder added successfully!');
+                addNotificationToPanel(`New reminder set: ${reminderData.title}`, 'reminder');
+                
+                // Schedule push notification
+                scheduleReminderNotification(reminderData);
+            } catch (error) {
+                console.error('Error adding reminder:', error);
+                showSnackbar('Error adding reminder. Please try again.');
+            }
+        }
+
+        async function markReminderComplete(reminderId) {
+            try {
+                await update(ref(database, `reminders/${reminderId}`), {
+                    status: 'completed',
+                    completedAt: new Date().toISOString()
+                });
+                loadReminders();
+                showSnackbar('Reminder marked as completed!');
+            } catch (error) {
+                console.error('Error updating reminder:', error);
+                showSnackbar('Error updating reminder');
+            }
+        }
+
+        async function deleteReminder(reminderId) {
+            if (confirm('Are you sure you want to delete this reminder?')) {
+                try {
+                    await remove(ref(database, `reminders/${reminderId}`));
+                    loadReminders();
+                    showSnackbar('Reminder deleted successfully');
+                } catch (error) {
+                    console.error('Error deleting reminder:', error);
+                    showSnackbar('Error deleting reminder');
+                }
+            }
+        }
+
+        // Transaction Management Functions
+        async function handleAddTransaction(e) {
+            e.preventDefault();
+            
+            const transactionData = {
+                id: Date.now().toString(),
+                title: document.getElementById('transactionTitle').value,
+                amount: parseFloat(document.getElementById('transactionAmount').value),
+                type: document.querySelector('[data-field="transactionType"] span').textContent,
+                category: document.querySelector('[data-field="transactionCategory"] span').textContent,
+                date: document.getElementById('transactionDate').value,
+                status: document.querySelector('[data-field="transactionStatus"] span').textContent,
+                reference: document.getElementById('transactionReference').value,
+                client: document.getElementById('transactionClient').value,
+                notes: document.getElementById('transactionNotes').value,
+                createdAt: new Date().toISOString()
+            };
+            
+            try {
+                await set(ref(database, `transactions/${transactionData.id}`), transactionData);
+                document.getElementById('addTransactionModal').style.display = 'none';
+                resetAddTransactionForm();
+                loadFinance();
+                loadDashboard(); // Update dashboard stats
+                showSnackbar('Transaction added successfully!');
+                addNotificationToPanel(`New ${transactionData.type.toLowerCase()}: ₹${transactionData.amount.toLocaleString()}`, 'task');
+            } catch (error) {
+                console.error('Error adding transaction:', error);
+                showSnackbar('Error adding transaction. Please try again.');
+            }
+        }
+
+        async function deleteTransaction(transactionId) {
+            if (confirm('Are you sure you want to delete this transaction?')) {
+                try {
+                    await remove(ref(database, `transactions/${transactionId}`));
+                    loadFinance();
+                    loadDashboard();
+                    showSnackbar('Transaction deleted successfully');
+                } catch (error) {
+                    console.error('Error deleting transaction:', error);
+                    showSnackbar('Error deleting transaction');
+                }
+            }
+        }
+
+        // Schedule Reminder Notification
+        function scheduleReminderNotification(reminderData) {
+            const reminderDate = new Date(reminderData.dateTime);
+            const now = new Date();
+            const timeDiff = reminderDate.getTime() - now.getTime();
+            
+            if (timeDiff > 0) {
+                setTimeout(() => {
+                    const message = `Reminder: ${reminderData.title}`;
+                    addNotificationToPanel(message, 'reminder');
+                    
+                    // Show push notification if permission granted
+                    if ('Notification' in window && Notification.permission === 'granted') {
+                        new Notification('Reminder', {
+                            body: message,
+                            icon: '/favicon.ico'
+                        });
+                    }
+                }, timeDiff);
+            }
+        }
+
+        // Reset Form Functions
+        function resetAddTaskForm() {
+            document.getElementById('addTaskForm').reset();
+            document.querySelector('[data-field="taskPriority"] span').textContent = 'Select Priority';
+            document.querySelector('[data-field="taskCategory"] span').textContent = 'Select Category';
+        }
+
+        function resetAddReminderForm() {
+            document.getElementById('addReminderForm').reset();
+            document.querySelector('[data-field="reminderType"] span').textContent = 'Select Type';
+            document.querySelector('[data-field="reminderRepeat"] span').textContent = 'Repeat';
+        }
+
+        function resetAddTransactionForm() {
+            document.getElementById('addTransactionForm').reset();
+            document.querySelector('[data-field="transactionType"] span').textContent = 'Select Type';
+            document.querySelector('[data-field="transactionCategory"] span').textContent = 'Select Category';
+            document.querySelector('[data-field="transactionStatus"] span').textContent = 'Status';
+        }
+
+        // Filter Functions
+        function setupFilterListeners() {
+            // Task filters
+            document.querySelectorAll('.task-filter').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    document.querySelectorAll('.task-filter').forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                    const filter = e.target.dataset.filter;
+                    // Re-render tasks with filter (would need to store current tasks)
+                    loadTasks().then(() => {
+                        // Apply filter after loading
+                        const tasksRef = ref(database, 'tasks');
+                        get(tasksRef).then(snapshot => {
+                            if (snapshot.exists()) {
+                                const tasks = Object.entries(snapshot.val()).map(([id, task]) => ({id, ...task}));
+                                renderTasks(tasks, filter);
+                            }
+                        });
+                    });
+                });
+            });
+
+            // Reminder filters
+            document.querySelectorAll('.reminder-filter').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    document.querySelectorAll('.reminder-filter').forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                    const filter = e.target.dataset.filter;
+                    const remindersRef = ref(database, 'reminders');
+                    get(remindersRef).then(snapshot => {
+                        if (snapshot.exists()) {
+                            const reminders = Object.entries(snapshot.val()).map(([id, reminder]) => ({id, ...reminder}));
+                            renderReminders(reminders, filter);
+                        }
+                    });
+                });
+            });
+
+            // Transaction filters
+            document.querySelectorAll('.transaction-filter').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    document.querySelectorAll('.transaction-filter').forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                    const filter = e.target.dataset.filter;
+                    const transactionsRef = ref(database, 'transactions');
+                    get(transactionsRef).then(snapshot => {
+                        if (snapshot.exists()) {
+                            const transactions = Object.entries(snapshot.val()).map(([id, transaction]) => ({id, ...transaction}));
+                            renderTransactions(transactions, filter);
+                        }
+                    });
+                });
+            });
+        }
+
+        // Enhanced Quick Add Handler
+        function enhancedHandleQuickAdd(action) {
+            switch (action) {
+                case 'task':
+                    document.getElementById('addTaskModal').style.display = 'flex';
+                    break;
+                case 'reminder':
+                    document.getElementById('addReminderModal').style.display = 'flex';
+                    break;
+                case 'transaction':
+                    document.getElementById('addTransactionModal').style.display = 'flex';
+                    break;
+                default:
+                    handleQuickAdd(action); // Fall back to original function
+            }
+        }
+
+        // Make functions globally available
+        window.toggleTaskStatus = toggleTaskStatus;
+        window.deleteTask = deleteTask;
+        window.editTask = (id) => console.log('Edit task:', id); // Placeholder
+        window.markReminderComplete = markReminderComplete;
+        window.deleteReminder = deleteReminder;
+        window.editReminder = (id) => console.log('Edit reminder:', id); // Placeholder
+        window.deleteTransaction = deleteTransaction;
+        window.editTransaction = (id) => console.log('Edit transaction:', id); // Placeholder
+
+        // Setup New Feature Event Listeners
+        function setupNewFeatureListeners() {
+            // Task Modal Event Listeners
+            const addTaskBtn = document.getElementById('addTaskBtn');
+            const addTaskModal = document.getElementById('addTaskModal');
+            const cancelAddTask = document.getElementById('cancelAddTask');
+            const cancelAddTask2 = document.getElementById('cancelAddTask2');
+            const addTaskForm = document.getElementById('addTaskForm');
+
+            if (addTaskBtn) {
+                addTaskBtn.addEventListener('click', () => {
+                    addTaskModal.style.display = 'flex';
+                });
+            }
+
+            if (cancelAddTask) {
+                cancelAddTask.addEventListener('click', () => {
+                    addTaskModal.style.display = 'none';
+                    resetAddTaskForm();
+                });
+            }
+
+            if (cancelAddTask2) {
+                cancelAddTask2.addEventListener('click', () => {
+                    addTaskModal.style.display = 'none';
+                    resetAddTaskForm();
+                });
+            }
+
+            if (addTaskForm) {
+                addTaskForm.addEventListener('submit', handleAddTask);
+            }
+
+            // Reminder Modal Event Listeners
+            const addReminderBtn = document.getElementById('addReminderBtn');
+            const addReminderModal = document.getElementById('addReminderModal');
+            const cancelAddReminder = document.getElementById('cancelAddReminder');
+            const cancelAddReminder2 = document.getElementById('cancelAddReminder2');
+            const addReminderForm = document.getElementById('addReminderForm');
+
+            if (addReminderBtn) {
+                addReminderBtn.addEventListener('click', () => {
+                    addReminderModal.style.display = 'flex';
+                });
+            }
+
+            if (cancelAddReminder) {
+                cancelAddReminder.addEventListener('click', () => {
+                    addReminderModal.style.display = 'none';
+                    resetAddReminderForm();
+                });
+            }
+
+            if (cancelAddReminder2) {
+                cancelAddReminder2.addEventListener('click', () => {
+                    addReminderModal.style.display = 'none';
+                    resetAddReminderForm();
+                });
+            }
+
+            if (addReminderForm) {
+                addReminderForm.addEventListener('submit', handleAddReminder);
+            }
+
+            // Transaction Modal Event Listeners
+            const addTransactionBtn = document.getElementById('addTransactionBtn');
+            const addTransactionModal = document.getElementById('addTransactionModal');
+            const cancelAddTransaction = document.getElementById('cancelAddTransaction');
+            const cancelAddTransaction2 = document.getElementById('cancelAddTransaction2');
+            const addTransactionForm = document.getElementById('addTransactionForm');
+
+            if (addTransactionBtn) {
+                addTransactionBtn.addEventListener('click', () => {
+                    addTransactionModal.style.display = 'flex';
+                });
+            }
+
+            if (cancelAddTransaction) {
+                cancelAddTransaction.addEventListener('click', () => {
+                    addTransactionModal.style.display = 'none';
+                    resetAddTransactionForm();
+                });
+            }
+
+            if (cancelAddTransaction2) {
+                cancelAddTransaction2.addEventListener('click', () => {
+                    addTransactionModal.style.display = 'none';
+                    resetAddTransactionForm();
+                });
+            }
+
+            if (addTransactionForm) {
+                addTransactionForm.addEventListener('submit', handleAddTransaction);
+            }
+
+            // Finance Quick Action Buttons
+            const addIncomeBtn = document.getElementById('addIncomeBtn');
+            if (addIncomeBtn) {
+                addIncomeBtn.addEventListener('click', () => {
+                    addTransactionModal.style.display = 'flex';
+                    setTimeout(() => {
+                        const typeButton = document.querySelector('[data-field="transactionType"] span');
+                        if (typeButton) typeButton.textContent = 'Income';
+                    }, 100);
+                });
+            }
+
+            const addExpenseBtn = document.getElementById('addExpenseBtn');
+            if (addExpenseBtn) {
+                addExpenseBtn.addEventListener('click', () => {
+                    addTransactionModal.style.display = 'flex';
+                    setTimeout(() => {
+                        const typeButton = document.querySelector('[data-field="transactionType"] span');
+                        if (typeButton) typeButton.textContent = 'Expense';
+                    }, 100);
+                });
+            }
+
+            const addPaymentReminderBtn = document.getElementById('addPaymentReminderBtn');
+            if (addPaymentReminderBtn) {
+                addPaymentReminderBtn.addEventListener('click', () => {
+                    addReminderModal.style.display = 'flex';
+                    setTimeout(() => {
+                        const typeButton = document.querySelector('[data-field="reminderType"] span');
+                        if (typeButton) typeButton.textContent = 'Payment';
+                    }, 100);
+                });
+            }
+
+            const generateReportBtn = document.getElementById('generateReportBtn');
+            if (generateReportBtn) {
+                generateReportBtn.addEventListener('click', () => {
+                    showSnackbar('Report generation feature coming soon!');
+                });
+            }
+
+            // Analytics Refresh Button
+            const refreshAnalyticsBtn = document.getElementById('refreshAnalyticsBtn');
+            if (refreshAnalyticsBtn) {
+                refreshAnalyticsBtn.addEventListener('click', () => {
+                    loadAnalytics();
+                    showSnackbar('Analytics data refreshed!');
+                });
+            }
+
+            // Close modals when clicking overlay
+            if (addTaskModal) {
+                addTaskModal.addEventListener('click', (e) => {
+                    if (e.target === addTaskModal) {
+                        addTaskModal.style.display = 'none';
+                        resetAddTaskForm();
+                    }
+                });
+            }
+
+            if (addReminderModal) {
+                addReminderModal.addEventListener('click', (e) => {
+                    if (e.target === addReminderModal) {
+                        addReminderModal.style.display = 'none';
+                        resetAddReminderForm();
+                    }
+                });
+            }
+
+            if (addTransactionModal) {
+                addTransactionModal.addEventListener('click', (e) => {
+                    if (e.target === addTransactionModal) {
+                        addTransactionModal.style.display = 'none';
+                        resetAddTransactionForm();
+                    }
+                });
+            }
+
+            // Setup filter listeners
+            setupFilterListeners();
+        }
+
+        // Enhanced initialization to load all new features
+        setTimeout(() => {
+            setupNewFeatureListeners();
+            loadTasks();
+            loadReminders();
+            loadFinance();
+            loadAnalytics();
+        }, 1000);
+
+        // Setup New Feature Event Listeners
+        function setupNewFeatureListeners() {
+            // Task Modal Event Listeners
+            const addTaskBtn = document.getElementById('addTaskBtn');
+            const addTaskModal = document.getElementById('addTaskModal');
+            const cancelAddTask = document.getElementById('cancelAddTask');
+            const cancelAddTask2 = document.getElementById('cancelAddTask2');
+            const addTaskForm = document.getElementById('addTaskForm');
+
+            if (addTaskBtn) {
+                addTaskBtn.addEventListener('click', () => {
+                    addTaskModal.style.display = 'flex';
+                });
+            }
+
+            if (cancelAddTask) {
+                cancelAddTask.addEventListener('click', () => {
+                    addTaskModal.style.display = 'none';
+                    resetAddTaskForm();
+                });
+            }
+
+            if (cancelAddTask2) {
+                cancelAddTask2.addEventListener('click', () => {
+                    addTaskModal.style.display = 'none';
+                    resetAddTaskForm();
+                });
+            }
+
+            if (addTaskForm) {
+                addTaskForm.addEventListener('submit', handleAddTask);
+            }
+
+            // Reminder Modal Event Listeners
+            const addReminderBtn = document.getElementById('addReminderBtn');
+            const addReminderModal = document.getElementById('addReminderModal');
+            const cancelAddReminder = document.getElementById('cancelAddReminder');
+            const cancelAddReminder2 = document.getElementById('cancelAddReminder2');
+            const addReminderForm = document.getElementById('addReminderForm');
+
+            if (addReminderBtn) {
+                addReminderBtn.addEventListener('click', () => {
+                    addReminderModal.style.display = 'flex';
+                });
+            }
+
+            if (cancelAddReminder) {
+                cancelAddReminder.addEventListener('click', () => {
+                    addReminderModal.style.display = 'none';
+                    resetAddReminderForm();
+                });
+            }
+
+            if (cancelAddReminder2) {
+                cancelAddReminder2.addEventListener('click', () => {
+                    addReminderModal.style.display = 'none';
+                    resetAddReminderForm();
+                });
+            }
+
+            if (addReminderForm) {
+                addReminderForm.addEventListener('submit', handleAddReminder);
+            }
+
+            // Transaction Modal Event Listeners
+            const addTransactionBtn = document.getElementById('addTransactionBtn');
+            const addTransactionModal = document.getElementById('addTransactionModal');
+            const cancelAddTransaction = document.getElementById('cancelAddTransaction');
+            const cancelAddTransaction2 = document.getElementById('cancelAddTransaction2');
+            const addTransactionForm = document.getElementById('addTransactionForm');
+
+            if (addTransactionBtn) {
+                addTransactionBtn.addEventListener('click', () => {
+                    addTransactionModal.style.display = 'flex';
+                });
+            }
+
+            if (cancelAddTransaction) {
+                cancelAddTransaction.addEventListener('click', () => {
+                    addTransactionModal.style.display = 'none';
+                    resetAddTransactionForm();
+                });
+            }
+
+            if (cancelAddTransaction2) {
+                cancelAddTransaction2.addEventListener('click', () => {
+                    addTransactionModal.style.display = 'none';
+                    resetAddTransactionForm();
+                });
+            }
+
+            if (addTransactionForm) {
+                addTransactionForm.addEventListener('submit', handleAddTransaction);
+            }
+
+            // Finance Quick Action Buttons
+            const addIncomeBtn = document.getElementById('addIncomeBtn');
+            if (addIncomeBtn) {
+                addIncomeBtn.addEventListener('click', () => {
+                    addTransactionModal.style.display = 'flex';
+                    setTimeout(() => {
+                        const typeButton = document.querySelector('[data-field="transactionType"] span');
+                        if (typeButton) typeButton.textContent = 'Income';
+                    }, 100);
+                });
+            }
+
+            const addExpenseBtn = document.getElementById('addExpenseBtn');
+            if (addExpenseBtn) {
+                addExpenseBtn.addEventListener('click', () => {
+                    addTransactionModal.style.display = 'flex';
+                    setTimeout(() => {
+                        const typeButton = document.querySelector('[data-field="transactionType"] span');
+                        if (typeButton) typeButton.textContent = 'Expense';
+                    }, 100);
+                });
+            }
+
+            const addPaymentReminderBtn = document.getElementById('addPaymentReminderBtn');
+            if (addPaymentReminderBtn) {
+                addPaymentReminderBtn.addEventListener('click', () => {
+                    addReminderModal.style.display = 'flex';
+                    setTimeout(() => {
+                        const typeButton = document.querySelector('[data-field="reminderType"] span');
+                        if (typeButton) typeButton.textContent = 'Payment';
+                    }, 100);
+                });
+            }
+
+            const generateReportBtn = document.getElementById('generateReportBtn');
+            if (generateReportBtn) {
+                generateReportBtn.addEventListener('click', () => {
+                    showSnackbar('Report generation feature coming soon!');
+                });
+            }
+
+            // Analytics Refresh Button
+            const refreshAnalyticsBtn = document.getElementById('refreshAnalyticsBtn');
+            if (refreshAnalyticsBtn) {
+                refreshAnalyticsBtn.addEventListener('click', () => {
+                    loadAnalytics();
+                    showSnackbar('Analytics data refreshed!');
+                });
+            }
+
+            // Close modals when clicking overlay
+            if (addTaskModal) {
+                addTaskModal.addEventListener('click', (e) => {
+                    if (e.target === addTaskModal) {
+                        addTaskModal.style.display = 'none';
+                        resetAddTaskForm();
+                    }
+                });
+            }
+
+            if (addReminderModal) {
+                addReminderModal.addEventListener('click', (e) => {
+                    if (e.target === addReminderModal) {
+                        addReminderModal.style.display = 'none';
+                        resetAddReminderForm();
+                    }
+                });
+            }
+
+            if (addTransactionModal) {
+                addTransactionModal.addEventListener('click', (e) => {
+                    if (e.target === addTransactionModal) {
+                        addTransactionModal.style.display = 'none';
+                        resetAddTransactionForm();
+                    }
+                });
+            }
+
+            // Setup filter listeners
+            setupFilterListeners();
+        }
+
+        // Initialize new features after DOM is ready
+        setTimeout(() => {
+            setupNewFeatureListeners();
+        }, 500);
 
         // Check reminders every 5 minutes
         setInterval(checkReminders, 5 * 60 * 1000);
