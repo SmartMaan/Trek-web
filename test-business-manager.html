@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Manager Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #1e1e1e;
+            color: white;
+        }
+        .test-button {
+            padding: 10px 20px;
+            margin: 10px;
+            background: #6200ea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .test-button:hover {
+            background: #3700b3;
+        }
+        .error {
+            color: #ff5252;
+            margin: 10px 0;
+        }
+        .success {
+            color: #4caf50;
+            margin: 10px 0;
+        }
+        #output {
+            margin: 20px 0;
+            padding: 10px;
+            background: #2d2d2d;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Business Manager Feature Test</h1>
+    
+    <div>
+        <button class="test-button" onclick="testFirebase()">Test Firebase Connection</button>
+        <button class="test-button" onclick="testNotifications()">Test Notifications</button>
+        <button class="test-button" onclick="testTaskAdd()">Test Add Task</button>
+        <button class="test-button" onclick="testReminderAdd()">Test Add Reminder</button>
+        <button class="test-button" onclick="testTransactionAdd()">Test Add Transaction</button>
+    </div>
+    
+    <div id="output"></div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase, ref, set, get, push } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC_X2q8m22D_ujnHGS9sbtf5BbBaR6Uc2M",
+            authDomain: "lead-manage-maan.firebaseapp.com",
+            databaseURL: "https://lead-manage-maan-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "lead-manage-maan",
+            storageBucket: "lead-manage-maan.firebasestorage.app",
+            messagingSenderId: "929826628899",
+            appId: "1:929826628899:web:30811e98a4ae13bb4fd896",
+            measurementId: "G-T38XMZEBNS"
+        };
+
+        let app, database;
+        let output = document.getElementById('output');
+
+        function log(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = type;
+            div.innerHTML = `[${new Date().toLocaleTimeString()}] ${message}`;
+            output.appendChild(div);
+            console.log(message);
+        }
+
+        try {
+            // Initialize Firebase
+            app = initializeApp(firebaseConfig);
+            database = getDatabase(app);
+            log('Firebase initialized successfully!', 'success');
+            
+            // Make Firebase available globally
+            window.database = database;
+            window.ref = ref;
+            window.set = set;
+            window.get = get;
+            window.push = push;
+            
+        } catch (error) {
+            log(`Firebase initialization error: ${error.message}`, 'error');
+        }
+
+        // Test Functions
+        window.testFirebase = async function() {
+            try {
+                log('Testing Firebase connection...');
+                const testRef = ref(database, 'test');
+                await set(testRef, { message: 'Hello Firebase!', timestamp: Date.now() });
+                
+                const snapshot = await get(testRef);
+                if (snapshot.exists()) {
+                    log(`Firebase test successful: ${JSON.stringify(snapshot.val())}`, 'success');
+                } else {
+                    log('Firebase test failed: No data returned', 'error');
+                }
+            } catch (error) {
+                log(`Firebase test error: ${error.message}`, 'error');
+            }
+        };
+
+        window.testNotifications = function() {
+            try {
+                log('Testing notifications...');
+                
+                if ('Notification' in window) {
+                    if (Notification.permission === 'granted') {
+                        new Notification('Test Notification', {
+                            body: 'Notifications are working!',
+                            icon: '/favicon.ico'
+                        });
+                        log('Notification sent successfully!', 'success');
+                    } else if (Notification.permission !== 'denied') {
+                        Notification.requestPermission().then(permission => {
+                            if (permission === 'granted') {
+                                new Notification('Test Notification', {
+                                    body: 'Notifications are now enabled!',
+                                    icon: '/favicon.ico'
+                                });
+                                log('Notification permission granted and sent!', 'success');
+                            } else {
+                                log('Notification permission denied', 'error');
+                            }
+                        });
+                    } else {
+                        log('Notifications are blocked', 'error');
+                    }
+                } else {
+                    log('Browser does not support notifications', 'error');
+                }
+            } catch (error) {
+                log(`Notification test error: ${error.message}`, 'error');
+            }
+        };
+
+        window.testTaskAdd = async function() {
+            try {
+                log('Testing task addition...');
+                
+                const taskData = {
+                    id: Date.now().toString(),
+                    title: 'Test Task',
+                    description: 'This is a test task',
+                    priority: 'High',
+                    category: 'Work',
+                    dueDate: new Date().toISOString(),
+                    status: 'pending',
+                    createdAt: new Date().toISOString()
+                };
+                
+                await set(ref(database, `tasks/${taskData.id}`), taskData);
+                log(`Task added successfully: ${taskData.title}`, 'success');
+                
+                // Verify by reading back
+                const snapshot = await get(ref(database, `tasks/${taskData.id}`));
+                if (snapshot.exists()) {
+                    log(`Task verified in database: ${JSON.stringify(snapshot.val())}`, 'success');
+                } else {
+                    log('Task verification failed', 'error');
+                }
+                
+            } catch (error) {
+                log(`Task addition error: ${error.message}`, 'error');
+            }
+        };
+
+        window.testReminderAdd = async function() {
+            try {
+                log('Testing reminder addition...');
+                
+                const reminderData = {
+                    id: Date.now().toString(),
+                    title: 'Test Reminder',
+                    notes: 'This is a test reminder',
+                    type: 'Meeting',
+                    dateTime: new Date(Date.now() + 60000).toISOString(), // 1 minute from now
+                    repeat: 'None',
+                    status: 'pending',
+                    createdAt: new Date().toISOString()
+                };
+                
+                await set(ref(database, `reminders/${reminderData.id}`), reminderData);
+                log(`Reminder added successfully: ${reminderData.title}`, 'success');
+                
+                // Schedule notification
+                setTimeout(() => {
+                    if ('Notification' in window && Notification.permission === 'granted') {
+                        new Notification('Reminder', {
+                            body: reminderData.title,
+                            icon: '/favicon.ico'
+                        });
+                        log('Reminder notification triggered!', 'success');
+                    }
+                }, 60000);
+                
+                log('Reminder notification scheduled for 1 minute', 'success');
+                
+            } catch (error) {
+                log(`Reminder addition error: ${error.message}`, 'error');
+            }
+        };
+
+        window.testTransactionAdd = async function() {
+            try {
+                log('Testing transaction addition...');
+                
+                const transactionData = {
+                    id: Date.now().toString(),
+                    title: 'Test Transaction',
+                    amount: 1000,
+                    type: 'Income',
+                    category: 'Client Payment',
+                    date: new Date().toISOString().split('T')[0],
+                    status: 'Completed',
+                    reference: 'TEST001',
+                    client: 'Test Client',
+                    notes: 'This is a test transaction',
+                    createdAt: new Date().toISOString()
+                };
+                
+                await set(ref(database, `transactions/${transactionData.id}`), transactionData);
+                log(`Transaction added successfully: ₹${transactionData.amount}`, 'success');
+                
+            } catch (error) {
+                log(`Transaction addition error: ${error.message}`, 'error');
+            }
+        };
+
+        // Auto-run basic tests
+        setTimeout(() => {
+            log('Running automatic tests...');
+            testFirebase();
+        }, 1000);
+
+    </script>
+</body>
+</html>
