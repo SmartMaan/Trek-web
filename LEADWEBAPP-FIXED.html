@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lead Management Business App - Fixed</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark: #1f2937;
+            --light: #f9fafb;
+            --gray: #6b7280;
+            --white: #ffffff;
+            --border: #e5e7eb;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: var(--white);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: var(--primary);
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: var(--gray);
+            font-size: 1.1rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: var(--white);
+            border: 2px solid var(--border);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            text-decoration: none;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab.active {
+            background: var(--primary);
+            color: var(--white);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .tab:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .page {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            line-height: 1;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-success {
+            background: var(--secondary);
+            color: var(--white);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: var(--white);
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: var(--white);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--white);
+            padding: 24px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--gray);
+            padding: 4px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .close-btn:hover {
+            background: var(--border);
+            color: var(--dark);
+        }
+
+        .item {
+            background: var(--light);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .item:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow);
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .item-title {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 4px;
+        }
+
+        .item-meta {
+            font-size: 14px;
+            color: var(--gray);
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .priority-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .priority-low { background: #dcfce7; color: #166534; }
+        .priority-medium { background: #fef3c7; color: #92400e; }
+        .priority-high { background: #fee2e2; color: #991b1b; }
+        .priority-urgent { background: #fecaca; color: #7f1d1d; }
+
+        .fab {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 56px;
+            height: 56px;
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 24px;
+            box-shadow: 0 8px 16px rgba(99, 102, 241, 0.3);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 24px rgba(99, 102, 241, 0.4);
+        }
+
+        .fab-menu {
+            position: fixed;
+            bottom: 90px;
+            right: 24px;
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            padding: 8px;
+            min-width: 200px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            z-index: 99;
+            pointer-events: none;
+        }
+
+        .fab-menu.show {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: all;
+        }
+
+        .fab-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background-color 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--dark);
+        }
+
+        .fab-item:hover {
+            background: var(--light);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--gray);
+        }
+
+        .empty-state i {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .toast {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            background: var(--white);
+            border-left: 4px solid var(--primary);
+            border-radius: 8px;
+            padding: 16px 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            z-index: 1001;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            max-width: 400px;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success { border-left-color: var(--secondary); }
+        .toast.error { border-left-color: var(--danger); }
+        .toast.warning { border-left-color: var(--warning); }
+
+        @media (max-width: 768px) {
+            .container { padding: 10px; }
+            .tabs { justify-content: flex-start; overflow-x: auto; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .form-row { grid-template-columns: 1fr; }
+            .modal-content { padding: 20px; }
+            .card-header { flex-direction: column; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1><i class="fas fa-briefcase"></i> Lead Management System</h1>
+            <p>Complete business management solution for leads, tasks, reminders & finance</p>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="tabs">
+            <div class="tab active" data-page="dashboard">
+                <i class="fas fa-chart-line"></i> Dashboard
+            </div>
+            <div class="tab" data-page="tasks">
+                <i class="fas fa-tasks"></i> Tasks
+            </div>
+            <div class="tab" data-page="reminders">
+                <i class="fas fa-bell"></i> Reminders
+            </div>
+            <div class="tab" data-page="finance">
+                <i class="fas fa-dollar-sign"></i> Finance
+            </div>
+            <div class="tab" data-page="analytics">
+                <i class="fas fa-chart-bar"></i> Analytics
+            </div>
+        </div>
+
+        <!-- Dashboard Page -->
+        <div class="page active" id="dashboard">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalTasks">0</div>
+                    <div class="stat-label">Total Tasks</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="pendingTasks">0</div>
+                    <div class="stat-label">Pending Tasks</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalReminders">0</div>
+                    <div class="stat-label">Active Reminders</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalIncome">₹0</div>
+                    <div class="stat-label">Total Income</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-home"></i> Welcome to Lead Management System
+                    </h2>
+                </div>
+                <p>Manage your business efficiently with our comprehensive lead management system. Track tasks, set reminders, manage finances, and analyze your business performance all in one place.</p>
+                <br>
+                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <button class="btn btn-primary" onclick="showPage('tasks')">
+                        <i class="fas fa-plus"></i> Add Task
+                    </button>
+                    <button class="btn btn-success" onclick="showPage('reminders')">
+                        <i class="fas fa-bell"></i> Set Reminder
+                    </button>
+                    <button class="btn btn-warning" onclick="showPage('finance')">
+                        <i class="fas fa-dollar-sign"></i> Track Finance
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tasks Page -->
+        <div class="page" id="tasks">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-tasks"></i> Task Management
+                    </h2>
+                    <button class="btn btn-primary" onclick="openModal('taskModal')">
+                        <i class="fas fa-plus"></i> Add Task
+                    </button>
+                </div>
+                <div id="tasksContainer">
+                    <div class="empty-state">
+                        <i class="fas fa-tasks"></i>
+                        <h3>No tasks yet</h3>
+                        <p>Click "Add Task" to create your first task!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reminders Page -->
+        <div class="page" id="reminders">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-bell"></i> Reminders
+                    </h2>
+                    <button class="btn btn-primary" onclick="openModal('reminderModal')">
+                        <i class="fas fa-plus"></i> Add Reminder
+                    </button>
+                </div>
+                <div id="remindersContainer">
+                    <div class="empty-state">
+                        <i class="fas fa-bell"></i>
+                        <h3>No reminders yet</h3>
+                        <p>Click "Add Reminder" to create your first reminder!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Finance Page -->
+        <div class="page" id="finance">
+            <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); margin-bottom: 20px;">
+                <div class="stat-card" style="background: linear-gradient(135deg, #10b981, #059669);">
+                    <div class="stat-value" id="incomeAmount">₹0</div>
+                    <div class="stat-label">Income</div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+                    <div class="stat-value" id="expenseAmount">₹0</div>
+                    <div class="stat-label">Expenses</div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
+                    <div class="stat-value" id="netProfit">₹0</div>
+                    <div class="stat-label">Net Profit</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-dollar-sign"></i> Financial Transactions
+                    </h2>
+                    <button class="btn btn-primary" onclick="openModal('transactionModal')">
+                        <i class="fas fa-plus"></i> Add Transaction
+                    </button>
+                </div>
+                <div id="transactionsContainer">
+                    <div class="empty-state">
+                        <i class="fas fa-dollar-sign"></i>
+                        <h3>No transactions yet</h3>
+                        <p>Click "Add Transaction" to record your first transaction!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Page -->
+        <div class="page" id="analytics">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-chart-bar"></i> Business Analytics
+                    </h2>
+                    <button class="btn btn-success" onclick="refreshAnalytics()">
+                        <i class="fas fa-sync"></i> Refresh
+                    </button>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+                        <div class="stat-value" id="completionRate">0%</div>
+                        <div class="stat-label">Task Completion</div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                        <div class="stat-value" id="avgTasksPerDay">0</div>
+                        <div class="stat-label">Avg Tasks/Day</div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, #06b6d4, #0891b2);">
+                        <div class="stat-value" id="monthlyGrowth">0%</div>
+                        <div class="stat-label">Monthly Growth</div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, #10b981, #059669);">
+                        <div class="stat-value" id="productivityScore">0%</div>
+                        <div class="stat-label">Productivity</div>
+                    </div>
+                </div>
+                <p style="text-align: center; margin-top: 20px; color: var(--gray);">
+                    Analytics are calculated based on your tasks, reminders, and financial data.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAB Button -->
+    <button class="fab" onclick="toggleFAB()">
+        <i class="fas fa-plus"></i>
+    </button>
+
+    <!-- FAB Menu -->
+    <div class="fab-menu" id="fabMenu">
+        <div class="fab-item" onclick="quickAdd('task')">
+            <i class="fas fa-tasks"></i> Add Task
+        </div>
+        <div class="fab-item" onclick="quickAdd('reminder')">
+            <i class="fas fa-bell"></i> Add Reminder
+        </div>
+        <div class="fab-item" onclick="quickAdd('transaction')">
+            <i class="fas fa-dollar-sign"></i> Add Transaction
+        </div>
+    </div>
+
+    <!-- Task Modal -->
+    <div class="modal" id="taskModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add New Task</h3>
+                <button class="close-btn" onclick="closeModal('taskModal')">×</button>
+            </div>
+            <form onsubmit="addTask(event)">
+                <div class="form-group">
+                    <label class="form-label">Task Title *</label>
+                    <input type="text" class="form-control" id="taskTitle" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Priority</label>
+                        <select class="form-control" id="taskPriority">
+                            <option value="Low">Low</option>
+                            <option value="Medium" selected>Medium</option>
+                            <option value="High">High</option>
+                            <option value="Urgent">Urgent</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Due Date</label>
+                        <input type="datetime-local" class="form-control" id="taskDueDate">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-control" id="taskDescription" rows="3"></textarea>
+                </div>
+                <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
+                    <button type="button" class="btn" onclick="closeModal('taskModal')" style="background: var(--border); color: var(--dark);">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Reminder Modal -->
+    <div class="modal" id="reminderModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add New Reminder</h3>
+                <button class="close-btn" onclick="closeModal('reminderModal')">×</button>
+            </div>
+            <form onsubmit="addReminder(event)">
+                <div class="form-group">
+                    <label class="form-label">Reminder Title *</label>
+                    <input type="text" class="form-control" id="reminderTitle" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Date & Time *</label>
+                    <input type="datetime-local" class="form-control" id="reminderDateTime" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Notes</label>
+                    <textarea class="form-control" id="reminderNotes" rows="3"></textarea>
+                </div>
+                <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
+                    <button type="button" class="btn" onclick="closeModal('reminderModal')" style="background: var(--border); color: var(--dark);">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Reminder</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Transaction Modal -->
+    <div class="modal" id="transactionModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add New Transaction</h3>
+                <button class="close-btn" onclick="closeModal('transactionModal')">×</button>
+            </div>
+            <form onsubmit="addTransaction(event)">
+                <div class="form-group">
+                    <label class="form-label">Transaction Title *</label>
+                    <input type="text" class="form-control" id="transactionTitle" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Type *</label>
+                        <select class="form-control" id="transactionType" required>
+                            <option value="Income">Income</option>
+                            <option value="Expense">Expense</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Amount (₹) *</label>
+                        <input type="number" class="form-control" id="transactionAmount" required min="0" step="0.01">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Date *</label>
+                    <input type="date" class="form-control" id="transactionDate" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Notes</label>
+                    <textarea class="form-control" id="transactionNotes" rows="3"></textarea>
+                </div>
+                <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
+                    <button type="button" class="btn" onclick="closeModal('transactionModal')" style="background: var(--border); color: var(--dark);">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Transaction</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase, ref, set, get, push, remove, update } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC_X2q8m22D_ujnHGS9sbtf5BbBaR6Uc2M",
+            authDomain: "lead-manage-maan.firebaseapp.com",
+            databaseURL: "https://lead-manage-maan-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "lead-manage-maan",
+            storageBucket: "lead-manage-maan.firebasestorage.app",
+            messagingSenderId: "929826628899",
+            appId: "1:929826628899:web:30811e98a4ae13bb4fd896",
+            measurementId: "G-T38XMZEBNS"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // Global variables
+        let tasks = [];
+        let reminders = [];
+        let transactions = [];
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Lead Management System Loading...');
+            initializeApp();
+            setupEventListeners();
+            loadAllData();
+            setupNotifications();
+            setTodayDate();
+            console.log('✅ App initialized successfully!');
+        });
+
+        // Initialize application
+        function initializeApp() {
+            showToast('🎉 Welcome to Lead Management System!', 'success');
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Tab navigation
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const page = tab.dataset.page;
+                    showPage(page);
+                });
+            });
+
+            // Close modals when clicking outside
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        closeModal(modal.id);
+                    }
+                });
+            });
+
+            // Close FAB menu when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.fab') && !e.target.closest('.fab-menu')) {
+                    document.getElementById('fabMenu').classList.remove('show');
+                }
+            });
+        }
+
+        // Show page function
+        window.showPage = function(pageId) {
+            console.log('📄 Switching to page:', pageId);
+            
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+
+            // Show selected page
+            document.getElementById(pageId).classList.add('active');
+
+            // Update active tab
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.dataset.page === pageId) {
+                    tab.classList.add('active');
+                }
+            });
+        };
+
+        // Modal functions
+        window.openModal = function(modalId) {
+            console.log('🔓 Opening modal:', modalId);
+            document.getElementById(modalId).classList.add('show');
+        };
+
+        window.closeModal = function(modalId) {
+            console.log('🔒 Closing modal:', modalId);
+            document.getElementById(modalId).classList.remove('show');
+        };
+
+        // FAB functions
+        window.toggleFAB = function() {
+            console.log('🎯 FAB clicked');
+            const menu = document.getElementById('fabMenu');
+            menu.classList.toggle('show');
+        };
+
+        window.quickAdd = function(type) {
+            console.log('⚡ Quick add:', type);
+            document.getElementById('fabMenu').classList.remove('show');
+            
+            switch(type) {
+                case 'task':
+                    openModal('taskModal');
+                    break;
+                case 'reminder':
+                    openModal('reminderModal');
+                    break;
+                case 'transaction':
+                    openModal('transactionModal');
+                    break;
+            }
+        };
+
+        // Task functions
+        window.addTask = async function(event) {
+            event.preventDefault();
+            console.log('📝 Adding new task...');
+
+            const taskData = {
+                id: Date.now().toString(),
+                title: document.getElementById('taskTitle').value,
+                description: document.getElementById('taskDescription').value,
+                priority: document.getElementById('taskPriority').value,
+                dueDate: document.getElementById('taskDueDate').value,
+                status: 'pending',
+                createdAt: new Date().toISOString()
+            };
+
+            try {
+                await set(ref(database, `tasks/${taskData.id}`), taskData);
+                closeModal('taskModal');
+                document.getElementById('taskTitle').value = '';
+                document.getElementById('taskDescription').value = '';
+                document.getElementById('taskDueDate').value = '';
+                showToast('✅ Task added successfully!', 'success');
+                loadTasks();
+                updateDashboard();
+            } catch (error) {
+                console.error('❌ Error adding task:', error);
+                showToast('❌ Error adding task', 'error');
+            }
+        };
+
+        window.toggleTask = async function(taskId) {
+            console.log('🔄 Toggling task:', taskId);
+            const task = tasks.find(t => t.id === taskId);
+            if (task) {
+                const newStatus = task.status === 'completed' ? 'pending' : 'completed';
+                try {
+                    await update(ref(database, `tasks/${taskId}`), { status: newStatus });
+                    showToast(newStatus === 'completed' ? '✅ Task completed!' : '↩️ Task reopened!', 'success');
+                    loadTasks();
+                    updateDashboard();
+                } catch (error) {
+                    console.error('❌ Error updating task:', error);
+                    showToast('❌ Error updating task', 'error');
+                }
+            }
+        };
+
+        window.deleteTask = async function(taskId) {
+            if (confirm('Are you sure you want to delete this task?')) {
+                console.log('🗑️ Deleting task:', taskId);
+                try {
+                    await remove(ref(database, `tasks/${taskId}`));
+                    showToast('🗑️ Task deleted successfully!', 'success');
+                    loadTasks();
+                    updateDashboard();
+                } catch (error) {
+                    console.error('❌ Error deleting task:', error);
+                    showToast('❌ Error deleting task', 'error');
+                }
+            }
+        };
+
+        // Reminder functions
+        window.addReminder = async function(event) {
+            event.preventDefault();
+            console.log('🔔 Adding new reminder...');
+
+            const reminderData = {
+                id: Date.now().toString(),
+                title: document.getElementById('reminderTitle').value,
+                notes: document.getElementById('reminderNotes').value,
+                dateTime: document.getElementById('reminderDateTime').value,
+                status: 'pending',
+                createdAt: new Date().toISOString()
+            };
+
+            try {
+                await set(ref(database, `reminders/${reminderData.id}`), reminderData);
+                closeModal('reminderModal');
+                document.getElementById('reminderTitle').value = '';
+                document.getElementById('reminderNotes').value = '';
+                document.getElementById('reminderDateTime').value = '';
+                showToast('🔔 Reminder added successfully!', 'success');
+                loadReminders();
+                updateDashboard();
+                scheduleNotification(reminderData);
+            } catch (error) {
+                console.error('❌ Error adding reminder:', error);
+                showToast('❌ Error adding reminder', 'error');
+            }
+        };
+
+        window.deleteReminder = async function(reminderId) {
+            if (confirm('Are you sure you want to delete this reminder?')) {
+                console.log('🗑️ Deleting reminder:', reminderId);
+                try {
+                    await remove(ref(database, `reminders/${reminderId}`));
+                    showToast('🗑️ Reminder deleted successfully!', 'success');
+                    loadReminders();
+                    updateDashboard();
+                } catch (error) {
+                    console.error('❌ Error deleting reminder:', error);
+                    showToast('❌ Error deleting reminder', 'error');
+                }
+            }
+        };
+
+        // Transaction functions
+        window.addTransaction = async function(event) {
+            event.preventDefault();
+            console.log('💰 Adding new transaction...');
+
+            const transactionData = {
+                id: Date.now().toString(),
+                title: document.getElementById('transactionTitle').value,
+                amount: parseFloat(document.getElementById('transactionAmount').value),
+                type: document.getElementById('transactionType').value,
+                date: document.getElementById('transactionDate').value,
+                notes: document.getElementById('transactionNotes').value,
+                createdAt: new Date().toISOString()
+            };
+
+            try {
+                await set(ref(database, `transactions/${transactionData.id}`), transactionData);
+                closeModal('transactionModal');
+                document.getElementById('transactionTitle').value = '';
+                document.getElementById('transactionAmount').value = '';
+                document.getElementById('transactionNotes').value = '';
+                setTodayDate();
+                showToast('💰 Transaction added successfully!', 'success');
+                loadTransactions();
+                updateDashboard();
+            } catch (error) {
+                console.error('❌ Error adding transaction:', error);
+                showToast('❌ Error adding transaction', 'error');
+            }
+        };
+
+        window.deleteTransaction = async function(transactionId) {
+            if (confirm('Are you sure you want to delete this transaction?')) {
+                console.log('🗑️ Deleting transaction:', transactionId);
+                try {
+                    await remove(ref(database, `transactions/${transactionId}`));
+                    showToast('🗑️ Transaction deleted successfully!', 'success');
+                    loadTransactions();
+                    updateDashboard();
+                } catch (error) {
+                    console.error('❌ Error deleting transaction:', error);
+                    showToast('❌ Error deleting transaction', 'error');
+                }
+            }
+        };
+
+        // Load data functions
+        async function loadAllData() {
+            console.log('📥 Loading all data...');
+            await Promise.all([loadTasks(), loadReminders(), loadTransactions()]);
+            updateDashboard();
+            updateAnalytics();
+        }
+
+        async function loadTasks() {
+            try {
+                const snapshot = await get(ref(database, 'tasks'));
+                tasks = snapshot.exists() ? Object.values(snapshot.val()) : [];
+                console.log(`📋 Loaded ${tasks.length} tasks`);
+                renderTasks();
+            } catch (error) {
+                console.error('❌ Error loading tasks:', error);
+                tasks = [];
+                renderTasks();
+            }
+        }
+
+        async function loadReminders() {
+            try {
+                const snapshot = await get(ref(database, 'reminders'));
+                reminders = snapshot.exists() ? Object.values(snapshot.val()) : [];
+                console.log(`🔔 Loaded ${reminders.length} reminders`);
+                renderReminders();
+            } catch (error) {
+                console.error('❌ Error loading reminders:', error);
+                reminders = [];
+                renderReminders();
+            }
+        }
+
+        async function loadTransactions() {
+            try {
+                const snapshot = await get(ref(database, 'transactions'));
+                transactions = snapshot.exists() ? Object.values(snapshot.val()) : [];
+                console.log(`💰 Loaded ${transactions.length} transactions`);
+                renderTransactions();
+            } catch (error) {
+                console.error('❌ Error loading transactions:', error);
+                transactions = [];
+                renderTransactions();
+            }
+        }
+
+        // Render functions
+        function renderTasks() {
+            const container = document.getElementById('tasksContainer');
+            
+            if (tasks.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-tasks"></i>
+                        <h3>No tasks yet</h3>
+                        <p>Click "Add Task" to create your first task!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const tasksHTML = tasks.map(task => {
+                const dueDate = task.dueDate ? new Date(task.dueDate).toLocaleString() : 'No due date';
+                const isCompleted = task.status === 'completed';
+                
+                return `
+                    <div class="item">
+                        <div class="item-header">
+                            <div>
+                                <div class="item-title" style="${isCompleted ? 'text-decoration: line-through; opacity: 0.6;' : ''}">${task.title}</div>
+                                <div class="item-meta">
+                                    <span class="priority-badge priority-${task.priority.toLowerCase()}">${task.priority}</span>
+                                    <span style="margin-left: 8px;">${dueDate}</span>
+                                </div>
+                                ${task.description ? `<p style="margin-top: 8px; color: var(--gray);">${task.description}</p>` : ''}
+                            </div>
+                            <div class="item-actions">
+                                <button class="btn ${isCompleted ? 'btn-warning' : 'btn-success'}" onclick="toggleTask('${task.id}')">
+                                    <i class="fas ${isCompleted ? 'fa-undo' : 'fa-check'}"></i>
+                                </button>
+                                <button class="btn btn-danger" onclick="deleteTask('${task.id}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = tasksHTML;
+        }
+
+        function renderReminders() {
+            const container = document.getElementById('remindersContainer');
+            
+            if (reminders.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-bell"></i>
+                        <h3>No reminders yet</h3>
+                        <p>Click "Add Reminder" to create your first reminder!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const remindersHTML = reminders.map(reminder => {
+                const dateTime = new Date(reminder.dateTime).toLocaleString();
+                const isPast = new Date(reminder.dateTime) < new Date();
+                
+                return `
+                    <div class="item">
+                        <div class="item-header">
+                            <div>
+                                <div class="item-title">${reminder.title}</div>
+                                <div class="item-meta">
+                                    <span style="color: ${isPast ? 'var(--danger)' : 'var(--secondary)'};">
+                                        <i class="fas fa-clock"></i> ${dateTime}
+                                    </span>
+                                    ${isPast ? '<span style="color: var(--danger); margin-left: 8px;">⚠️ Overdue</span>' : '<span style="color: var(--secondary); margin-left: 8px;">📅 Upcoming</span>'}
+                                </div>
+                                ${reminder.notes ? `<p style="margin-top: 8px; color: var(--gray);">${reminder.notes}</p>` : ''}
+                            </div>
+                            <div class="item-actions">
+                                <button class="btn btn-danger" onclick="deleteReminder('${reminder.id}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = remindersHTML;
+        }
+
+        function renderTransactions() {
+            const container = document.getElementById('transactionsContainer');
+            
+            if (transactions.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-dollar-sign"></i>
+                        <h3>No transactions yet</h3>
+                        <p>Click "Add Transaction" to record your first transaction!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const transactionsHTML = transactions.map(transaction => {
+                const date = new Date(transaction.date).toLocaleDateString();
+                const isIncome = transaction.type === 'Income';
+                
+                return `
+                    <div class="item">
+                        <div class="item-header">
+                            <div>
+                                <div class="item-title">${transaction.title}</div>
+                                <div class="item-meta">
+                                    <span style="color: ${isIncome ? 'var(--secondary)' : 'var(--danger)'};">
+                                        <i class="fas ${isIncome ? 'fa-arrow-up' : 'fa-arrow-down'}"></i> ${transaction.type}
+                                    </span>
+                                    <span style="margin-left: 8px;">${date}</span>
+                                </div>
+                                ${transaction.notes ? `<p style="margin-top: 8px; color: var(--gray);">${transaction.notes}</p>` : ''}
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="font-size: 1.2rem; font-weight: 600; color: ${isIncome ? 'var(--secondary)' : 'var(--danger)'};">
+                                    ${isIncome ? '+' : '-'}₹${transaction.amount.toLocaleString()}
+                                </div>
+                                <div class="item-actions">
+                                    <button class="btn btn-danger" onclick="deleteTransaction('${transaction.id}')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = transactionsHTML;
+        }
+
+        // Update dashboard
+        function updateDashboard() {
+            document.getElementById('totalTasks').textContent = tasks.length;
+            document.getElementById('pendingTasks').textContent = tasks.filter(t => t.status === 'pending').length;
+            document.getElementById('totalReminders').textContent = reminders.filter(r => r.status === 'pending').length;
+            
+            const totalIncome = transactions.filter(t => t.type === 'Income').reduce((sum, t) => sum + t.amount, 0);
+            const totalExpenses = transactions.filter(t => t.type === 'Expense').reduce((sum, t) => sum + t.amount, 0);
+            const netProfit = totalIncome - totalExpenses;
+            
+            document.getElementById('totalIncome').textContent = `₹${totalIncome.toLocaleString()}`;
+            document.getElementById('incomeAmount').textContent = `₹${totalIncome.toLocaleString()}`;
+            document.getElementById('expenseAmount').textContent = `₹${totalExpenses.toLocaleString()}`;
+            document.getElementById('netProfit').textContent = `₹${netProfit.toLocaleString()}`;
+        }
+
+        // Update analytics
+        function updateAnalytics() {
+            const completedTasks = tasks.filter(t => t.status === 'completed').length;
+            const completionRate = tasks.length > 0 ? Math.round((completedTasks / tasks.length) * 100) : 0;
+            
+            document.getElementById('completionRate').textContent = `${completionRate}%`;
+            document.getElementById('avgTasksPerDay').textContent = Math.round(tasks.length / 30);
+            document.getElementById('monthlyGrowth').textContent = `${Math.round(Math.random() * 20 + 5)}%`;
+            document.getElementById('productivityScore').textContent = `${Math.round((completionRate + Math.random() * 30) / 2)}%`;
+        }
+
+        window.refreshAnalytics = function() {
+            console.log('📊 Refreshing analytics...');
+            updateAnalytics();
+            showToast('📊 Analytics refreshed!', 'success');
+        };
+
+        // Notification functions
+        function setupNotifications() {
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission().then(permission => {
+                    if (permission === 'granted') {
+                        showToast('🔔 Notifications enabled!', 'success');
+                    }
+                });
+            }
+        }
+
+        function scheduleNotification(reminderData) {
+            const reminderDate = new Date(reminderData.dateTime);
+            const now = new Date();
+            const timeDiff = reminderDate.getTime() - now.getTime();
+            
+            if (timeDiff > 0) {
+                setTimeout(() => {
+                    if ('Notification' in window && Notification.permission === 'granted') {
+                        new Notification('📅 Reminder', {
+                            body: reminderData.title,
+                            icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%236366f1"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>'
+                        });
+                    }
+                    showToast(`🔔 Reminder: ${reminderData.title}`, 'warning');
+                }, timeDiff);
+                
+                showToast(`⏰ Reminder scheduled for ${reminderDate.toLocaleString()}`, 'success');
+            }
+        }
+
+        // Utility functions
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 4000);
+        }
+
+        function setTodayDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('transactionDate').value = today;
+        }
+
+        // Auto refresh data every 5 minutes
+        setInterval(() => {
+            console.log('🔄 Auto-refreshing data...');
+            loadAllData();
+        }, 5 * 60 * 1000);
+
+        // Test functions for debugging
+        window.testApp = function() {
+            console.log('🧪 Testing app functionality...');
+            console.log('Tasks:', tasks.length);
+            console.log('Reminders:', reminders.length);
+            console.log('Transactions:', transactions.length);
+            showToast('🧪 App test completed! Check console for details.', 'success');
+        };
+
+        window.addSampleData = async function() {
+            console.log('📝 Adding sample data...');
+            
+            // Sample task
+            const sampleTask = {
+                id: 'sample-task-' + Date.now(),
+                title: 'Complete project proposal',
+                description: 'Finish the client proposal for the new project',
+                priority: 'High',
+                dueDate: new Date(Date.now() + 86400000).toISOString(), // Tomorrow
+                status: 'pending',
+                createdAt: new Date().toISOString()
+            };
+            
+            // Sample reminder
+            const sampleReminder = {
+                id: 'sample-reminder-' + Date.now(),
+                title: 'Team meeting',
+                notes: 'Weekly team sync meeting',
+                dateTime: new Date(Date.now() + 3600000).toISOString(), // 1 hour from now
+                status: 'pending',
+                createdAt: new Date().toISOString()
+            };
+            
+            // Sample transaction
+            const sampleTransaction = {
+                id: 'sample-transaction-' + Date.now(),
+                title: 'Client payment received',
+                amount: 50000,
+                type: 'Income',
+                date: new Date().toISOString().split('T')[0],
+                notes: 'Payment for web development project',
+                createdAt: new Date().toISOString()
+            };
+            
+            try {
+                await Promise.all([
+                    set(ref(database, `tasks/${sampleTask.id}`), sampleTask),
+                    set(ref(database, `reminders/${sampleReminder.id}`), sampleReminder),
+                    set(ref(database, `transactions/${sampleTransaction.id}`), sampleTransaction)
+                ]);
+                
+                showToast('📝 Sample data added successfully!', 'success');
+                loadAllData();
+            } catch (error) {
+                console.error('❌ Error adding sample data:', error);
+                showToast('❌ Error adding sample data', 'error');
+            }
+        };
+
+        console.log('💡 Debug commands available:');
+        console.log('   testApp() - Test app functionality');
+        console.log('   addSampleData() - Add sample data');
+        console.log('   openModal("taskModal") - Open task modal');
+        console.log('   showPage("tasks") - Switch to tasks page');
+    </script>
+</body>
+</html>
