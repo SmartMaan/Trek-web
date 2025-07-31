@@ -1,0 +1,2595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Management System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+    <style>
+        /* Material 3 Design System Variables */
+        :root {
+            /* Material 3 Color Tokens - Dark Theme */
+            --md-sys-color-primary: #BB86FC;
+            --md-sys-color-on-primary: #000000;
+            --md-sys-color-primary-container: #3700B3;
+            --md-sys-color-on-primary-container: #E1C4FF;
+            --md-sys-color-secondary: #03DAC6;
+            --md-sys-color-on-secondary: #000000;
+            --md-sys-color-secondary-container: #018786;
+            --md-sys-color-on-secondary-container: #A7F3D0;
+            --md-sys-color-tertiary: #CF6679;
+            --md-sys-color-on-tertiary: #000000;
+            --md-sys-color-error: #CF6679;
+            --md-sys-color-on-error: #000000;
+            --md-sys-color-error-container: #93000A;
+            --md-sys-color-on-error-container: #FFDAD6;
+            --md-sys-color-background: #121212;
+            --md-sys-color-on-background: #E0E0E0;
+            --md-sys-color-surface: #1E1E1E;
+            --md-sys-color-on-surface: #E0E0E0;
+            --md-sys-color-surface-variant: #2D2D2D;
+            --md-sys-color-on-surface-variant: #CAC4D0;
+            --md-sys-color-outline: #938F99;
+            --md-sys-color-outline-variant: #49454F;
+            --md-sys-color-shadow: #000000;
+            --md-sys-color-scrim: #000000;
+            --md-sys-color-inverse-surface: #E6E1E5;
+            --md-sys-color-inverse-on-surface: #313033;
+            --md-sys-color-inverse-primary: #6750A4;
+            --md-sys-color-surface-dim: #141218;
+            --md-sys-color-surface-bright: #3B383E;
+            --md-sys-color-surface-container-lowest: #0F0D13;
+            --md-sys-color-surface-container-low: #1D1B20;
+            --md-sys-color-surface-container: #211F26;
+            --md-sys-color-surface-container-high: #2B2930;
+            --md-sys-color-surface-container-highest: #36343B;
+
+            /* Custom Properties */
+            --sidebar-width: 280px;
+            --header-height: 64px;
+            --fab-size: 56px;
+        }
+
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 24px;
+            background-color: var(--md-sys-color-background);
+            color: var(--md-sys-color-on-background);
+            overflow-x: hidden;
+        }
+
+        /* App Container */
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--md-sys-color-surface-container);
+            border-right: 1px solid var(--md-sys-color-outline-variant);
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            transform: translateX(-100%);
+            transition: transform 300ms cubic-bezier(0.2, 0, 0, 1);
+            z-index: 100;
+            overflow-y: auto;
+        }
+
+        .sidebar.open {
+            transform: translateX(0);
+        }
+
+        .sidebar-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--md-sys-color-outline-variant);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .sidebar-title {
+            font-size: 22px;
+            font-weight: 400;
+            color: var(--md-sys-color-on-surface);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .close-sidebar {
+            background: none;
+            border: none;
+            color: var(--md-sys-color-on-surface-variant);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 20px;
+            transition: background-color 200ms;
+        }
+
+        .close-sidebar:hover {
+            background-color: var(--md-sys-color-surface-variant);
+        }
+
+        .nav-list {
+            list-style: none;
+            padding: 12px 0;
+        }
+
+        .nav-item {
+            margin: 4px 12px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            text-decoration: none;
+            color: var(--md-sys-color-on-surface);
+            border-radius: 28px;
+            transition: all 200ms;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link:hover {
+            background-color: var(--md-sys-color-surface-variant);
+        }
+
+        .nav-link.active {
+            background-color: var(--md-sys-color-secondary-container);
+            color: var(--md-sys-color-on-secondary-container);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 0;
+            transition: margin-left 300ms cubic-bezier(0.2, 0, 0, 1);
+        }
+
+        /* Header */
+        .header {
+            height: var(--header-height);
+            background-color: var(--md-sys-color-surface);
+            border-bottom: 1px solid var(--md-sys-color-outline-variant);
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            gap: 16px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: var(--md-sys-color-on-surface);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 20px;
+            transition: background-color 200ms;
+        }
+
+        .menu-toggle:hover {
+            background-color: var(--md-sys-color-surface-variant);
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 400;
+            color: var(--md-sys-color-on-surface);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-actions {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Material 3 Buttons */
+        .md-filled-button {
+            background-color: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+            border: none;
+            border-radius: 20px;
+            padding: 10px 24px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 200ms;
+            box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .md-filled-button:hover {
+            box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 2px 6px 2px rgba(0, 0, 0, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .md-outlined-button {
+            background-color: transparent;
+            color: var(--md-sys-color-primary);
+            border: 1px solid var(--md-sys-color-outline);
+            border-radius: 20px;
+            padding: 10px 24px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 200ms;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .md-outlined-button:hover {
+            background-color: rgba(187, 134, 252, 0.08);
+            transform: translateY(-1px);
+        }
+
+        .md-text-button {
+            background-color: transparent;
+            color: var(--md-sys-color-primary);
+            border: none;
+            border-radius: 20px;
+            padding: 10px 12px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 200ms;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .md-text-button:hover {
+            background-color: rgba(187, 134, 252, 0.08);
+        }
+
+        .md-icon-button {
+            background-color: transparent;
+            color: var(--md-sys-color-on-surface-variant);
+            border: none;
+            border-radius: 20px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 200ms;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .md-icon-button:hover {
+            background-color: rgba(202, 196, 208, 0.08);
+            transform: scale(1.1);
+        }
+
+        .md-icon-button:active {
+            transform: scale(0.95);
+        }
+
+        .md-fab {
+            background-color: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-on-primary-container);
+            border: none;
+            border-radius: 16px;
+            width: var(--fab-size);
+            height: var(--fab-size);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.3), 0px 4px 8px 3px rgba(0, 0, 0, 0.15);
+            transition: all 200ms;
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 60;
+        }
+
+        .md-fab:hover {
+            box-shadow: 0px 2px 3px 0px rgba(0, 0, 0, 0.3), 0px 6px 10px 4px rgba(0, 0, 0, 0.15);
+            transform: scale(1.05);
+        }
+
+        .md-fab:active {
+            transform: scale(0.95);
+        }
+
+        /* Content Area */
+        .content {
+            padding: 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .page {
+            display: none;
+            animation: fadeIn 300ms cubic-bezier(0.2, 0, 0, 1);
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Material 3 Cards */
+        .md-card {
+            background-color: var(--md-sys-color-surface-container);
+            border-radius: 12px;
+            box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+            transition: all 200ms;
+            overflow: hidden;
+        }
+
+        .md-card:hover {
+            box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 2px 6px 2px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .md-card-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--md-sys-color-outline-variant);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .md-card-title {
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--md-sys-color-on-surface);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .md-card-content {
+            padding: 24px;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            border-radius: 16px;
+            padding: 24px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            transition: all 300ms cubic-bezier(0.2, 0, 0, 1);
+            cursor: pointer;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.3), 0px 8px 12px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: translate(30px, -30px);
+        }
+
+        .stat-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .stat-card-icon {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-card-expand-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            transition: all 200ms;
+        }
+
+        .stat-card-expand-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .stat-card-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .stat-card-label {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 16px;
+        }
+
+        .stat-card-details {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 300ms cubic-bezier(0.2, 0, 0, 1);
+        }
+
+        .stat-card.expanded .stat-card-details {
+            max-height: 200px;
+        }
+
+        /* Quick Add Menu */
+        .quick-add-menu {
+            position: fixed;
+            bottom: 90px;
+            right: 24px;
+            background-color: var(--md-sys-color-surface-container);
+            border-radius: 12px;
+            box-shadow: 0px 2px 3px 0px rgba(0, 0, 0, 0.3), 0px 6px 10px 4px rgba(0, 0, 0, 0.15);
+            padding: 8px;
+            transform: scale(0) translateY(20px);
+            opacity: 0;
+            transition: all 200ms cubic-bezier(0.2, 0, 0, 1);
+            z-index: 55;
+            min-width: 200px;
+        }
+
+        .quick-add-menu.show {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+
+        .quick-add-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 200ms;
+            color: var(--md-sys-color-on-surface);
+            text-decoration: none;
+        }
+
+        .quick-add-item:hover {
+            background-color: var(--md-sys-color-surface-variant);
+        }
+
+        /* Notification Panel */
+        .notification-panel {
+            position: fixed;
+            top: var(--header-height);
+            right: 0;
+            width: 400px;
+            max-width: 90vw;
+            height: calc(100vh - var(--header-height));
+            background-color: var(--md-sys-color-surface-container);
+            border-left: 1px solid var(--md-sys-color-outline-variant);
+            transform: translateX(100%);
+            transition: transform 300ms cubic-bezier(0.2, 0, 0, 1);
+            z-index: 90;
+            overflow-y: auto;
+        }
+
+        .notification-panel.show {
+            transform: translateX(0);
+        }
+
+        .notification-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--md-sys-color-outline-variant);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .notification-title {
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--md-sys-color-on-surface);
+        }
+
+        .notification-list {
+            padding: 16px;
+        }
+
+        .notification-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            transition: background-color 200ms;
+        }
+
+        .notification-item:hover {
+            background-color: var(--md-sys-color-surface-variant);
+        }
+
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .notification-icon.meeting {
+            background-color: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-on-primary-container);
+        }
+
+        .notification-icon.task {
+            background-color: var(--md-sys-color-secondary-container);
+            color: var(--md-sys-color-on-secondary-container);
+        }
+
+        .notification-icon.lead {
+            background-color: var(--md-sys-color-tertiary);
+            color: var(--md-sys-color-on-tertiary);
+        }
+
+        .notification-icon.reminder {
+            background-color: var(--md-sys-color-error-container);
+            color: var(--md-sys-color-on-error-container);
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-text {
+            font-size: 14px;
+            color: var(--md-sys-color-on-surface);
+            margin-bottom: 4px;
+        }
+
+        .notification-time {
+            font-size: 12px;
+            color: var(--md-sys-color-on-surface-variant);
+        }
+
+        /* Modals */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 300ms cubic-bezier(0.2, 0, 0, 1);
+        }
+
+        .modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background-color: var(--md-sys-color-surface-container);
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.8) translateY(20px);
+            transition: transform 300ms cubic-bezier(0.2, 0, 0, 1);
+        }
+
+        .modal.show .modal-content {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 500;
+            color: var(--md-sys-color-on-surface);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--md-sys-color-on-surface-variant);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 20px;
+            transition: background-color 200ms;
+        }
+
+        .modal-close:hover {
+            background-color: var(--md-sys-color-surface-variant);
+        }
+
+        /* Form Styles */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .form-section {
+            margin-bottom: 24px;
+        }
+
+        .form-section-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--md-sys-color-on-surface);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .md-text-field {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .md-text-field input,
+        .md-text-field textarea {
+            width: 100%;
+            padding: 16px 12px 8px;
+            border: 1px solid var(--md-sys-color-outline);
+            border-radius: 4px;
+            background-color: transparent;
+            color: var(--md-sys-color-on-surface);
+            font-size: 16px;
+            transition: all 200ms;
+        }
+
+        .md-text-field input:focus,
+        .md-text-field textarea:focus {
+            outline: none;
+            border-color: var(--md-sys-color-primary);
+            border-width: 2px;
+        }
+
+        .md-text-field label {
+            position: absolute;
+            left: 12px;
+            top: 16px;
+            color: var(--md-sys-color-on-surface-variant);
+            font-size: 16px;
+            transition: all 200ms;
+            pointer-events: none;
+            background-color: var(--md-sys-color-surface-container);
+            padding: 0 4px;
+        }
+
+        .md-text-field input:focus + label,
+        .md-text-field input:not(:placeholder-shown) + label,
+        .md-text-field textarea:focus + label,
+        .md-text-field textarea:not(:placeholder-shown) + label {
+            top: -8px;
+            font-size: 12px;
+            color: var(--md-sys-color-primary);
+        }
+
+        /* Custom Dropdown */
+        .custom-dropdown {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .custom-dropdown-button {
+            width: 100%;
+            padding: 16px 12px;
+            border: 1px solid var(--md-sys-color-outline);
+            border-radius: 4px;
+            background-color: transparent;
+            color: var(--md-sys-color-on-surface);
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 200ms;
+        }
+
+        .custom-dropdown-button:hover {
+            border-color: var(--md-sys-color-primary);
+        }
+
+        .custom-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: var(--md-sys-color-surface-container);
+            border: 1px solid var(--md-sys-color-outline);
+            border-radius: 4px;
+            box-shadow: 0px 2px 3px 0px rgba(0, 0, 0, 0.3), 0px 6px 10px 4px rgba(0, 0, 0, 0.15);
+            z-index: 10;
+            max-height: 200px;
+            overflow-y: auto;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 200ms;
+        }
+
+        .custom-dropdown-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .custom-dropdown-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: background-color 200ms;
+            color: var(--md-sys-color-on-surface);
+        }
+
+        .custom-dropdown-item:hover {
+            background-color: var(--md-sys-color-surface-variant);
+        }
+
+        .custom-dropdown-item.add-custom {
+            border-top: 1px solid var(--md-sys-color-outline-variant);
+            color: var(--md-sys-color-primary);
+            font-weight: 500;
+        }
+
+        /* Priority Badges */
+        .priority-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .priority-badge.low {
+            background-color: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+        }
+
+        .priority-badge.medium {
+            background-color: rgba(255, 152, 0, 0.2);
+            color: #FF9800;
+        }
+
+        .priority-badge.high {
+            background-color: rgba(255, 87, 34, 0.2);
+            color: #FF5722;
+        }
+
+        .priority-badge.urgent {
+            background-color: rgba(244, 67, 54, 0.2);
+            color: #F44336;
+        }
+
+        /* Snackbar */
+        .snackbar {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background-color: var(--md-sys-color-inverse-surface);
+            color: var(--md-sys-color-inverse-on-surface);
+            padding: 16px 24px;
+            border-radius: 8px;
+            box-shadow: 0px 2px 3px 0px rgba(0, 0, 0, 0.3), 0px 6px 10px 4px rgba(0, 0, 0, 0.15);
+            z-index: 300;
+            transition: transform 300ms cubic-bezier(0.2, 0, 0, 1);
+            max-width: 400px;
+        }
+
+        .snackbar.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Utility Classes */
+        .flex {
+            display: flex;
+        }
+
+        .gap-8 {
+            gap: 8px;
+        }
+
+        .gap-12 {
+            gap: 12px;
+        }
+
+        .gap-16 {
+            gap: 16px;
+        }
+
+        .mb-16 {
+            margin-bottom: 16px;
+        }
+
+        .mb-24 {
+            margin-bottom: 24px;
+        }
+
+        .mt-24 {
+            margin-top: 24px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+            }
+
+            .content {
+                padding: 16px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .notification-panel {
+                width: 100%;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 16px;
+            }
+        }
+
+        /* 1080x720 Optimization */
+        @media (width: 1080px) and (height: 720px) {
+            .content {
+                padding: 16px;
+                max-width: 100%;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 16px;
+            }
+
+            .stat-card {
+                padding: 16px;
+            }
+
+            .stat-card-value {
+                font-size: 24px;
+            }
+
+            .md-card-content {
+                padding: 16px;
+            }
+
+            .sidebar {
+                width: 240px;
+            }
+
+            .main-content.sidebar-open {
+                margin-left: 240px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title">
+                    <span class="material-symbols-outlined">business</span>
+                    Business Manager
+                </div>
+                <button class="close-sidebar" id="closeSidebar">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <ul class="nav-list">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active" data-page="dashboard">
+                        <span class="material-symbols-outlined">dashboard</span>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-page="leads">
+                        <span class="material-symbols-outlined">people</span>
+                        Lead Management
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-page="projects">
+                        <span class="material-symbols-outlined">folder</span>
+                        Project Management
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-page="finance">
+                        <span class="material-symbols-outlined">account_balance</span>
+                        Finance
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-page="tasks">
+                        <span class="material-symbols-outlined">task</span>
+                        Today's Work
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-page="analytics">
+                        <span class="material-symbols-outlined">analytics</span>
+                        Analytics
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-page="reminders">
+                        <span class="material-symbols-outlined">notifications</span>
+                        Reminders
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-page="settings">
+                        <span class="material-symbols-outlined">settings</span>
+                        Settings
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content" id="mainContent">
+            <!-- Header -->
+            <header class="header">
+                <button class="menu-toggle" id="menuToggle">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+                <div class="page-title" id="pageTitle">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    Dashboard
+                </div>
+                <div class="header-actions">
+                    <button class="md-icon-button" id="notificationBtn">
+                        <span class="material-symbols-outlined">notifications</span>
+                    </button>
+                    <button class="md-icon-button" id="profileBtn">
+                        <span class="material-symbols-outlined">account_circle</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <div class="content">
+                <!-- Dashboard Page -->
+                <div class="page active" id="dashboard">
+                    <!-- Stats Cards -->
+                    <div class="stats-grid">
+                        <div class="stat-card" onclick="toggleStatCard(this)">
+                            <div class="stat-card-header">
+                                <div class="stat-card-icon">
+                                    <span class="material-symbols-outlined">people</span>
+                                </div>
+                                <button class="stat-card-expand-btn">
+                                    <span class="material-symbols-outlined">expand_more</span>
+                                </button>
+                            </div>
+                            <div class="stat-card-value" id="totalLeads">0</div>
+                            <div class="stat-card-label">Total Leads</div>
+                            <div class="stat-card-details">
+                                <div style="font-size: 14px; opacity: 0.9;">
+                                    <div style="margin-bottom: 8px;">• New leads: <span id="newLeads">0</span></div>
+                                    <div style="margin-bottom: 8px;">• Conversion rate: <span id="conversionRate">0%</span></div>
+                                    <div style="margin-bottom: 8px;">• Average deal size: ₹<span id="avgDealSize">0</span></div>
+                                    <div>• This month: <span id="monthlyGrowth">0%</span></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stat-card" onclick="toggleStatCard(this)">
+                            <div class="stat-card-header">
+                                <div class="stat-card-icon">
+                                    <span class="material-symbols-outlined">folder</span>
+                                </div>
+                                <button class="stat-card-expand-btn">
+                                    <span class="material-symbols-outlined">expand_more</span>
+                                </button>
+                            </div>
+                            <div class="stat-card-value" id="activeProjects">0</div>
+                            <div class="stat-card-label">Active Projects</div>
+                            <div class="stat-card-details">
+                                <div style="font-size: 14px; opacity: 0.9;">
+                                    <div style="margin-bottom: 8px;">• Completed: <span id="completedProjects">0</span></div>
+                                    <div style="margin-bottom: 8px;">• In progress: <span id="inProgressProjects">0</span></div>
+                                    <div style="margin-bottom: 8px;">• Avg completion: <span id="avgCompletion">0</span> days</div>
+                                    <div>• Success rate: <span id="successRate">0%</span></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stat-card" onclick="toggleStatCard(this)">
+                            <div class="stat-card-header">
+                                <div class="stat-card-icon">
+                                    <span class="material-symbols-outlined">currency_rupee</span>
+                                </div>
+                                <button class="stat-card-expand-btn">
+                                    <span class="material-symbols-outlined">expand_more</span>
+                                </button>
+                            </div>
+                            <div class="stat-card-value" id="totalRevenue">₹0</div>
+                            <div class="stat-card-label">Total Revenue</div>
+                            <div class="stat-card-details">
+                                <div style="font-size: 14px; opacity: 0.9;">
+                                    <div style="margin-bottom: 8px;">• This month: ₹<span id="monthlyRevenue">0</span></div>
+                                    <div style="margin-bottom: 8px;">• Expenses: ₹<span id="totalExpenses">0</span></div>
+                                    <div style="margin-bottom: 8px;">• Net profit: ₹<span id="netProfit">0</span></div>
+                                    <div>• Growth: <span id="revenueGrowth">0%</span></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stat-card" onclick="toggleStatCard(this)">
+                            <div class="stat-card-header">
+                                <div class="stat-card-icon">
+                                    <span class="material-symbols-outlined">task</span>
+                                </div>
+                                <button class="stat-card-expand-btn">
+                                    <span class="material-symbols-outlined">expand_more</span>
+                                </button>
+                            </div>
+                            <div class="stat-card-value" id="pendingTasks">0</div>
+                            <div class="stat-card-label">Pending Tasks</div>
+                            <div class="stat-card-details">
+                                <div style="font-size: 14px; opacity: 0.9;">
+                                    <div style="margin-bottom: 8px;">• Due today: <span id="dueToday">0</span></div>
+                                    <div style="margin-bottom: 8px;">• Due this week: <span id="dueThisWeek">0</span></div>
+                                    <div style="margin-bottom: 8px;">• Overdue: <span id="overdue">0</span></div>
+                                    <div>• Completed this week: <span id="completedThisWeek">0</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Projects -->
+                    <div class="md-card">
+                        <div class="md-card-header">
+                            <h3 class="md-card-title">
+                                <span class="material-symbols-outlined">folder</span>
+                                Recent Projects
+                            </h3>
+                        </div>
+                        <div class="md-card-content">
+                            <div id="recentProjectsTable">
+                                <p style="text-align: center; color: var(--md-sys-color-on-surface-variant); padding: 20px;">
+                                    No projects yet. Create your first project to get started!
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lead Management Page -->
+                <div class="page" id="leads">
+                    <div class="md-card">
+                        <div class="md-card-header">
+                            <h3 class="md-card-title">
+                                <span class="material-symbols-outlined">people</span>
+                                Lead Management
+                            </h3>
+                            <button class="md-filled-button" id="addLeadBtn">
+                                <span class="material-symbols-outlined">add</span>
+                                Add Lead
+                            </button>
+                        </div>
+                        <div class="md-card-content">
+                            <div id="leadsContainer">
+                                <p style="text-align: center; color: var(--md-sys-color-on-surface-variant); padding: 20px;">
+                                    No leads yet. Add your first lead to get started!
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project Management Page -->
+                <div class="page" id="projects">
+                    <div class="md-card">
+                        <div class="md-card-header">
+                            <h3 class="md-card-title">
+                                <span class="material-symbols-outlined">folder</span>
+                                Project Management
+                            </h3>
+                            <button class="md-filled-button" id="addProjectBtn">
+                                <span class="material-symbols-outlined">add</span>
+                                Add Project
+                            </button>
+                        </div>
+                        <div class="md-card-content">
+                            <div id="projectsContainer">
+                                <p style="text-align: center; color: var(--md-sys-color-on-surface-variant); padding: 20px;">
+                                    No projects yet. Create your first project to get started!
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Finance Page -->
+                <div class="page" id="finance">
+                    <div class="md-card">
+                        <div class="md-card-header">
+                            <h3 class="md-card-title">
+                                <span class="material-symbols-outlined">account_balance</span>
+                                Finance Management
+                            </h3>
+                            <button class="md-filled-button" id="addTransactionBtn">
+                                <span class="material-symbols-outlined">add</span>
+                                Add Transaction
+                            </button>
+                        </div>
+                        <div class="md-card-content">
+                            <div id="financeContainer">
+                                <p style="text-align: center; color: var(--md-sys-color-on-surface-variant); padding: 20px;">
+                                    No transactions yet. Add your first transaction to get started!
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Today's Work Page -->
+                <div class="page" id="tasks">
+                    <div class="md-card">
+                        <div class="md-card-header">
+                            <h3 class="md-card-title">
+                                <span class="material-symbols-outlined">task</span>
+                                Today's Work
+                            </h3>
+                            <button class="md-filled-button" id="addTaskBtn">
+                                <span class="material-symbols-outlined">add</span>
+                                Add Task
+                            </button>
+                        </div>
+                        <div class="md-card-content">
+                            <div id="tasksContainer">
+                                <p style="text-align: center; color: var(--md-sys-color-on-surface-variant); padding: 20px;">
+                                    No tasks yet. Add your first task to get started!
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analytics Page -->
+                <div class="page" id="analytics">
+                    <div class="md-card">
+                        <div class="md-card-header">
+                            <h3 class="md-card-title">
+                                <span class="material-symbols-outlined">analytics</span>
+                                Analytics Dashboard
+                            </h3>
+                        </div>
+                        <div class="md-card-content">
+                            <div id="analyticsContainer">
+                                <p style="text-align: center; color: var(--md-sys-color-on-surface-variant); padding: 20px;">
+                                    Analytics will appear here once you have data to analyze.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reminders Page -->
+                <div class="page" id="reminders">
+                    <div class="md-card">
+                        <div class="md-card-header">
+                            <h3 class="md-card-title">
+                                <span class="material-symbols-outlined">notifications</span>
+                                Reminders
+                            </h3>
+                            <button class="md-filled-button" id="addReminderBtn">
+                                <span class="material-symbols-outlined">add</span>
+                                Add Reminder
+                            </button>
+                        </div>
+                        <div class="md-card-content">
+                            <div id="remindersContainer">
+                                <p style="text-align: center; color: var(--md-sys-color-on-surface-variant); padding: 20px;">
+                                    No reminders yet. Add your first reminder to get started!
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Page -->
+                <div class="page" id="settings">
+                    <div class="md-card">
+                        <div class="md-card-header">
+                            <h3 class="md-card-title">
+                                <span class="material-symbols-outlined">settings</span>
+                                Settings
+                            </h3>
+                        </div>
+                        <div class="md-card-content">
+                            <div id="settingsContainer">
+                                <div class="form-section">
+                                    <div class="form-section-title">
+                                        <span class="material-symbols-outlined">palette</span>
+                                        Theme Settings
+                                    </div>
+                                    <div class="form-grid">
+                                        <div class="custom-dropdown">
+                                            <button class="custom-dropdown-button" data-field="theme">
+                                                <span>Dark Theme</span>
+                                                <span class="material-symbols-outlined">expand_more</span>
+                                            </button>
+                                            <div class="custom-dropdown-menu">
+                                                <div class="custom-dropdown-item" data-value="dark">Dark Theme</div>
+                                                <div class="custom-dropdown-item" data-value="light">Light Theme</div>
+                                                <div class="custom-dropdown-item" data-value="auto">Auto</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-section">
+                                    <div class="form-section-title">
+                                        <span class="material-symbols-outlined">person</span>
+                                        Profile Settings
+                                    </div>
+                                    <div class="form-grid">
+                                        <div class="md-text-field">
+                                            <input type="text" placeholder=" " id="profileName" value="Business Manager">
+                                            <label>Full Name</label>
+                                        </div>
+                                        <div class="md-text-field">
+                                            <input type="email" placeholder=" " id="profileEmail" value="manager@business.com">
+                                            <label>Email</label>
+                                        </div>
+                                        <div class="md-text-field">
+                                            <input type="text" placeholder=" " id="profileCompany" value="My Business">
+                                            <label>Company</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-section">
+                                    <div class="form-section-title">
+                                        <span class="material-symbols-outlined">notifications</span>
+                                        Notification Settings
+                                    </div>
+                                    <div class="form-grid">
+                                        <label style="display: flex; align-items: center; gap: 12px;">
+                                            <input type="checkbox" checked id="emailNotifications">
+                                            Email Notifications
+                                        </label>
+                                        <label style="display: flex; align-items: center; gap: 12px;">
+                                            <input type="checkbox" checked id="pushNotifications">
+                                            Push Notifications
+                                        </label>
+                                        <label style="display: flex; align-items: center; gap: 12px;">
+                                            <input type="checkbox" checked id="meetingReminders">
+                                            Meeting Reminders
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="mt-24">
+                                    <button class="md-filled-button" id="saveSettingsBtn">
+                                        <span class="material-symbols-outlined">save</span>
+                                        Save Settings
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Floating Action Button -->
+        <button class="md-fab" id="fab">
+            <span class="material-symbols-outlined">add</span>
+        </button>
+
+        <!-- Quick Add Menu -->
+        <div class="quick-add-menu" id="quickAddMenu">
+            <div class="quick-add-item" data-action="lead">
+                <span class="material-symbols-outlined">person_add</span>
+                Add Lead
+            </div>
+            <div class="quick-add-item" data-action="project">
+                <span class="material-symbols-outlined">create_new_folder</span>
+                Add Project
+            </div>
+            <div class="quick-add-item" data-action="task">
+                <span class="material-symbols-outlined">add_task</span>
+                Add Task
+            </div>
+            <div class="quick-add-item" data-action="reminder">
+                <span class="material-symbols-outlined">alarm_add</span>
+                Add Reminder
+            </div>
+            <div class="quick-add-item" data-action="transaction">
+                <span class="material-symbols-outlined">payments</span>
+                Add Transaction
+            </div>
+        </div>
+
+        <!-- Notification Panel -->
+        <div class="notification-panel" id="notificationPanel">
+            <div class="notification-header">
+                <div class="notification-title">Notifications & Reminders</div>
+                <button class="md-icon-button" id="clearNotifications">
+                    <span class="material-symbols-outlined">clear_all</span>
+                </button>
+            </div>
+            <div class="notification-list" id="notificationList">
+                <div style="text-align: center; color: var(--md-sys-color-on-surface-variant); padding: 20px;">
+                    No notifications yet. Reminders and activities will appear here.
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Lead Modal -->
+        <div class="modal" id="addLeadModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">Add New Lead</div>
+                    <button class="modal-close" id="cancelAddLead">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+                <form id="addLeadForm">
+                    <div class="form-section">
+                        <div class="form-section-title">
+                            <span class="material-symbols-outlined">business</span>
+                            Company Information
+                        </div>
+                        <div class="form-grid">
+                            <div class="md-text-field">
+                                <input type="text" placeholder=" " id="companyName" required>
+                                <label>Company Name</label>
+                            </div>
+                            <div class="md-text-field">
+                                <input type="text" placeholder=" " id="contactPerson" required>
+                                <label>Contact Person</label>
+                            </div>
+                            <div class="md-text-field">
+                                <input type="email" placeholder=" " id="email" required>
+                                <label>Email</label>
+                            </div>
+                            <div class="md-text-field">
+                                <input type="tel" placeholder=" " id="phone" required>
+                                <label>Phone Number</label>
+                            </div>
+                            <div class="md-text-field">
+                                <input type="url" placeholder=" " id="website">
+                                <label>Website (Optional)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="form-section-title">
+                            <span class="material-symbols-outlined">category</span>
+                            Lead Details
+                        </div>
+                        <div class="form-grid">
+                            <div class="custom-dropdown">
+                                <button type="button" class="custom-dropdown-button" data-field="category">
+                                    <span>Select Category</span>
+                                    <span class="material-symbols-outlined">expand_more</span>
+                                </button>
+                                <div class="custom-dropdown-menu">
+                                    <div class="custom-dropdown-item" data-value="B2B">B2B</div>
+                                    <div class="custom-dropdown-item" data-value="B2C">B2C</div>
+                                    <div class="custom-dropdown-item" data-value="Enterprise">Enterprise</div>
+                                    <div class="custom-dropdown-item" data-value="Startup">Startup</div>
+                                    <div class="custom-dropdown-item add-custom">+ Add Custom</div>
+                                </div>
+                            </div>
+
+                            <div class="custom-dropdown">
+                                <button type="button" class="custom-dropdown-button" data-field="stage">
+                                    <span>Select Stage</span>
+                                    <span class="material-symbols-outlined">expand_more</span>
+                                </button>
+                                <div class="custom-dropdown-menu">
+                                    <div class="custom-dropdown-item" data-value="New Lead">New Lead</div>
+                                    <div class="custom-dropdown-item" data-value="Contacted">Contacted</div>
+                                    <div class="custom-dropdown-item" data-value="Qualified">Qualified</div>
+                                    <div class="custom-dropdown-item" data-value="Proposal Sent">Proposal Sent</div>
+                                    <div class="custom-dropdown-item" data-value="Negotiating">Negotiating</div>
+                                    <div class="custom-dropdown-item" data-value="Converted">Converted</div>
+                                    <div class="custom-dropdown-item add-custom">+ Add Custom</div>
+                                </div>
+                            </div>
+
+                            <div class="custom-dropdown">
+                                <button type="button" class="custom-dropdown-button" data-field="priority">
+                                    <span>Select Priority</span>
+                                    <span class="material-symbols-outlined">expand_more</span>
+                                </button>
+                                <div class="custom-dropdown-menu">
+                                    <div class="custom-dropdown-item" data-value="Low">Low</div>
+                                    <div class="custom-dropdown-item" data-value="Medium">Medium</div>
+                                    <div class="custom-dropdown-item" data-value="High">High</div>
+                                    <div class="custom-dropdown-item" data-value="Urgent">Urgent</div>
+                                    <div class="custom-dropdown-item add-custom">+ Add Custom</div>
+                                </div>
+                            </div>
+
+                            <div class="md-text-field">
+                                <input type="text" placeholder=" " id="leadOwner">
+                                <label>Lead Owner</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="form-section-title">
+                            <span class="material-symbols-outlined">currency_rupee</span>
+                            Deal Information
+                        </div>
+                        <div class="form-grid">
+                            <div class="md-text-field">
+                                <input type="number" placeholder=" " id="dealAmount" min="0" step="0.01">
+                                <label>Deal Amount</label>
+                            </div>
+                            <div class="custom-dropdown">
+                                <button type="button" class="custom-dropdown-button" data-field="currency">
+                                    <span>INR</span>
+                                    <span class="material-symbols-outlined">expand_more</span>
+                                </button>
+                                <div class="custom-dropdown-menu">
+                                    <div class="custom-dropdown-item" data-value="INR">INR</div>
+                                    <div class="custom-dropdown-item" data-value="USD">USD</div>
+                                    <div class="custom-dropdown-item" data-value="EUR">EUR</div>
+                                    <div class="custom-dropdown-item" data-value="GBP">GBP</div>
+                                    <div class="custom-dropdown-item add-custom">+ Add Custom</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="form-section-title">
+                            <span class="material-symbols-outlined">event</span>
+                            Meeting & Reminder Information
+                        </div>
+                        <div class="form-grid">
+                            <div class="md-text-field">
+                                <input type="datetime-local" placeholder=" " id="meetingDateTime">
+                                <label>Meeting Date & Time</label>
+                            </div>
+                            <div class="md-text-field">
+                                <input type="text" placeholder=" " id="meetingTopic">
+                                <label>Meeting Topic</label>
+                            </div>
+                            <div class="custom-dropdown">
+                                <button type="button" class="custom-dropdown-button" data-field="meetingType">
+                                    <span>Select Meeting Type</span>
+                                    <span class="material-symbols-outlined">expand_more</span>
+                                </button>
+                                <div class="custom-dropdown-menu">
+                                    <div class="custom-dropdown-item" data-value="Phone Call">Phone Call</div>
+                                    <div class="custom-dropdown-item" data-value="Video Call">Video Call</div>
+                                    <div class="custom-dropdown-item" data-value="In-Person">In-Person</div>
+                                    <div class="custom-dropdown-item" data-value="Email">Email</div>
+                                    <div class="custom-dropdown-item add-custom">+ Add Custom</div>
+                                </div>
+                            </div>
+                            <div class="custom-dropdown">
+                                <button type="button" class="custom-dropdown-button" data-field="reminderTime">
+                                    <span>Reminder Time</span>
+                                    <span class="material-symbols-outlined">expand_more</span>
+                                </button>
+                                <div class="custom-dropdown-menu">
+                                    <div class="custom-dropdown-item" data-value="5">5 minutes before</div>
+                                    <div class="custom-dropdown-item" data-value="15">15 minutes before</div>
+                                    <div class="custom-dropdown-item" data-value="30">30 minutes before</div>
+                                    <div class="custom-dropdown-item" data-value="60">1 hour before</div>
+                                    <div class="custom-dropdown-item" data-value="1440">1 day before</div>
+                                    <div class="custom-dropdown-item add-custom">+ Add Custom</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="form-section-title">
+                            <span class="material-symbols-outlined">note</span>
+                            Additional Information
+                        </div>
+                        <div class="md-text-field">
+                            <textarea placeholder=" " id="notes" rows="3"></textarea>
+                            <label>Notes</label>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-16 mt-24">
+                        <button type="button" class="md-outlined-button" id="cancelAddLead2">Cancel</button>
+                        <button type="submit" class="md-filled-button">
+                            <span class="material-symbols-outlined">save</span>
+                            Save Lead
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Add Project Modal -->
+        <div class="modal" id="addProjectModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">Add New Project</div>
+                    <button class="modal-close" id="cancelAddProject">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+                <form id="addProjectForm">
+                    <div class="form-section">
+                        <div class="form-section-title">
+                            <span class="material-symbols-outlined">folder</span>
+                            Project Information
+                        </div>
+                        <div class="form-grid">
+                            <div class="md-text-field">
+                                <input type="text" placeholder=" " id="projectName" required>
+                                <label>Project Name</label>
+                            </div>
+                            <div class="custom-dropdown">
+                                <button type="button" class="custom-dropdown-button" data-field="projectLead">
+                                    <span>Select Lead (Optional)</span>
+                                    <span class="material-symbols-outlined">expand_more</span>
+                                </button>
+                                <div class="custom-dropdown-menu" id="projectLeadDropdown">
+                                    <div class="custom-dropdown-item" data-value="">No Lead Selected</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-16 mt-24">
+                        <button type="button" class="md-outlined-button" id="cancelAddProject2">Cancel</button>
+                        <button type="submit" class="md-filled-button">
+                            <span class="material-symbols-outlined">save</span>
+                            Save Project
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Snackbar -->
+        <div class="snackbar" id="snackbar"></div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase, ref, set, get, update, remove, push, onValue } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC_X2q8m22D_ujnHGS9sbtf5BbBaR6Uc2M",
+            authDomain: "lead-manage-maan.firebaseapp.com",
+            databaseURL: "https://lead-manage-maan-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "lead-manage-maan",
+            storageBucket: "lead-manage-maan.firebasestorage.app",
+            messagingSenderId: "929826628899",
+            appId: "1:929826628899:web:30811e98a4ae13bb4fd896",
+            measurementId: "G-T38XMZEBNS"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // Make Firebase available globally
+        window.database = database;
+        window.ref = ref;
+        window.set = set;
+        window.get = get;
+        window.update = update;
+        window.remove = remove;
+        window.push = push;
+        window.onValue = onValue;
+
+        // Global variables for DOM elements
+        const sidebar = document.getElementById('sidebar');
+        const menuToggle = document.getElementById('menuToggle');
+        const fab = document.getElementById('fab');
+        const quickAddMenu = document.getElementById('quickAddMenu');
+        const notificationBtn = document.getElementById('notificationBtn');
+        const notificationPanel = document.getElementById('notificationPanel');
+        const addLeadModal = document.getElementById('addLeadModal');
+        const addProjectModal = document.getElementById('addProjectModal');
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', async () => {
+            setupEventListeners();
+            setupNotifications();
+            loadDashboard();
+            loadLeads();
+            loadProjects();
+            checkReminders();
+            showPage('dashboard');
+        });
+
+        // Event Listeners
+        function setupEventListeners() {
+            // Navigation
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const page = link.dataset.page;
+                    showPage(page);
+                    // Auto-close sidebar on mobile after navigation
+                    if (window.innerWidth <= 768) {
+                        sidebar.classList.remove('open');
+                    }
+                });
+            });
+
+            // Menu Toggle
+            menuToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+            });
+
+            // Close Sidebar
+            document.getElementById('closeSidebar').addEventListener('click', () => {
+                sidebar.classList.remove('open');
+            });
+
+            // FAB and Quick Add
+            fab.addEventListener('click', () => {
+                quickAddMenu.classList.toggle('show');
+            });
+
+            // Quick Add Actions
+            document.querySelectorAll('.quick-add-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const action = item.dataset.action;
+                    handleQuickAdd(action);
+                    quickAddMenu.classList.remove('show');
+                });
+            });
+
+            // Notifications
+            notificationBtn.addEventListener('click', () => {
+                notificationPanel.classList.toggle('show');
+            });
+
+            // Clear Notifications
+            document.getElementById('clearNotifications').addEventListener('click', () => {
+                clearNotifications();
+            });
+
+            // Add Lead Button
+            document.getElementById('addLeadBtn').addEventListener('click', () => {
+                addLeadModal.classList.add('show');
+            });
+
+            // Cancel Add Lead
+            document.getElementById('cancelAddLead').addEventListener('click', () => {
+                addLeadModal.classList.remove('show');
+                resetAddLeadForm();
+            });
+
+            document.getElementById('cancelAddLead2').addEventListener('click', () => {
+                addLeadModal.classList.remove('show');
+                resetAddLeadForm();
+            });
+
+            // Add Lead Form
+            document.getElementById('addLeadForm').addEventListener('submit', handleAddLead);
+
+            // Add Project Button
+            document.getElementById('addProjectBtn').addEventListener('click', () => {
+                addProjectModal.classList.add('show');
+                populateLeadDropdown();
+            });
+
+            // Cancel Add Project
+            document.getElementById('cancelAddProject').addEventListener('click', () => {
+                addProjectModal.classList.remove('show');
+                resetAddProjectForm();
+            });
+
+            document.getElementById('cancelAddProject2').addEventListener('click', () => {
+                addProjectModal.classList.remove('show');
+                resetAddProjectForm();
+            });
+
+            // Add Project Form
+            document.getElementById('addProjectForm').addEventListener('submit', handleAddProject);
+
+            // Save Settings
+            document.getElementById('saveSettingsBtn').addEventListener('click', saveSettings);
+
+            // Custom Dropdown Functionality
+            setupCustomDropdowns();
+
+            // Close modals and panels when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!fab.contains(e.target) && !quickAddMenu.contains(e.target)) {
+                    quickAddMenu.classList.remove('show');
+                }
+            });
+
+            // Close notification panel when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!notificationBtn.contains(e.target) && !notificationPanel.contains(e.target)) {
+                    notificationPanel.classList.remove('show');
+                }
+            });
+
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', (e) => {
+                if (window.innerWidth <= 768 && 
+                    !sidebar.contains(e.target) && 
+                    !menuToggle.contains(e.target) && 
+                    sidebar.classList.contains('open')) {
+                    sidebar.classList.remove('open');
+                }
+            });
+
+            // Close modal when clicking overlay
+            addLeadModal.addEventListener('click', (e) => {
+                if (e.target === addLeadModal) {
+                    addLeadModal.classList.remove('show');
+                    resetAddLeadForm();
+                }
+            });
+
+            addProjectModal.addEventListener('click', (e) => {
+                if (e.target === addProjectModal) {
+                    addProjectModal.classList.remove('show');
+                    resetAddProjectForm();
+                }
+            });
+        }
+
+        // Page Navigation
+        function showPage(pageId) {
+            // Update navigation
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.dataset.page === pageId) {
+                    link.classList.add('active');
+                }
+            });
+
+            // Update page title
+            const pageTitle = document.getElementById('pageTitle');
+            const icons = {
+                dashboard: 'dashboard',
+                leads: 'people',
+                projects: 'folder',
+                finance: 'account_balance',
+                tasks: 'task',
+                analytics: 'analytics',
+                reminders: 'notifications',
+                settings: 'settings'
+            };
+
+            const titles = {
+                dashboard: 'Dashboard',
+                leads: 'Lead Management',
+                projects: 'Project Management',
+                finance: 'Finance',
+                tasks: "Today's Work",
+                analytics: 'Analytics',
+                reminders: 'Reminders',
+                settings: 'Settings'
+            };
+
+            pageTitle.innerHTML = `
+                <span class="material-symbols-outlined">${icons[pageId]}</span>
+                ${titles[pageId]}
+            `;
+
+            // Show/hide pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+
+            // Load page-specific data
+            switch (pageId) {
+                case 'dashboard':
+                    loadDashboard();
+                    break;
+                case 'leads':
+                    loadLeads();
+                    break;
+                case 'projects':
+                    loadProjects();
+                    break;
+                case 'tasks':
+                    loadTasks();
+                    break;
+                case 'analytics':
+                    loadAnalytics();
+                    break;
+                case 'reminders':
+                    loadReminders();
+                    break;
+            }
+
+            // Close sidebar on mobile
+            if (window.innerWidth <= 768) {
+                sidebar.classList.remove('open');
+            }
+        }
+
+        // Quick Add Handler
+        function handleQuickAdd(action) {
+            switch (action) {
+                case 'lead':
+                    addLeadModal.classList.add('show');
+                    break;
+                case 'project':
+                    addProjectModal.classList.add('show');
+                    populateLeadDropdown();
+                    break;
+                case 'task':
+                    showSnackbar('Task creation coming soon!');
+                    break;
+                case 'reminder':
+                    showSnackbar('Reminder creation coming soon!');
+                    break;
+                case 'transaction':
+                    showSnackbar('Transaction creation coming soon!');
+                    break;
+            }
+        }
+
+        // Custom Dropdown Setup
+        function setupCustomDropdowns() {
+            document.querySelectorAll('.custom-dropdown').forEach(dropdown => {
+                const button = dropdown.querySelector('.custom-dropdown-button');
+                const menu = dropdown.querySelector('.custom-dropdown-menu');
+                const field = button.dataset.field;
+
+                button.addEventListener('click', () => {
+                    // Close other dropdowns
+                    document.querySelectorAll('.custom-dropdown-menu').forEach(m => {
+                        if (m !== menu) m.classList.remove('show');
+                    });
+                    menu.classList.toggle('show');
+                });
+
+                menu.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('custom-dropdown-item')) {
+                        if (e.target.classList.contains('add-custom')) {
+                            handleAddCustomOption(field, button);
+                        } else {
+                            const value = e.target.dataset.value;
+                            button.querySelector('span').textContent = e.target.textContent;
+                            button.dataset.value = value;
+                        }
+                        menu.classList.remove('show');
+                    }
+                });
+            });
+
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.custom-dropdown')) {
+                    document.querySelectorAll('.custom-dropdown-menu').forEach(menu => {
+                        menu.classList.remove('show');
+                    });
+                }
+            });
+        }
+
+        // Handle Add Custom Option
+        function handleAddCustomOption(field, button) {
+            const customValue = prompt(`Enter custom ${field}:`);
+            if (customValue && customValue.trim()) {
+                const menu = button.nextElementSibling;
+                const addCustomItem = menu.querySelector('.add-custom');
+                
+                // Create new option
+                const newItem = document.createElement('div');
+                newItem.className = 'custom-dropdown-item';
+                newItem.dataset.value = customValue.trim();
+                newItem.textContent = customValue.trim();
+                
+                // Insert before "Add Custom" option
+                menu.insertBefore(newItem, addCustomItem);
+                
+                // Select the new option
+                button.querySelector('span').textContent = customValue.trim();
+                button.dataset.value = customValue.trim();
+                
+                showSnackbar(`Custom ${field} "${customValue.trim()}" added successfully!`);
+            }
+        }
+
+        // Add Lead Form Handler
+        async function handleAddLead(e) {
+            e.preventDefault();
+            
+            const modal = document.getElementById('addLeadModal');
+            const editId = modal.getAttribute('data-edit-id');
+            
+            const leadData = {
+                companyName: document.getElementById('companyName').value,
+                contactPerson: document.getElementById('contactPerson').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                website: document.getElementById('website').value,
+                category: document.querySelector('[data-field="category"]').dataset.value || '',
+                stage: document.querySelector('[data-field="stage"]').dataset.value || '',
+                priority: document.querySelector('[data-field="priority"]').dataset.value || '',
+                leadOwner: document.getElementById('leadOwner').value,
+                dealAmount: parseFloat(document.getElementById('dealAmount').value) || 0,
+                currency: document.querySelector('[data-field="currency"]').dataset.value || 'INR',
+                meetingDateTime: document.getElementById('meetingDateTime').value,
+                meetingTopic: document.getElementById('meetingTopic').value,
+                meetingType: document.querySelector('[data-field="meetingType"]').dataset.value || '',
+                reminderTime: parseInt(document.querySelector('[data-field="reminderTime"]').dataset.value) || 30,
+                notes: document.getElementById('notes').value,
+                updatedAt: new Date().toISOString()
+            };
+
+            try {
+                if (editId) {
+                    // Update existing lead
+                    leadData.id = editId;
+                    const leadRef = ref(database, `leads/${editId}`);
+                    await update(leadRef, leadData);
+                    showSnackbar('Lead updated successfully!');
+                    addNotificationToPanel(`Lead "${leadData.companyName}" updated successfully!`, 'lead');
+                } else {
+                    // Create new lead
+                    leadData.id = Date.now().toString();
+                    leadData.createdAt = new Date().toISOString();
+                    const leadRef = ref(database, `leads/${leadData.id}`);
+                    await set(leadRef, leadData);
+                    showSnackbar('Lead added successfully!');
+                    addNotificationToPanel(`New lead "${leadData.companyName}" added successfully!`, 'lead');
+                }
+                
+                modal.classList.remove('show');
+                modal.removeAttribute('data-edit-id');
+                resetAddLeadForm();
+                loadLeads();
+                loadDashboard();
+                
+                // Schedule reminder if meeting is set
+                if (leadData.meetingDateTime) {
+                    scheduleReminder(leadData);
+                }
+            } catch (error) {
+                console.error('Error saving lead:', error);
+                showSnackbar('Error saving lead. Please try again.');
+            }
+        }
+
+        // Add Project Form Handler
+        async function handleAddProject(e) {
+            e.preventDefault();
+
+            const projectName = document.getElementById('projectName').value;
+            const leadId = document.querySelector('[data-field="projectLead"]').dataset.value;
+
+            if (!projectName) {
+                showSnackbar('Please enter project name');
+                return;
+            }
+
+            const projectData = {
+                id: Date.now().toString(),
+                name: projectName,
+                leadId: leadId || null,
+                status: 'Active',
+                createdAt: new Date().toISOString()
+            };
+
+            try {
+                const projectRef = ref(database, `projects/${projectData.id}`);
+                await set(projectRef, projectData);
+                showSnackbar('Project added successfully!');
+                addNotificationToPanel(`New project "${projectName}" created successfully!`, 'task');
+                addProjectModal.classList.remove('show');
+                resetAddProjectForm();
+                loadProjects();
+                loadDashboard();
+            } catch (error) {
+                console.error('Error saving project:', error);
+                showSnackbar('Error saving project. Please try again.');
+            }
+        }
+
+        // Reset Add Lead Form
+        function resetAddLeadForm() {
+            document.getElementById('addLeadForm').reset();
+            
+            // Reset custom dropdowns
+            document.querySelectorAll('.custom-dropdown-button').forEach(button => {
+                const defaultText = {
+                    category: 'Select Category',
+                    stage: 'Select Stage',
+                    priority: 'Select Priority',
+                    currency: 'INR',
+                    meetingType: 'Select Meeting Type',
+                    reminderTime: 'Reminder Time'
+                };
+                
+                const field = button.dataset.field;
+                button.querySelector('span').textContent = defaultText[field] || 'Select Option';
+                button.dataset.value = field === 'currency' ? 'INR' : '';
+            });
+        }
+
+        // Reset Add Project Form
+        function resetAddProjectForm() {
+            document.getElementById('addProjectForm').reset();
+            document.querySelector('[data-field="projectLead"]').querySelector('span').textContent = 'Select Lead (Optional)';
+            document.querySelector('[data-field="projectLead"]').dataset.value = '';
+        }
+
+        // Load Dashboard
+        async function loadDashboard() {
+            try {
+                const [leadsSnapshot, projectsSnapshot] = await Promise.all([
+                    get(ref(database, 'leads')),
+                    get(ref(database, 'projects'))
+                ]);
+                
+                let totalLeads = 0;
+                let totalRevenue = 0;
+                let newLeads = 0;
+                
+                if (leadsSnapshot.exists()) {
+                    const leads = Object.values(leadsSnapshot.val());
+                    totalLeads = leads.length;
+                    
+                    // Calculate revenue
+                    totalRevenue = leads.reduce((sum, lead) => sum + (lead.dealAmount || 0), 0);
+                    
+                    // Count new leads (created in last 30 days)
+                    const thirtyDaysAgo = new Date();
+                    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+                    newLeads = leads.filter(lead => new Date(lead.createdAt) > thirtyDaysAgo).length;
+                }
+
+                let activeProjects = 0;
+                if (projectsSnapshot.exists()) {
+                    const projects = Object.values(projectsSnapshot.val());
+                    activeProjects = projects.filter(p => p.status === 'Active').length;
+                    
+                    const recentProjectsTable = document.getElementById('recentProjectsTable');
+                    if (projects.length > 0) {
+                        recentProjectsTable.innerHTML = projects.slice(0, 5).map(project => `
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid var(--md-sys-color-outline-variant);">
+                                <div>
+                                    <div style="font-weight: 500;">${project.name}</div>
+                                    <div style="font-size: 14px; color: var(--md-sys-color-on-surface-variant);">Created: ${new Date(project.createdAt).toLocaleDateString()}</div>
+                                </div>
+                                <span class="priority-badge medium">${project.status}</span>
+                            </div>
+                        `).join('');
+                    }
+                }
+
+                // Update dashboard stats
+                document.getElementById('totalLeads').textContent = totalLeads;
+                document.getElementById('activeProjects').textContent = activeProjects;
+                document.getElementById('totalRevenue').textContent = `₹${totalRevenue.toLocaleString()}`;
+                document.getElementById('pendingTasks').textContent = '0'; // Will be updated when tasks are implemented
+                
+                // Update detailed stats
+                document.getElementById('newLeads').textContent = newLeads;
+                document.getElementById('conversionRate').textContent = totalLeads > 0 ? Math.round((newLeads / totalLeads) * 100) + '%' : '0%';
+                document.getElementById('avgDealSize').textContent = totalLeads > 0 ? Math.round(totalRevenue / totalLeads).toLocaleString() : '0';
+                document.getElementById('monthlyGrowth').textContent = '0%'; // Will be calculated based on historical data
+                
+                document.getElementById('completedProjects').textContent = '0'; // Will be updated when project status tracking is implemented
+                document.getElementById('inProgressProjects').textContent = activeProjects;
+                document.getElementById('avgCompletion').textContent = '0';
+                document.getElementById('successRate').textContent = '0%';
+                
+                document.getElementById('monthlyRevenue').textContent = totalRevenue.toLocaleString();
+                document.getElementById('totalExpenses').textContent = '0'; // Will be updated when expense tracking is implemented
+                document.getElementById('netProfit').textContent = totalRevenue.toLocaleString();
+                document.getElementById('revenueGrowth').textContent = '0%';
+                
+                document.getElementById('dueToday').textContent = '0';
+                document.getElementById('dueThisWeek').textContent = '0';
+                document.getElementById('overdue').textContent = '0';
+                document.getElementById('completedThisWeek').textContent = '0';
+                
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+            }
+        }
+
+        // Load Leads
+        async function loadLeads() {
+            try {
+                const leadsRef = ref(database, 'leads');
+                const snapshot = await get(leadsRef);
+                
+                const leadsContainer = document.getElementById('leadsContainer');
+                
+                if (snapshot.exists()) {
+                    const leads = Object.values(snapshot.val());
+                    
+                    leadsContainer.innerHTML = leads.map(lead => `
+                        <div class="md-card mb-16" style="margin-bottom: 16px;">
+                            <div class="md-card-content">
+                                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px;">
+                                    <div>
+                                        <h4 style="font-size: 18px; font-weight: 500; margin-bottom: 8px;">${lead.companyName}</h4>
+                                        <p style="color: var(--md-sys-color-on-surface-variant); margin-bottom: 4px;">${lead.contactPerson}</p>
+                                        <p style="color: var(--md-sys-color-on-surface-variant); font-size: 14px;">${lead.email}</p>
+                                        ${lead.meetingDateTime ? `<p style="color: var(--md-sys-color-primary); font-size: 14px; margin-top: 8px;"><span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle;">event</span> ${new Date(lead.meetingDateTime).toLocaleString()}</p>` : ''}
+                                    </div>
+                                    <div style="display: flex; gap: 8px;">
+                                        <button class="md-icon-button" onclick="editLead('${lead.id}')">
+                                            <span class="material-symbols-outlined">edit</span>
+                                        </button>
+                                        <button class="md-icon-button" onclick="deleteLead('${lead.id}')">
+                                            <span class="material-symbols-outlined">delete</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                    <span class="priority-badge ${lead.priority?.toLowerCase() || 'medium'}">${lead.priority || 'Medium'}</span>
+                                    <span style="background-color: var(--md-sys-color-surface-variant); color: var(--md-sys-color-on-surface-variant); padding: 4px 8px; border-radius: 12px; font-size: 12px;">${lead.stage || 'New Lead'}</span>
+                                    <span style="background-color: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container); padding: 4px 8px; border-radius: 12px; font-size: 12px;">${lead.currency} ${lead.dealAmount?.toLocaleString() || '0'}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    leadsContainer.innerHTML = `
+                        <p style="text-align: center; color: var(--md-sys-color-on-surface-variant); padding: 20px;">
+                            No leads yet. Add your first lead to get started!
+                        </p>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading leads:', error);
+            }
+        }
+
+        // Load Projects
+        async function loadProjects() {
+            try {
+                const projectsRef = ref(database, 'projects');
+                const snapshot = await get(projectsRef);
+                
+                const projectsContainer = document.getElementById('projectsContainer');
+                
+                if (snapshot.exists()) {
+                    const projects = Object.values(snapshot.val());
+                    
+                    projectsContainer.innerHTML = projects.map(project => `
+                        <div class="md-card mb-16" style="margin-bottom: 16px;">
+                            <div class="md-card-content">
+                                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px;">
+                                    <div>
+                                        <h4 style="font-size: 18px; font-weight: 500; margin-bottom: 8px;">${project.name}</h4>
+                                        <p style="color: var(--md-sys-color-on-surface-variant); font-size: 14px;">Created: ${new Date(project.createdAt).toLocaleDateString()}</p>
+                                        ${project.leadId ? `<p style="color: var(--md-sys-color-primary); font-size: 14px; margin-top: 4px;">Linked to Lead</p>` : ''}
+                                    </div>
+                                    <div style="display: flex; gap: 8px;">
+                                        <button class="md-icon-button" onclick="editProject('${project.id}')">
+                                            <span class="material-symbols-outlined">edit</span>
+                                        </button>
+                                        <button class="md-icon-button" onclick="deleteProject('${project.id}')">
+                                            <span class="material-symbols-outlined">delete</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                    <span class="priority-badge medium">${project.status || 'Active'}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    projectsContainer.innerHTML = `
+                        <p style="text-align: center; color: var(--md-sys-color-on-surface-variant); padding: 20px;">
+                            No projects yet. Create your first project to get started!
+                        </p>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading projects:', error);
+            }
+        }
+
+        // Edit Lead
+        window.editLead = async function(leadId) {
+            try {
+                const leadRef = ref(database, `leads/${leadId}`);
+                const snapshot = await get(leadRef);
+                
+                if (snapshot.exists()) {
+                    const leadData = snapshot.val();
+                    
+                    // Populate form with existing data
+                    document.getElementById('companyName').value = leadData.companyName || '';
+                    document.getElementById('contactPerson').value = leadData.contactPerson || '';
+                    document.getElementById('email').value = leadData.email || '';
+                    document.getElementById('phone').value = leadData.phone || '';
+                    document.getElementById('leadOwner').value = leadData.leadOwner || '';
+                    document.getElementById('dealAmount').value = leadData.dealAmount || '';
+                    document.getElementById('notes').value = leadData.notes || '';
+                    document.getElementById('website').value = leadData.website || '';
+                    document.getElementById('meetingDateTime').value = leadData.meetingDateTime || '';
+                    document.getElementById('meetingTopic').value = leadData.meetingTopic || '';
+                    
+                    // Set dropdown values
+                    if (leadData.category) {
+                        const categoryBtn = document.querySelector('[data-field="category"]');
+                        categoryBtn.querySelector('span').textContent = leadData.category;
+                        categoryBtn.dataset.value = leadData.category;
+                    }
+                    
+                    if (leadData.stage) {
+                        const stageBtn = document.querySelector('[data-field="stage"]');
+                        stageBtn.querySelector('span').textContent = leadData.stage;
+                        stageBtn.dataset.value = leadData.stage;
+                    }
+                    
+                    if (leadData.priority) {
+                        const priorityBtn = document.querySelector('[data-field="priority"]');
+                        priorityBtn.querySelector('span').textContent = leadData.priority;
+                        priorityBtn.dataset.value = leadData.priority;
+                    }
+                    
+                    if (leadData.currency) {
+                        const currencyBtn = document.querySelector('[data-field="currency"]');
+                        currencyBtn.querySelector('span').textContent = leadData.currency;
+                        currencyBtn.dataset.value = leadData.currency;
+                    }
+                    
+                    if (leadData.meetingType) {
+                        const meetingTypeBtn = document.querySelector('[data-field="meetingType"]');
+                        meetingTypeBtn.querySelector('span').textContent = leadData.meetingType;
+                        meetingTypeBtn.dataset.value = leadData.meetingType;
+                    }
+                    
+                    if (leadData.reminderTime) {
+                        const reminderBtn = document.querySelector('[data-field="reminderTime"]');
+                        reminderBtn.querySelector('span').textContent = `${leadData.reminderTime} minutes before`;
+                        reminderBtn.dataset.value = leadData.reminderTime;
+                    }
+                    
+                    // Store the lead ID for updating
+                    const modal = document.getElementById('addLeadModal');
+                    modal.setAttribute('data-edit-id', leadId);
+                    
+                    // Show modal
+                    modal.classList.add('show');
+                    showSnackbar('Lead data loaded for editing');
+                } else {
+                    showSnackbar('Lead not found');
+                }
+            } catch (error) {
+                console.error('Error loading lead for edit:', error);
+                showSnackbar('Error loading lead data');
+            }
+        };
+
+        // Delete Lead
+        window.deleteLead = async function(leadId) {
+            if (confirm('Are you sure you want to delete this lead?')) {
+                try {
+                    const leadRef = ref(database, `leads/${leadId}`);
+                    await remove(leadRef);
+                    showSnackbar('Lead deleted successfully!');
+                    addNotificationToPanel('Lead deleted successfully!', 'lead');
+                    loadLeads();
+                    loadDashboard();
+                } catch (error) {
+                    console.error('Error deleting lead:', error);
+                    showSnackbar('Error deleting lead');
+                }
+            }
+        };
+
+        // Edit Project
+        window.editProject = async function(projectId) {
+            showSnackbar('Project editing coming soon!');
+        };
+
+        // Delete Project
+        window.deleteProject = async function(projectId) {
+            if (confirm('Are you sure you want to delete this project?')) {
+                try {
+                    const projectRef = ref(database, `projects/${projectId}`);
+                    await remove(projectRef);
+                    showSnackbar('Project deleted successfully!');
+                    addNotificationToPanel('Project deleted successfully!', 'task');
+                    loadProjects();
+                    loadDashboard();
+                } catch (error) {
+                    console.error('Error deleting project:', error);
+                    showSnackbar('Error deleting project');
+                }
+            }
+        };
+
+        // Populate Lead Dropdown
+        async function populateLeadDropdown() {
+            try {
+                const leadsRef = ref(database, 'leads');
+                const snapshot = await get(leadsRef);
+                
+                const dropdownMenu = document.getElementById('projectLeadDropdown');
+                dropdownMenu.innerHTML = '<div class="custom-dropdown-item" data-value="">No Lead Selected</div>';
+                
+                if (snapshot.exists()) {
+                    const leads = Object.values(snapshot.val());
+                    leads.forEach(lead => {
+                        dropdownMenu.innerHTML += `<div class="custom-dropdown-item" data-value="${lead.id}">${lead.companyName}</div>`;
+                    });
+                }
+            } catch (error) {
+                console.error('Error populating lead dropdown:', error);
+            }
+        }
+
+        // Load Tasks
+        function loadTasks() {
+            console.log('Loading tasks...');
+        }
+
+        // Load Analytics
+        function loadAnalytics() {
+            console.log('Loading analytics...');
+        }
+
+        // Load Reminders
+        function loadReminders() {
+            console.log('Loading reminders...');
+        }
+
+        // Setup Notifications
+        function setupNotifications() {
+            // Request notification permission
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+        }
+
+        // Add Notification to Panel
+        function addNotificationToPanel(message, type = 'task') {
+            const notificationList = document.getElementById('notificationList');
+            const now = new Date();
+            const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            // Remove "no notifications" message if it exists
+            const noNotificationsMsg = notificationList.querySelector('div[style*="text-align: center"]');
+            if (noNotificationsMsg) {
+                noNotificationsMsg.remove();
+            }
+            
+            const notificationHTML = `
+                <div class="notification-item">
+                    <div class="notification-icon ${type}">
+                        <span class="material-symbols-outlined">${type === 'meeting' ? 'event' : type === 'lead' ? 'person' : type === 'reminder' ? 'alarm' : 'task_alt'}</span>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-text">${message}</div>
+                        <div class="notification-time">${timeString}</div>
+                    </div>
+                </div>
+            `;
+            
+            notificationList.insertAdjacentHTML('afterbegin', notificationHTML);
+        }
+
+        // Clear Notifications
+        function clearNotifications() {
+            const notificationList = document.getElementById('notificationList');
+            notificationList.innerHTML = `
+                <div style="text-align: center; color: var(--md-sys-color-on-surface-variant); padding: 20px;">
+                    No notifications yet. Reminders and activities will appear here.
+                </div>
+            `;
+            showSnackbar('Notifications cleared');
+        }
+
+        // Schedule Reminder
+        function scheduleReminder(leadData) {
+            if (leadData.meetingDateTime && leadData.reminderTime) {
+                const meetingDate = new Date(leadData.meetingDateTime);
+                const now = new Date();
+                const reminderTime = leadData.reminderTime * 60 * 1000; // Convert minutes to milliseconds
+                const reminderDate = new Date(meetingDate.getTime() - reminderTime);
+                
+                if (reminderDate > now) {
+                    const timeDiff = reminderDate.getTime() - now.getTime();
+                    
+                    setTimeout(() => {
+                        const message = `Meeting reminder: ${leadData.meetingTopic || 'Meeting'} with ${leadData.companyName} in ${leadData.reminderTime} minutes`;
+                        addNotificationToPanel(message, 'reminder');
+                        
+                        // Show push notification if permission granted
+                        if ('Notification' in window && Notification.permission === 'granted') {
+                            new Notification('Meeting Reminder', {
+                                body: message,
+                                icon: '/favicon.ico'
+                            });
+                        }
+                    }, timeDiff);
+                    
+                    showSnackbar(`Reminder set for ${leadData.reminderTime} minutes before meeting`);
+                }
+            }
+        }
+
+        // Check Reminders
+        async function checkReminders() {
+            try {
+                const leadsRef = ref(database, 'leads');
+                const snapshot = await get(leadsRef);
+                
+                if (snapshot.exists()) {
+                    const leads = Object.values(snapshot.val());
+                    const now = new Date();
+                    
+                    leads.forEach(lead => {
+                        if (lead.meetingDateTime) {
+                            const meetingDate = new Date(lead.meetingDateTime);
+                            const timeDiff = meetingDate.getTime() - now.getTime();
+                            const hoursDiff = timeDiff / (1000 * 60 * 60);
+                            
+                            // Show notification for meetings within next 24 hours
+                            if (hoursDiff > 0 && hoursDiff <= 24) {
+                                const message = `Upcoming meeting: ${lead.meetingTopic || 'Meeting'} with ${lead.companyName} on ${meetingDate.toLocaleString()}`;
+                                addNotificationToPanel(message, 'meeting');
+                            }
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Error checking reminders:', error);
+            }
+        }
+
+        // Save Settings
+        function saveSettings() {
+            const settings = {
+                profileName: document.getElementById('profileName').value,
+                profileEmail: document.getElementById('profileEmail').value,
+                profileCompany: document.getElementById('profileCompany').value,
+                emailNotifications: document.getElementById('emailNotifications').checked,
+                pushNotifications: document.getElementById('pushNotifications').checked,
+                meetingReminders: document.getElementById('meetingReminders').checked
+            };
+            
+            // Save to localStorage for now (can be moved to Firebase later)
+            localStorage.setItem('businessManagerSettings', JSON.stringify(settings));
+            showSnackbar('Settings saved successfully!');
+            addNotificationToPanel('Settings updated successfully!', 'task');
+        }
+
+        // Show Snackbar
+        function showSnackbar(message) {
+            const snackbar = document.getElementById('snackbar');
+            snackbar.textContent = message;
+            snackbar.classList.add('show');
+            
+            setTimeout(() => {
+                snackbar.classList.remove('show');
+            }, 3000);
+        }
+
+        // Toggle Stat Card Expand/Collapse
+        function toggleStatCard(card) {
+            const expandBtn = card.querySelector('.stat-card-expand-btn span');
+            
+            if (card.classList.contains('expanded')) {
+                card.classList.remove('expanded');
+                expandBtn.textContent = 'expand_more';
+            } else {
+                card.classList.add('expanded');
+                expandBtn.textContent = 'expand_less';
+            }
+        }
+
+        // Make functions globally available
+        window.toggleStatCard = toggleStatCard;
+        window.showSnackbar = showSnackbar;
+        window.addNotificationToPanel = addNotificationToPanel;
+        window.scheduleReminder = scheduleReminder;
+        window.checkReminders = checkReminders;
+
+        // Check reminders every 5 minutes
+        setInterval(checkReminders, 5 * 60 * 1000);
+    </script>
+</body>
+</html>
+
