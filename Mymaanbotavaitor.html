@@ -312,6 +312,85 @@
             margin-top: 4px;
         }
 
+        .search-section {
+            padding: 16px;
+            border-bottom: 1px solid #333;
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 12px;
+        }
+
+        .search-box input {
+            width: 100%;
+            background: #2c2c2c;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 40px 10px 12px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .search-box .material-icons {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
+            font-size: 20px;
+        }
+
+        .filter-options select {
+            width: 100%;
+            background: #2c2c2c;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 12px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .filter-options select option {
+            background: #2c2c2c;
+            color: white;
+        }
+
+        .user-status-info {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            margin-top: 4px;
+        }
+
+        .user-status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #4CAF50;
+        }
+
+        .user-status-dot.offline {
+            background: #666;
+        }
+
+        .unread-count {
+            background: #FF3B30;
+            color: white;
+            border-radius: 10px;
+            padding: 2px 6px;
+            font-size: 10px;
+            font-weight: bold;
+            margin-left: auto;
+        }
+
+        .user-phone {
+            font-size: 11px;
+            color: #666;
+            margin-top: 2px;
+        }
+
         .chat-panel {
             flex: 1;
             display: flex;
@@ -408,7 +487,26 @@
                 <h1>Admin Panel</h1>
                 <span class="material-icons" onclick="exitAdmin()">close</span>
             </div>
-            <!-- Users will be listed here -->
+            
+            <!-- Search and Filter -->
+            <div class="search-section">
+                <div class="search-box">
+                    <input type="text" id="userSearch" placeholder="Search users..." onkeyup="searchUsers()">
+                    <span class="material-icons">search</span>
+                </div>
+                <div class="filter-options">
+                    <select id="statusFilter" onchange="filterUsers()">
+                        <option value="all">All Users</option>
+                        <option value="online">Online</option>
+                        <option value="offline">Offline</option>
+                        <option value="unread">Unread Messages</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div id="usersContainer">
+                <!-- Users will be listed here -->
+            </div>
         </div>
 
         <div class="chat-panel">
@@ -645,13 +743,15 @@
             }
 
             // Send regular message
+            const userKey = `${currentUser}_${currentUserPhone}`;
             const messageData = {
                 from: 'user',
                 text: message,
-                time: Date.now()
+                time: Date.now(),
+                read: false
             };
 
-            database.ref(`chats/${currentUser}`).push(messageData);
+            database.ref(`chats/${userKey}`).push(messageData);
             input.value = '';
             
             // Update user status
@@ -659,7 +759,7 @@
             
             // Stop typing indicator
             clearTimeout(typingTimeout);
-            database.ref(`user_status/${currentUser}/typing`).set(false);
+            database.ref(`user_status/${userKey}/typing`).set(false);
 
             // Show notification to admin if they're not active
             sendNotificationToAdmin(message);
@@ -735,8 +835,9 @@
                     statusText.textContent = 'Admin Online';
                 } else {
                     typingIndicator.classList.add('hidden');
-                    const lastSeen = status.last_seen;
-                    if (lastSeen && Date.now() - lastSeen < 300000) { // 5 minutes
+                    // Check if admin panel is open (admin is truly online)
+                    const isAdminOnline = status.online && (Date.now() - status.last_seen < 300000); // 5 minutes
+                    if (isAdminOnline) {
                         statusDot.classList.remove('offline');
                         statusText.textContent = 'Admin Online';
                     } else {
@@ -752,20 +853,22 @@
         }
 
         function handleUserTyping() {
-            database.ref(`user_status/${currentUser}/typing`).set(true);
+            const userKey = `${currentUser}_${currentUserPhone}`;
+            database.ref(`user_status/${userKey}/typing`).set(true);
             
             clearTimeout(typingTimeout);
             typingTimeout = setTimeout(() => {
-                database.ref(`user_status/${currentUser}/typing`).set(false);
+                database.ref(`user_status/${userKey}/typing`).set(false);
             }, 3000);
         }
 
         function updateUserStatus() {
-            if (currentUser) {
-                database.ref(`user_status/${currentUser}/last_seen`).set(Date.now());
+            if (currentUser && currentUserPhone) {
+                const userKey = `${currentUser}_${currentUserPhone}`;
+                database.ref(`user_status/${userKey}/last_seen`).set(Date.now());
                 
                 // Set user as offline when page unloads
-                database.ref(`user_status/${currentUser}/typing`).onDisconnect().set(false);
+                database.ref(`user_status/${userKey}/typing`).onDisconnect().set(false);
             }
         }
 
@@ -775,78 +878,211 @@
             document.getElementById('adminPanel').classList.add('active');
             loadUsersList();
             updateAdminStatus();
+            
+            // Set admin as online when panel is open
+            database.ref('admin_status/online').set(true);
+            database.ref('admin_status/last_seen').set(Date.now());
         }
 
         function loadUsersList() {
-            database.ref('chats').on('value', (snapshot) => {
-                const chats = snapshot.val();
-                displayUsersList(chats);
+            // Load both chats and users data
+            Promise.all([
+                database.ref('chats').once('value'),
+                database.ref('users').once('value'),
+                database.ref('user_status').once('value')
+            ]).then(([chatsSnapshot, usersSnapshot, statusSnapshot]) => {
+                const chats = chatsSnapshot.val() || {};
+                const users = usersSnapshot.val() || {};
+                const statuses = statusSnapshot.val() || {};
+                
+                displayUsersList(chats, users, statuses);
+            });
+            
+            // Listen for real-time updates
+            database.ref('user_status').on('value', (snapshot) => {
+                updateUserStatuses(snapshot.val() || {});
             });
         }
 
-        function displayUsersList(chats) {
-            const usersList = document.getElementById('usersList');
-            
-            // Clear existing users (except header)
-            const header = usersList.querySelector('.header');
-            usersList.innerHTML = '';
-            usersList.appendChild(header);
+        let allUsersData = [];
 
-            if (chats) {
+        function displayUsersList(chats, users, statuses) {
+            const usersContainer = document.getElementById('usersContainer');
+            usersContainer.innerHTML = '';
+            
+            allUsersData = [];
+
+            if (chats && Object.keys(chats).length > 0) {
                 Object.entries(chats)
-                    .map(([username, messages]) => {
+                    .map(([userKey, messages]) => {
                         const messageArray = Object.values(messages);
                         const lastMessage = messageArray[messageArray.length - 1];
-                        return { username, lastMessage, messageCount: messageArray.length };
+                        const unreadCount = messageArray.filter(msg => msg.from === 'user' && !msg.read).length;
+                        
+                        // Get user data
+                        const userData = users[userKey] || { name: userKey.split('_')[0], phone: userKey.split('_')[1] || 'N/A' };
+                        const userStatus = statuses[userKey] || { last_seen: 0, typing: false };
+                        
+                        const isOnline = userStatus.last_seen && (Date.now() - userStatus.last_seen < 300000); // 5 minutes
+                        
+                        return { 
+                            userKey, 
+                            userData, 
+                            userStatus,
+                            lastMessage, 
+                            messageCount: messageArray.length,
+                            unreadCount,
+                            isOnline
+                        };
                     })
                     .sort((a, b) => b.lastMessage.time - a.lastMessage.time)
-                    .forEach(({ username, lastMessage, messageCount }) => {
-                        const userDiv = document.createElement('div');
-                        userDiv.className = 'user-item';
-                        userDiv.onclick = () => selectUser(username);
-                        
-                        const time = new Date(lastMessage.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                        const preview = lastMessage.text.substring(0, 50) + (lastMessage.text.length > 50 ? '...' : '');
-                        
-                        userDiv.innerHTML = `
-                            <div class="user-name">${username} (${messageCount})</div>
-                            <div class="user-preview">${preview}</div>
-                            <div class="user-time">${time}</div>
-                        `;
-                        
-                        if (selectedAdminUser === username) {
-                            userDiv.classList.add('active');
-                        }
-                        
-                        usersList.appendChild(userDiv);
+                    .forEach((userInfo) => {
+                        allUsersData.push(userInfo);
+                        createUserItem(userInfo);
                     });
             }
         }
+        
+        function createUserItem(userInfo) {
+            const { userKey, userData, userStatus, lastMessage, messageCount, unreadCount, isOnline } = userInfo;
+            const usersContainer = document.getElementById('usersContainer');
+            
+            const userDiv = document.createElement('div');
+            userDiv.className = 'user-item';
+            userDiv.onclick = () => selectUser(userKey, userData);
+            userDiv.dataset.userKey = userKey;
+            
+            const time = new Date(lastMessage.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            const preview = lastMessage.text.substring(0, 40) + (lastMessage.text.length > 40 ? '...' : '');
+            const lastSeenText = isOnline ? 'Online' : `Last seen: ${new Date(userStatus.last_seen).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+            
+            userDiv.innerHTML = `
+                <div class="user-name">${userData.name} ${unreadCount > 0 ? `<span class="unread-count">${unreadCount}</span>` : ''}</div>
+                <div class="user-phone">${userData.phone}</div>
+                <div class="user-preview">${preview}</div>
+                <div class="user-status-info">
+                    <div class="user-status-dot ${isOnline ? '' : 'offline'}"></div>
+                    <span>${lastSeenText}</span>
+                </div>
+                <div class="user-time">${time} (${messageCount} msgs)</div>
+            `;
+            
+            if (selectedAdminUser === userKey) {
+                userDiv.classList.add('active');
+            }
+            
+            usersContainer.appendChild(userDiv);
+        }
+        
+        function updateUserStatuses(statuses) {
+            allUsersData.forEach(userInfo => {
+                const userStatus = statuses[userInfo.userKey] || { last_seen: 0, typing: false };
+                const isOnline = userStatus.last_seen && (Date.now() - userStatus.last_seen < 300000);
+                
+                const userDiv = document.querySelector(`[data-user-key="${userInfo.userKey}"]`);
+                if (userDiv) {
+                    const statusDot = userDiv.querySelector('.user-status-dot');
+                    const statusInfo = userDiv.querySelector('.user-status-info span');
+                    
+                    if (statusDot) {
+                        statusDot.className = `user-status-dot ${isOnline ? '' : 'offline'}`;
+                    }
+                    
+                    if (statusInfo) {
+                        const lastSeenText = isOnline ? 'Online' : `Last seen: ${new Date(userStatus.last_seen).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+                        statusInfo.textContent = lastSeenText;
+                    }
+                }
+            });
+        }
+        
+        function searchUsers() {
+            const searchTerm = document.getElementById('userSearch').value.toLowerCase();
+            const userItems = document.querySelectorAll('.user-item');
+            
+            userItems.forEach(item => {
+                const userName = item.querySelector('.user-name').textContent.toLowerCase();
+                const userPhone = item.querySelector('.user-phone').textContent.toLowerCase();
+                const preview = item.querySelector('.user-preview').textContent.toLowerCase();
+                
+                if (userName.includes(searchTerm) || userPhone.includes(searchTerm) || preview.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+        
+        function filterUsers() {
+            const filter = document.getElementById('statusFilter').value;
+            const userItems = document.querySelectorAll('.user-item');
+            
+            userItems.forEach(item => {
+                const statusDot = item.querySelector('.user-status-dot');
+                const unreadCount = item.querySelector('.unread-count');
+                const isOnline = !statusDot.classList.contains('offline');
+                const hasUnread = unreadCount !== null;
+                
+                let show = true;
+                
+                switch(filter) {
+                    case 'online':
+                        show = isOnline;
+                        break;
+                    case 'offline':
+                        show = !isOnline;
+                        break;
+                    case 'unread':
+                        show = hasUnread;
+                        break;
+                    default:
+                        show = true;
+                }
+                
+                item.style.display = show ? 'block' : 'none';
+            });
+        }
 
-        function selectUser(username) {
-            selectedAdminUser = username;
+        function selectUser(userKey, userData) {
+            selectedAdminUser = userKey;
             
             // Update UI
             document.getElementById('noChatSelected').style.display = 'none';
             document.getElementById('adminChatContainer').classList.remove('hidden');
-            document.getElementById('selectedUserName').textContent = `Chat with ${username}`;
+            document.getElementById('selectedUserName').textContent = `Chat with ${userData.name} (${userData.phone})`;
             
             // Update active user in list
             document.querySelectorAll('.user-item').forEach(item => item.classList.remove('active'));
             event.currentTarget.classList.add('active');
             
             // Load chat history
-            loadAdminChat(username);
+            loadAdminChat(userKey);
             
             // Listen for user status
-            listenForUserStatus(username);
+            listenForUserStatus(userKey);
+            
+            // Mark messages as read
+            markMessagesAsRead(userKey);
             
             // Focus admin input
             document.getElementById('adminMessageInput').focus();
         }
+        
+        function markMessagesAsRead(userKey) {
+            database.ref(`chats/${userKey}`).once('value', (snapshot) => {
+                const messages = snapshot.val();
+                if (messages) {
+                    Object.entries(messages).forEach(([msgId, message]) => {
+                        if (message.from === 'user' && !message.read) {
+                            database.ref(`chats/${userKey}/${msgId}/read`).set(true);
+                        }
+                    });
+                }
+            });
+        }
 
-        function loadAdminChat(username) {
-            database.ref(`chats/${username}`).on('value', (snapshot) => {
+        function loadAdminChat(userKey) {
+            database.ref(`chats/${userKey}`).on('value', (snapshot) => {
                 const messages = snapshot.val();
                 displayAdminMessages(messages);
             });
@@ -878,7 +1114,8 @@
             const messageData = {
                 from: 'admin',
                 text: message,
-                time: Date.now()
+                time: Date.now(),
+                read: false
             };
 
             database.ref(`chats/${selectedAdminUser}`).push(messageData);
@@ -890,12 +1127,16 @@
             // Stop typing indicator
             clearTimeout(adminTypingTimeout);
             database.ref('admin_status/typing').set(false);
+            
+            // Refresh user list to update last message
+            loadUsersList();
         }
 
-        function listenForUserStatus(username) {
-            database.ref(`user_status/${username}`).on('value', (snapshot) => {
+        function listenForUserStatus(userKey) {
+            database.ref(`user_status/${userKey}`).on('value', (snapshot) => {
                 const status = snapshot.val();
-                updateUserStatusUI(status, username);
+                const userName = userKey.split('_')[0];
+                updateUserStatusUI(status, userName);
             });
         }
 
@@ -944,6 +1185,10 @@
         }
 
         function exitAdmin() {
+            // Set admin as offline when exiting
+            database.ref('admin_status/online').set(false);
+            database.ref('admin_status/last_seen').set(Date.now());
+            
             localStorage.removeItem("isAdmin");
             location.reload();
         }
@@ -952,7 +1197,7 @@
             if (isAdmin) {
                 exitAdmin();
             } else {
-                localStorage.removeItem("username");
+                localStorage.removeItem("userData");
                 location.reload();
             }
         }
@@ -1021,11 +1266,13 @@
 
         // Update status before page unload
         window.addEventListener('beforeunload', function() {
-            if (currentUser) {
-                database.ref(`user_status/${currentUser}/typing`).set(false);
+            if (currentUser && currentUserPhone) {
+                const userKey = `${currentUser}_${currentUserPhone}`;
+                database.ref(`user_status/${userKey}/typing`).set(false);
             }
             if (isAdmin) {
                 database.ref('admin_status/typing').set(false);
+                database.ref('admin_status/online').set(false);
             }
         });
     </script>
