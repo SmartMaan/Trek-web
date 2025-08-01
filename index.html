@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stuffius - E-commerce Store</title>
+    
+    <!-- Material 3 Design -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- UUID -->
+    <script src="https://cdn.jsdelivr.net/npm/uuid@9.0.0/dist/umd/uuidv4.min.js"></script>
+    
+    <!-- Firebase -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getDatabase, ref, push, set, get, remove, onValue } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyAPPZgVrZF9SEaS42xx8RcsnM2i8EpenUQ",
+            authDomain: "creadit-loan-5203b.firebaseapp.com",
+            databaseURL: "https://creadit-loan-5203b-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "creadit-loan-5203b",
+            storageBucket: "creadit-loan-5203b.appspot.com",
+            messagingSenderId: "95634892627",
+            appId: "1:95634892627:web:1500052cb60f3b7e4823a6",
+            measurementId: "G-V60FZSL5V1"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+        
+        window.auth = auth;
+        window.database = database;
+        window.firebaseAuth = { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged };
+        window.firebaseDB = { ref, push, set, get, remove, onValue };
+    </script>
+    
+    <style>
+        :root {
+            --md-sys-color-primary: #ff1744;
+            --md-sys-color-on-primary: #ffffff;
+            --md-sys-color-primary-container: #ffdad6;
+            --md-sys-color-on-primary-container: #410002;
+            --md-sys-color-surface: #1a1a1a;
+            --md-sys-color-on-surface: #e6e1e5;
+            --md-sys-color-surface-variant: #49454f;
+            --md-sys-color-on-surface-variant: #cac4d0;
+            --md-sys-color-outline: #938f99;
+            --md-sys-color-background: #121212;
+            --md-sys-color-on-background: #e6e1e5;
+            --md-sys-color-surface-container: #211f26;
+            --md-sys-color-surface-container-high: #2b2930;
+            --md-sys-color-surface-container-highest: #36343b;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--md-sys-color-background);
+            color: var(--md-sys-color-on-background);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 16px;
+        }
+        
+        /* Header */
+        .header {
+            background-color: var(--md-sys-color-surface-container);
+            padding: 16px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--md-sys-color-primary);
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background-color: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+        }
+        
+        .btn-secondary {
+            background-color: var(--md-sys-color-surface-container-high);
+            color: var(--md-sys-color-on-surface);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 23, 68, 0.3);
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--md-sys-color-surface-container) 0%, var(--md-sys-color-surface-container-high) 100%);
+            padding: 80px 0;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: clamp(48px, 8vw, 120px);
+            font-weight: 700;
+            margin-bottom: 24px;
+            background: linear-gradient(45deg, var(--md-sys-color-primary), #ff6b9d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero p {
+            font-size: 20px;
+            margin-bottom: 32px;
+            opacity: 0.8;
+        }
+        
+        .search-container {
+            max-width: 500px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 16px 24px;
+            border: 2px solid var(--md-sys-color-outline);
+            border-radius: 28px;
+            background-color: var(--md-sys-color-surface-container);
+            color: var(--md-sys-color-on-surface);
+            font-size: 16px;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--md-sys-color-primary);
+        }
+        
+        /* Categories */
+        .categories {
+            padding: 60px 0;
+        }
+        
+        .section-title {
+            font-size: 32px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 48px;
+        }
+        
+        .category-filters {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 48px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .category-btn {
+            padding: 12px 20px;
+            background-color: var(--md-sys-color-surface-container);
+            color: var(--md-sys-color-on-surface);
+            border: 2px solid transparent;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .category-btn.active {
+            background-color: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+        }
+        
+        .category-btn:hover {
+            border-color: var(--md-sys-color-primary);
+        }
+        
+        /* Products Grid */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 60px;
+        }
+        
+        .product-card {
+            background-color: var(--md-sys-color-surface-container);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 32px rgba(255, 23, 68, 0.2);
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background-color: var(--md-sys-color-surface-container-high);
+        }
+        
+        .product-info {
+            padding: 20px;
+        }
+        
+        .product-category {
+            background-color: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            display: inline-block;
+            margin-bottom: 12px;
+        }
+        
+        .product-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .product-description {
+            color: var(--md-sys-color-on-surface-variant);
+            margin-bottom: 16px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .product-price {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--md-sys-color-primary);
+            margin-bottom: 16px;
+        }
+        
+        .product-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        /* Admin Panel */
+        .admin-panel {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background-color: var(--md-sys-color-surface-container);
+            padding: 24px;
+            transition: right 0.3s ease;
+            z-index: 200;
+            overflow-y: auto;
+            box-shadow: -4px 0 16px rgba(0,0,0,0.3);
+        }
+        
+        .admin-panel.open {
+            right: 0;
+        }
+        
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .close-admin {
+            background: none;
+            border: none;
+            color: var(--md-sys-color-on-surface);
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--md-sys-color-outline);
+            border-radius: 8px;
+            background-color: var(--md-sys-color-surface-container-high);
+            color: var(--md-sys-color-on-surface);
+            font-size: 14px;
+        }
+        
+        .form-textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--md-sys-color-primary);
+        }
+        
+        .upload-area {
+            border: 2px dashed var(--md-sys-color-outline);
+            border-radius: 8px;
+            padding: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-area:hover {
+            border-color: var(--md-sys-color-primary);
+            background-color: var(--md-sys-color-surface-container-high);
+        }
+        
+        .upload-preview {
+            max-width: 100%;
+            max-height: 200px;
+            margin-top: 12px;
+            border-radius: 8px;
+        }
+        
+        /* Auth Modal */
+        .auth-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 300;
+        }
+        
+        .auth-modal.show {
+            display: flex;
+        }
+        
+        .auth-form {
+            background-color: var(--md-sys-color-surface-container);
+            padding: 32px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 400px;
+        }
+        
+        .auth-form h2 {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        
+        /* Loading */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .spinner {
+            border: 4px solid var(--md-sys-color-surface-container);
+            border-top: 4px solid var(--md-sys-color-primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .admin-panel {
+                width: 100%;
+                right: -100%;
+            }
+            
+            .nav {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .nav-links {
+                justify-content: center;
+            }
+            
+            .hero {
+                padding: 40px 0;
+            }
+            
+            .categories {
+                padding: 40px 0;
+            }
+            
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 16px;
+            }
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="#" class="logo">
+                    <span class="material-icons">shopping_bag</span>
+                    Stuffius
+                </a>
+                <div class="nav-links">
+                    <button id="loginBtn" class="btn btn-secondary">
+                        <span class="material-icons">login</span>
+                        Login
+                    </button>
+                    <button id="logoutBtn" class="btn btn-secondary hidden">
+                        <span class="material-icons">logout</span>
+                        Logout
+                    </button>
+                    <button id="adminBtn" class="btn btn-primary hidden">
+                        <span class="material-icons">admin_panel_settings</span>
+                        Admin Panel
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Shop</h1>
+            <p>Give All You Need</p>
+            <div class="search-container">
+                <input type="text" id="searchInput" class="search-input" placeholder="Search on Stuffius">
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="categories">
+        <div class="container">
+            <h2 class="section-title">Category</h2>
+            
+            <!-- Category Filters -->
+            <div class="category-filters">
+                <button class="category-btn active" data-category="all">All</button>
+                <button class="category-btn" data-category="Electronics">Electronics</button>
+                <button class="category-btn" data-category="Fashion">Fashion</button>
+                <button class="category-btn" data-category="Beauty">Beauty</button>
+                <button class="category-btn" data-category="Home">Home</button>
+                <button class="category-btn" data-category="Kitchen">Kitchen</button>
+                <button class="category-btn" data-category="Mobile">Mobile</button>
+                <button class="category-btn" data-category="Shoes">Shoes</button>
+                <button class="category-btn" data-category="Tools">Tools</button>
+                <button class="category-btn" data-category="Toys">Toys</button>
+                <button class="category-btn" data-category="Music">Music</button>
+                <button class="category-btn" data-category="Other">Other</button>
+            </div>
+
+            <!-- Loading -->
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+                <p>Loading products...</p>
+            </div>
+
+            <!-- Products Grid -->
+            <div id="productsGrid" class="products-grid">
+                <!-- Products will be loaded here -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Admin Panel -->
+    <div id="adminPanel" class="admin-panel">
+        <div class="admin-header">
+            <h2>Admin Panel</h2>
+            <button id="closeAdmin" class="close-admin">
+                <span class="material-icons">close</span>
+            </button>
+        </div>
+
+        <form id="productForm">
+            <div class="form-group">
+                <label for="productName">Product Name</label>
+                <input type="text" id="productName" class="form-input" required>
+            </div>
+
+            <div class="form-group">
+                <label for="productPrice">Price ($)</label>
+                <input type="number" id="productPrice" class="form-input" step="0.01" required>
+            </div>
+
+            <div class="form-group">
+                <label for="productDescription">Description</label>
+                <textarea id="productDescription" class="form-textarea" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="productCategory">Category</label>
+                <select id="productCategory" class="form-select" required>
+                    <option value="">Select Category</option>
+                    <option value="Electronics">Electronics</option>
+                    <option value="Fashion">Fashion</option>
+                    <option value="Beauty">Beauty</option>
+                    <option value="Home">Home</option>
+                    <option value="Kitchen">Kitchen</option>
+                    <option value="Mobile">Mobile</option>
+                    <option value="Shoes">Shoes</option>
+                    <option value="Tools">Tools</option>
+                    <option value="Toys">Toys</option>
+                    <option value="Music">Music</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="productImageUrl">Image/Video URL (Optional)</label>
+                <input type="url" id="productImageUrl" class="form-input" placeholder="Direct link to image or video">
+            </div>
+
+            <div class="form-group">
+                <label>Upload Image/Video</label>
+                <div id="uploadArea" class="upload-area">
+                    <span class="material-icons" style="font-size: 48px; opacity: 0.5;">cloud_upload</span>
+                    <p>Click to upload or drag and drop</p>
+                    <input type="file" id="fileInput" accept="image/*,video/*" style="display: none;">
+                </div>
+                <img id="uploadPreview" class="upload-preview" style="display: none;">
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    <span class="material-icons">add</span>
+                    Add Product
+                </button>
+            </div>
+        </form>
+
+        <div style="margin-top: 32px;">
+            <h3>Manage Products</h3>
+            <div id="adminProductsList">
+                <!-- Admin products list will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Modal -->
+    <div id="authModal" class="auth-modal">
+        <div class="auth-form">
+            <h2 id="authTitle">Login</h2>
+            <form id="authForm">
+                <div class="form-group">
+                    <label for="authEmail">Email</label>
+                    <input type="email" id="authEmail" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="authPassword">Password</label>
+                    <input type="password" id="authPassword" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">
+                        <span id="authSubmitText">Login</span>
+                    </button>
+                </div>
+                <div class="form-group" style="text-align: center;">
+                    <button type="button" id="toggleAuth" class="btn btn-secondary">
+                        <span id="toggleAuthText">Create Account</span>
+                    </button>
+                </div>
+                <div class="form-group" style="text-align: center;">
+                    <button type="button" id="closeAuth" class="btn btn-secondary">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Cloudinary Configuration
+        const cloudinaryConfig = {
+            cloudName: "dzqnfaqzy",
+            apiKey: "988911776927922",
+            uploadPreset: "ecom_preset"
+        };
+
+        // Global Variables
+        let currentUser = null;
+        let products = [];
+        let filteredProducts = [];
+        let currentCategory = 'all';
+        let isAdmin = false;
+        let isLoginMode = true;
+
+        // DOM Elements
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const adminBtn = document.getElementById('adminBtn');
+        const authModal = document.getElementById('authModal');
+        const authForm = document.getElementById('authForm');
+        const authTitle = document.getElementById('authTitle');
+        const authSubmitText = document.getElementById('authSubmitText');
+        const toggleAuth = document.getElementById('toggleAuth');
+        const toggleAuthText = document.getElementById('toggleAuthText');
+        const closeAuth = document.getElementById('closeAuth');
+        const adminPanel = document.getElementById('adminPanel');
+        const closeAdmin = document.getElementById('closeAdmin');
+        const productForm = document.getElementById('productForm');
+        const productsGrid = document.getElementById('productsGrid');
+        const loading = document.getElementById('loading');
+        const searchInput = document.getElementById('searchInput');
+        const categoryBtns = document.querySelectorAll('.category-btn');
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const uploadPreview = document.getElementById('uploadPreview');
+
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeAuth();
+            loadProducts();
+            setupEventListeners();
+            loadSampleProducts();
+        });
+
+        // Authentication
+        function initializeAuth() {
+            window.firebaseAuth.onAuthStateChanged(window.auth, (user) => {
+                currentUser = user;
+                if (user) {
+                    isAdmin = user.email === 'admin207247@gmail.com';
+                    updateUIForLoggedInUser();
+                } else {
+                    updateUIForLoggedOutUser();
+                }
+            });
+        }
+
+        function updateUIForLoggedInUser() {
+            loginBtn.classList.add('hidden');
+            logoutBtn.classList.remove('hidden');
+            if (isAdmin) {
+                adminBtn.classList.remove('hidden');
+            }
+        }
+
+        function updateUIForLoggedOutUser() {
+            loginBtn.classList.remove('hidden');
+            logoutBtn.classList.add('hidden');
+            adminBtn.classList.add('hidden');
+            isAdmin = false;
+        }
+
+        // Event Listeners
+        function setupEventListeners() {
+            // Auth buttons
+            loginBtn.addEventListener('click', () => showAuthModal(true));
+            logoutBtn.addEventListener('click', logout);
+            adminBtn.addEventListener('click', () => adminPanel.classList.add('open'));
+            closeAdmin.addEventListener('click', () => adminPanel.classList.remove('open'));
+            closeAuth.addEventListener('click', () => authModal.classList.remove('show'));
+            toggleAuth.addEventListener('click', toggleAuthMode);
+            authForm.addEventListener('submit', handleAuth);
+
+            // Search and filters
+            searchInput.addEventListener('input', filterProducts);
+            categoryBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    currentCategory = e.target.dataset.category;
+                    updateCategoryButtons();
+                    filterProducts();
+                });
+            });
+
+            // Product form
+            productForm.addEventListener('submit', handleProductSubmit);
+            uploadArea.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', handleFileUpload);
+
+            // Close modal on outside click
+            authModal.addEventListener('click', (e) => {
+                if (e.target === authModal) {
+                    authModal.classList.remove('show');
+                }
+            });
+        }
+
+        function showAuthModal(loginMode = true) {
+            isLoginMode = loginMode;
+            updateAuthModal();
+            authModal.classList.add('show');
+        }
+
+        function updateAuthModal() {
+            if (isLoginMode) {
+                authTitle.textContent = 'Login';
+                authSubmitText.textContent = 'Login';
+                toggleAuthText.textContent = 'Create Account';
+            } else {
+                authTitle.textContent = 'Create Account';
+                authSubmitText.textContent = 'Create Account';
+                toggleAuthText.textContent = 'Login';
+            }
+        }
+
+        function toggleAuthMode() {
+            isLoginMode = !isLoginMode;
+            updateAuthModal();
+        }
+
+        async function handleAuth(e) {
+            e.preventDefault();
+            const email = document.getElementById('authEmail').value;
+            const password = document.getElementById('authPassword').value;
+
+            try {
+                if (isLoginMode) {
+                    await window.firebaseAuth.signInWithEmailAndPassword(window.auth, email, password);
+                    Swal.fire('Success!', 'Logged in successfully', 'success');
+                } else {
+                    await window.firebaseAuth.createUserWithEmailAndPassword(window.auth, email, password);
+                    Swal.fire('Success!', 'Account created successfully', 'success');
+                }
+                authModal.classList.remove('show');
+                authForm.reset();
+            } catch (error) {
+                Swal.fire('Error!', error.message, 'error');
+            }
+        }
+
+        async function logout() {
+            try {
+                await window.firebaseAuth.signOut(window.auth);
+                adminPanel.classList.remove('open');
+                Swal.fire('Success!', 'Logged out successfully', 'success');
+            } catch (error) {
+                Swal.fire('Error!', error.message, 'error');
+            }
+        }
+
+        // Products Management
+        async function loadProducts() {
+            loading.style.display = 'block';
+            try {
+                const productsRef = window.firebaseDB.ref(window.database, 'products');
+                window.firebaseDB.onValue(productsRef, (snapshot) => {
+                    const data = snapshot.val();
+                    products = data ? Object.entries(data).map(([id, product]) => ({id, ...product})) : [];
+                    filterProducts();
+                    loadAdminProducts();
+                    loading.style.display = 'none';
+                });
+            } catch (error) {
+                console.error('Error loading products:', error);
+                loading.style.display = 'none';
+            }
+        }
+
+        function filterProducts() {
+            const searchTerm = searchInput.value.toLowerCase();
+            filteredProducts = products.filter(product => {
+                const matchesCategory = currentCategory === 'all' || product.category === currentCategory;
+                const matchesSearch = product.name.toLowerCase().includes(searchTerm) || 
+                                    product.description.toLowerCase().includes(searchTerm);
+                return matchesCategory && matchesSearch;
+            });
+            renderProducts();
+        }
+
+        function renderProducts() {
+            productsGrid.innerHTML = '';
+            filteredProducts.forEach(product => {
+                const productCard = createProductCard(product);
+                productsGrid.appendChild(productCard);
+            });
+        }
+
+        function createProductCard(product) {
+            const card = document.createElement('div');
+            card.className = 'product-card fade-in';
+            
+            const mediaElement = product.mediaUrl ? 
+                (product.mediaUrl.includes('.mp4') || product.mediaUrl.includes('video') ? 
+                    `<video class="product-image" src="${product.mediaUrl}" controls></video>` :
+                    `<img class="product-image" src="${product.mediaUrl}" alt="${product.name}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjMzYzNDNCIi8+CjxwYXRoIGQ9Ik0xMDAgNzBDMTA4LjI4NCA3MCA5NSA4My4yODQgOTUgOTVTMTA4LjI4NCAxMjAgMTAwIDEyMFM5NSAxMDYuNzE2IDk1IDk1UzEwOC4yODQgNzAgMTAwIDcwWiIgZmlsbD0iIzlFOUU5RSIvPgo8L3N2Zz4K'">`) :
+                `<div class="product-image" style="display: flex; align-items: center; justify-content: center; color: var(--md-sys-color-on-surface-variant);">
+                    <span class="material-icons" style="font-size: 48px;">image</span>
+                </div>`;
+
+            card.innerHTML = `
+                ${mediaElement}
+                <div class="product-info">
+                    <span class="product-category">${product.category}</span>
+                    <h3 class="product-name">${product.name}</h3>
+                    <p class="product-description">${product.description}</p>
+                    <div class="product-price">$${product.price}</div>
+                    <div class="product-actions">
+                        <button class="btn btn-primary" onclick="addToCart('${product.id}')">
+                            <span class="material-icons">add_shopping_cart</span>
+                            Add to Cart
+                        </button>
+                        ${isAdmin ? `<button class="btn btn-secondary" onclick="editProduct('${product.id}')">
+                            <span class="material-icons">edit</span>
+                        </button>
+                        <button class="btn btn-secondary" onclick="deleteProduct('${product.id}')">
+                            <span class="material-icons">delete</span>
+                        </button>` : ''}
+                    </div>
+                </div>
+            `;
+            return card;
+        }
+
+        function updateCategoryButtons() {
+            categoryBtns.forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.category === currentCategory);
+            });
+        }
+
+        // Admin Functions
+        async function handleProductSubmit(e) {
+            e.preventDefault();
+            
+            if (!isAdmin) {
+                Swal.fire('Error!', 'Admin access required', 'error');
+                return;
+            }
+
+            const productData = {
+                name: document.getElementById('productName').value,
+                price: parseFloat(document.getElementById('productPrice').value),
+                description: document.getElementById('productDescription').value,
+                category: document.getElementById('productCategory').value,
+                mediaUrl: document.getElementById('productImageUrl').value || uploadPreview.src || null,
+                createdAt: Date.now()
+            };
+
+            try {
+                const productsRef = window.firebaseDB.ref(window.database, 'products');
+                await window.firebaseDB.push(productsRef, productData);
+                
+                Swal.fire('Success!', 'Product added successfully', 'success');
+                productForm.reset();
+                uploadPreview.style.display = 'none';
+                document.getElementById('productImageUrl').value = '';
+            } catch (error) {
+                Swal.fire('Error!', 'Failed to add product: ' + error.message, 'error');
+            }
+        }
+
+        async function handleFileUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('upload_preset', cloudinaryConfig.uploadPreset);
+
+                const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudinaryConfig.cloudName}/auto/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                if (data.secure_url) {
+                    uploadPreview.src = data.secure_url;
+                    uploadPreview.style.display = 'block';
+                    Swal.fire('Success!', 'File uploaded successfully', 'success');
+                }
+            } catch (error) {
+                Swal.fire('Error!', 'Failed to upload file: ' + error.message, 'error');
+            }
+        }
+
+        function loadAdminProducts() {
+            if (!isAdmin) return;
+            
+            const adminList = document.getElementById('adminProductsList');
+            adminList.innerHTML = '';
+            
+            products.forEach(product => {
+                const item = document.createElement('div');
+                item.style.cssText = 'padding: 12px; margin: 8px 0; background: var(--md-sys-color-surface-container-high); border-radius: 8px; display: flex; justify-content: space-between; align-items: center;';
+                item.innerHTML = `
+                    <div>
+                        <strong>${product.name}</strong><br>
+                        <small>${product.category} - $${product.price}</small>
+                    </div>
+                    <div>
+                        <button class="btn btn-secondary" onclick="editProduct('${product.id}')" style="margin-right: 8px; padding: 8px 12px;">
+                            <span class="material-icons">edit</span>
+                        </button>
+                        <button class="btn btn-secondary" onclick="deleteProduct('${product.id}')" style="padding: 8px 12px;">
+                            <span class="material-icons">delete</span>
+                        </button>
+                    </div>
+                `;
+                adminList.appendChild(item);
+            });
+        }
+
+        async function deleteProduct(productId) {
+            if (!isAdmin) return;
+            
+            const result = await Swal.fire({
+                title: 'Are you sure?',
+                text: 'This product will be permanently deleted!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ff1744',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, delete it!'
+            });
+
+            if (result.isConfirmed) {
+                try {
+                    const productRef = window.firebaseDB.ref(window.database, `products/${productId}`);
+                    await window.firebaseDB.remove(productRef);
+                    Swal.fire('Deleted!', 'Product has been deleted.', 'success');
+                } catch (error) {
+                    Swal.fire('Error!', 'Failed to delete product: ' + error.message, 'error');
+                }
+            }
+        }
+
+        function editProduct(productId) {
+            if (!isAdmin) return;
+            
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            document.getElementById('productName').value = product.name;
+            document.getElementById('productPrice').value = product.price;
+            document.getElementById('productDescription').value = product.description;
+            document.getElementById('productCategory').value = product.category;
+            document.getElementById('productImageUrl').value = product.mediaUrl || '';
+            
+            if (product.mediaUrl) {
+                uploadPreview.src = product.mediaUrl;
+                uploadPreview.style.display = 'block';
+            }
+
+            // Update form to edit mode
+            const submitBtn = productForm.querySelector('button[type="submit"]');
+            submitBtn.innerHTML = '<span class="material-icons">edit</span> Update Product';
+            
+            productForm.onsubmit = async (e) => {
+                e.preventDefault();
+                await updateProduct(productId);
+            };
+        }
+
+        async function updateProduct(productId) {
+            if (!isAdmin) return;
+
+            const productData = {
+                name: document.getElementById('productName').value,
+                price: parseFloat(document.getElementById('productPrice').value),
+                description: document.getElementById('productDescription').value,
+                category: document.getElementById('productCategory').value,
+                mediaUrl: document.getElementById('productImageUrl').value || uploadPreview.src || null,
+                updatedAt: Date.now()
+            };
+
+            try {
+                const productRef = window.firebaseDB.ref(window.database, `products/${productId}`);
+                await window.firebaseDB.set(productRef, {...products.find(p => p.id === productId), ...productData});
+                
+                Swal.fire('Success!', 'Product updated successfully', 'success');
+                resetProductForm();
+            } catch (error) {
+                Swal.fire('Error!', 'Failed to update product: ' + error.message, 'error');
+            }
+        }
+
+        function resetProductForm() {
+            productForm.reset();
+            uploadPreview.style.display = 'none';
+            document.getElementById('productImageUrl').value = '';
+            
+            const submitBtn = productForm.querySelector('button[type="submit"]');
+            submitBtn.innerHTML = '<span class="material-icons">add</span> Add Product';
+            
+            productForm.onsubmit = handleProductSubmit;
+        }
+
+        // Cart Functions (Basic Implementation)
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if (product) {
+                Swal.fire({
+                    title: 'Added to Cart!',
+                    text: `${product.name} has been added to your cart.`,
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            }
+        }
+
+        // Load Sample Products
+        async function loadSampleProducts() {
+            const sampleProducts = [
+                {
+                    name: "Phone Holder Sakti",
+                    price: 29.90,
+                    description: "Adjustable phone holder for desk use with premium materials",
+                    category: "Electronics",
+                    mediaUrl: "https://images.unsplash.com/photo-1565849904461-04a58ad377e0?w=400"
+                },
+                {
+                    name: "Wireless Headphones",
+                    price: 129.99,
+                    description: "Premium noise-cancelling wireless headphones with 30-hour battery",
+                    category: "Electronics",
+                    mediaUrl: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400"
+                },
+                {
+                    name: "Smart Home Hub",
+                    price: 89.99,
+                    description: "Control all your smart home devices from one central hub",
+                    category: "Home",
+                    mediaUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400"
+                },
+                {
+                    name: "Wireless Earbuds Pro",
+                    price: 199.99,
+                    description: "Professional grade wireless earbuds with active noise cancellation",
+                    category: "Music",
+                    mediaUrl: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=400"
+                },
+                {
+                    name: "Security Camera",
+                    price: 149.99,
+                    description: "4K security camera with night vision and mobile app control",
+                    category: "Home",
+                    mediaUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400"
+                }
+            ];
+
+            // Only add sample products if database is empty
+            try {
+                const productsRef = window.firebaseDB.ref(window.database, 'products');
+                const snapshot = await window.firebaseDB.get(productsRef);
+                
+                if (!snapshot.exists()) {
+                    for (const product of sampleProducts) {
+                        await window.firebaseDB.push(productsRef, {
+                            ...product,
+                            createdAt: Date.now()
+                        });
+                    }
+                }
+            } catch (error) {
+                console.log('Sample products already exist or error occurred:', error);
+            }
+        }
+    </script>
+</body>
+</html>
