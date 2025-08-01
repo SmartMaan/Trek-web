@@ -121,6 +121,40 @@
             font-size: 12px;
             color: rgba(255,255,255,0.7);
             margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .message-status {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .tick {
+            width: 12px;
+            height: 12px;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .tick.delivered {
+            color: #4CAF50;
+        }
+
+        .tick.read {
+            color: #4CAF50;
+        }
+
+        .double-tick {
+            position: relative;
+        }
+
+        .double-tick::after {
+            content: '✓';
+            position: absolute;
+            left: 4px;
+            color: inherit;
         }
 
         .typing-indicator {
@@ -559,6 +593,24 @@
         </div>
     </div>
 
+    <!-- User History Modal -->
+    <div id="userHistoryModal" class="modal hidden">
+        <div class="modal-content" style="max-width: 500px; max-height: 70vh;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h2>Welcome Back!</h2>
+                <span class="material-icons" onclick="closeHistoryModal()" style="cursor: pointer;">close</span>
+            </div>
+            <p id="welcomeBackText">We found your previous chat history:</p>
+            <div id="historyPreview" style="max-height: 300px; overflow-y: auto; background: #2c2c2c; border-radius: 8px; padding: 12px; margin: 16px 0;">
+                <!-- Chat history will be shown here -->
+            </div>
+            <div style="display: flex; gap: 12px;">
+                <button onclick="continueWithHistory()" style="flex: 1; background: #FF3B30;">Continue Chat</button>
+                <button onclick="startNewChat()" style="flex: 1; background: #666;">Start New Chat</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -690,18 +742,84 @@
         
         function checkUserInFirebase() {
             const userKey = `${currentUser}_${currentUserPhone}`;
-            database.ref(`users/${userKey}`).once('value', (snapshot) => {
-                if (snapshot.exists()) {
-                    // User exists, load their data and start chat
-                    const userData = snapshot.val();
+            
+            // Check if user exists and has chat history
+            Promise.all([
+                database.ref(`users/${userKey}`).once('value'),
+                database.ref(`chats/${userKey}`).once('value')
+            ]).then(([userSnapshot, chatSnapshot]) => {
+                const userData = userSnapshot.val();
+                const chatData = chatSnapshot.val();
+                
+                if (userData && chatData) {
+                    // User exists with chat history - show history modal
+                    currentUserData = userData;
+                    showUserHistoryModal(chatData);
+                } else if (userData) {
+                    // User exists but no chat history
                     currentUserData = userData;
                     startUserChat();
                 } else {
-                    // New user, save to Firebase
+                    // New user
                     saveUserToFirebase();
                     startUserChat();
                 }
             });
+        }
+        
+        function showUserHistoryModal(chatData) {
+            const modal = document.getElementById('userHistoryModal');
+            const historyPreview = document.getElementById('historyPreview');
+            const welcomeText = document.getElementById('welcomeBackText');
+            
+            welcomeText.textContent = `Welcome back, ${currentUser}! We found your previous chat history:`;
+            
+            // Show last 5 messages as preview
+            const messages = Object.values(chatData).sort((a, b) => a.time - b.time).slice(-5);
+            historyPreview.innerHTML = '';
+            
+            messages.forEach(message => {
+                const messageDiv = document.createElement('div');
+                messageDiv.style.cssText = `
+                    padding: 8px 12px;
+                    margin: 4px 0;
+                    border-radius: 12px;
+                    max-width: 80%;
+                    ${message.from === 'user' ? 
+                        'background: #FF3B30; color: white; margin-left: auto; text-align: right;' : 
+                        'background: #444; color: white; margin-right: auto;'
+                    }
+                `;
+                
+                const time = new Date(message.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                messageDiv.innerHTML = `
+                    <div>${message.text}</div>
+                    <div style="font-size: 11px; opacity: 0.7; margin-top: 4px;">${time}</div>
+                `;
+                historyPreview.appendChild(messageDiv);
+            });
+            
+            modal.classList.remove('hidden');
+        }
+        
+        function continueWithHistory() {
+            document.getElementById('userHistoryModal').classList.add('hidden');
+            startUserChat();
+        }
+        
+        function startNewChat() {
+            const userKey = `${currentUser}_${currentUserPhone}`;
+            // Clear existing chat history
+            database.ref(`chats/${userKey}`).remove().then(() => {
+                document.getElementById('userHistoryModal').classList.add('hidden');
+                startUserChat();
+            });
+        }
+        
+        function closeHistoryModal() {
+            document.getElementById('userHistoryModal').classList.add('hidden');
+            // Go back to name input
+            showNameModal();
         }
         
         function saveUserToFirebase() {
@@ -748,6 +866,7 @@
                 from: 'user',
                 text: message,
                 time: Date.now(),
+                delivered: true,
                 read: false
             };
 
@@ -775,6 +894,9 @@
 
         function displayUserMessages(messages) {
             const chatArea = document.getElementById('chatArea');
+            const previousScrollHeight = chatArea.scrollHeight;
+            const wasScrolledToBottom = chatArea.scrollTop >= chatArea.scrollHeight - chatArea.clientHeight - 10;
+            
             chatArea.innerHTML = '';
 
             if (messages) {
@@ -785,7 +907,10 @@
                     });
             }
 
-            chatArea.scrollTop = chatArea.scrollHeight;
+            // Auto-scroll only if user was at bottom or new message
+            if (wasScrolledToBottom || chatArea.scrollHeight > previousScrollHeight) {
+                chatArea.scrollTop = chatArea.scrollHeight;
+            }
         }
 
         function addMessageToChat(message, container) {
@@ -794,9 +919,24 @@
             
             const time = new Date(message.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
             
+            // Create status indicator for user messages
+            let statusHtml = '';
+            if (message.from === 'user') {
+                if (message.read) {
+                    statusHtml = '<div class="message-status"><span class="tick double-tick read">✓</span></div>';
+                } else if (message.delivered) {
+                    statusHtml = '<div class="message-status"><span class="tick delivered">✓</span></div>';
+                } else {
+                    statusHtml = '<div class="message-status"><span class="tick">✓</span></div>';
+                }
+            }
+            
             messageDiv.innerHTML = `
                 <div>${message.text}</div>
-                <div class="message-time">${time}</div>
+                <div class="message-time">
+                    <span>${time}</span>
+                    ${statusHtml}
+                </div>
             `;
             
             container.appendChild(messageDiv);
@@ -804,15 +944,24 @@
 
         function listenForAdminMessages() {
             const userKey = `${currentUser}_${currentUserPhone}`;
+            let lastMessageTime = 0;
+            
             database.ref(`chats/${userKey}`).on('child_added', (snapshot) => {
                 const message = snapshot.val();
-                if (message.from === 'admin') {
+                
+                // Only show notification for new messages (not when loading history)
+                if (message.from === 'admin' && message.time > lastMessageTime) {
+                    // Mark admin message as read immediately when user sees it
+                    database.ref(`chats/${userKey}/${snapshot.key}/read`).set(true);
+                    
                     // Show notification for new admin message
                     showNotification('New message from Admin', message.text);
                     
                     // Play notification sound
                     playNotificationSound();
                 }
+                
+                lastMessageTime = Math.max(lastMessageTime, message.time);
             });
         }
 
@@ -902,6 +1051,44 @@
             database.ref('user_status').on('value', (snapshot) => {
                 updateUserStatuses(snapshot.val() || {});
             });
+            
+            // Listen for real-time chat updates to show new messages
+            database.ref('chats').on('child_changed', (snapshot) => {
+                const userKey = snapshot.key;
+                const messages = snapshot.val();
+                
+                // Update unread count for this user
+                if (messages) {
+                    const unreadCount = Object.values(messages).filter(msg => msg.from === 'user' && !msg.read).length;
+                    updateUserUnreadCount(userKey, unreadCount);
+                    
+                    // Show notification for new user messages
+                    const lastMessage = Object.values(messages).sort((a, b) => b.time - a.time)[0];
+                    if (lastMessage && lastMessage.from === 'user' && !lastMessage.read && selectedAdminUser !== userKey) {
+                        showNotification(`New message from ${userKey.split('_')[0]}`, lastMessage.text);
+                        playNotificationSound();
+                    }
+                }
+            });
+        }
+        
+        function updateUserUnreadCount(userKey, unreadCount) {
+            const userDiv = document.querySelector(`[data-user-key="${userKey}"]`);
+            if (userDiv) {
+                const userNameDiv = userDiv.querySelector('.user-name');
+                const existingBadge = userNameDiv.querySelector('.unread-count');
+                
+                if (existingBadge) {
+                    existingBadge.remove();
+                }
+                
+                if (unreadCount > 0) {
+                    const badge = document.createElement('span');
+                    badge.className = 'unread-count';
+                    badge.textContent = unreadCount;
+                    userNameDiv.appendChild(badge);
+                }
+            }
         }
 
         let allUsersData = [];
@@ -1078,6 +1265,11 @@
                         }
                     });
                 }
+                
+                // Refresh user list to update unread counts
+                setTimeout(() => {
+                    loadUsersList();
+                }, 500);
             });
         }
 
@@ -1090,6 +1282,9 @@
 
         function displayAdminMessages(messages) {
             const chatArea = document.getElementById('adminChatArea');
+            const previousScrollHeight = chatArea.scrollHeight;
+            const wasScrolledToBottom = chatArea.scrollTop >= chatArea.scrollHeight - chatArea.clientHeight - 10;
+            
             chatArea.innerHTML = '';
 
             if (messages) {
@@ -1100,7 +1295,10 @@
                     });
             }
 
-            chatArea.scrollTop = chatArea.scrollHeight;
+            // Auto-scroll only if admin was at bottom or new message
+            if (wasScrolledToBottom || chatArea.scrollHeight > previousScrollHeight) {
+                chatArea.scrollTop = chatArea.scrollHeight;
+            }
         }
 
         function sendAdminMessage() {
@@ -1115,6 +1313,7 @@
                 from: 'admin',
                 text: message,
                 time: Date.now(),
+                delivered: true,
                 read: false
             };
 
