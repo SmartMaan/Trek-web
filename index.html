@@ -516,6 +516,294 @@
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal.fullscreen .modal-content {
+            width: 95%;
+            height: 95%;
+            max-width: none;
+            max-height: none;
+            border-radius: 12px;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 8px;
+            max-width: 600px;
+            max-height: 90vh;
+            width: 90%;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #f8f9fa;
+        }
+
+        .modal-body {
+            padding: 20px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        /* Dashboard Styles */
+        .dashboard-stats {
+            display: flex;
+            gap: 16px;
+            margin: 0 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            min-width: 100px;
+        }
+
+        .stat-number {
+            display: block;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .dashboard-filters {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .orders-table-container {
+            overflow-x: auto;
+        }
+
+        .orders-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .orders-table th,
+        .orders-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .orders-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+
+        .orders-table tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-confirmed { background: #d4edda; color: #155724; }
+        .status-shipped { background: #cce5ff; color: #004085; }
+        .status-delivered { background: #d1ecf1; color: #0c5460; }
+        .status-cancelled { background: #f8d7da; color: #721c24; }
+
+        .product-details {
+            max-width: 800px;
+        }
+
+        .product-detail-image {
+            width: 100%;
+            max-width: 400px;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .product-detail-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .detail-section {
+            background: #f8f9fa;
+            padding: 16px;
+            border-radius: 8px;
+        }
+
+        .detail-section h3 {
+            margin-bottom: 12px;
+            color: #333;
+        }
+
+        /* QR Code Styles */
+        .qr-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .payment-method {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .payment-method:hover {
+            border-color: #2874f0;
+            background-color: #f0f8ff;
+        }
+
+        .payment-method.selected {
+            border-color: #2874f0;
+            background-color: #f0f8ff;
+        }
+
+        /* Order Cards */
+        .orders-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .order-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .order-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .order-date {
+            color: #666;
+            font-size: 14px;
+            margin: 4px 0;
+        }
+
+        .order-status {
+            text-align: right;
+        }
+
+        .order-total {
+            display: block;
+            font-size: 18px;
+            font-weight: bold;
+            color: #2874f0;
+            margin-top: 4px;
+        }
+
+        .order-items {
+            color: #666;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+
+        .order-item {
+            margin-right: 8px;
+        }
+
+        .order-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .order-actions .btn {
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+
+        /* Status Select */
+        .status-select {
+            border: none;
+            background: transparent;
+            font-size: 12px;
+            font-weight: 500;
+            padding: 4px 8px;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+
+        .status-select.status-pending { background: #fff3cd; color: #856404; }
+        .status-select.status-confirmed { background: #d4edda; color: #155724; }
+        .status-select.status-shipped { background: #cce5ff; color: #004085; }
+        .status-select.status-delivered { background: #d1ecf1; color: #0c5460; }
+        .status-select.status-cancelled { background: #f8d7da; color: #721c24; }
     </style>
 </head>
 <body>
@@ -551,6 +839,10 @@
                     <button id="adminBtn" class="btn btn-primary hidden">
                         <span class="material-icons">admin_panel_settings</span>
                         Admin Panel
+                    </button>
+                    <button id="ordersDashboardBtn" class="btn btn-primary hidden">
+                        <span class="material-icons">dashboard</span>
+                        Orders Dashboard
                     </button>
                 </div>
             </nav>
@@ -823,6 +1115,56 @@
         </div>
     </div>
 
+    <!-- Orders Dashboard Modal -->
+    <div id="ordersDashboardModal" class="modal fullscreen">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Orders Dashboard</h2>
+                <div class="dashboard-stats">
+                    <div class="stat-card">
+                        <span class="stat-number" id="totalOrders">0</span>
+                        <span class="stat-label">Total Orders</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="pendingOrders">0</span>
+                        <span class="stat-label">Pending</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="completedOrders">0</span>
+                        <span class="stat-label">Completed</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="totalRevenue">$0</span>
+                        <span class="stat-label">Total Revenue</span>
+                    </div>
+                </div>
+                <button id="closeOrdersDashboardModal" class="close-btn">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="dashboard-filters">
+                    <select id="statusFilter" class="form-select">
+                        <option value="all">All Orders</option>
+                        <option value="pending">Pending</option>
+                        <option value="confirmed">Confirmed</option>
+                        <option value="shipped">Shipped</option>
+                        <option value="delivered">Delivered</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                    <input type="date" id="dateFilter" class="form-input">
+                    <button class="btn btn-secondary" onclick="exportOrders()">
+                        <span class="material-icons">download</span>
+                        Export
+                    </button>
+                </div>
+                <div id="ordersDashboardContent" class="orders-table-container">
+                    <!-- Orders table will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Cloudinary Configuration
         const cloudinaryConfig = {
@@ -846,6 +1188,7 @@
         const cartBtn = document.getElementById('cartBtn');
         const ordersBtn = document.getElementById('ordersBtn');
         const adminBtn = document.getElementById('adminBtn');
+        const ordersDashboardBtn = document.getElementById('ordersDashboardBtn');
         const authModal = document.getElementById('authModal');
         const authForm = document.getElementById('authForm');
         const authTitle = document.getElementById('authTitle');
@@ -895,6 +1238,7 @@
             ordersBtn.classList.remove('hidden');
             if (isAdmin) {
                 adminBtn.classList.remove('hidden');
+                ordersDashboardBtn.classList.remove('hidden');
             }
             updateCartCount();
         }
@@ -906,6 +1250,7 @@
             cartBtn.classList.add('hidden');
             ordersBtn.classList.add('hidden');
             adminBtn.classList.add('hidden');
+            ordersDashboardBtn.classList.add('hidden');
             isAdmin = false;
         }
 
@@ -918,6 +1263,7 @@
             cartBtn.addEventListener('click', showCart);
             ordersBtn.addEventListener('click', showOrders);
             adminBtn.addEventListener('click', () => adminPanel.classList.add('open'));
+            ordersDashboardBtn.addEventListener('click', showOrdersDashboard);
             closeAdmin.addEventListener('click', () => adminPanel.classList.remove('open'));
             closeAuth.addEventListener('click', () => authModal.classList.remove('show'));
             toggleAuth.addEventListener('click', toggleAuthMode);
@@ -1407,10 +1753,347 @@
             }
         }
 
-        function showOrders() {
-            // This will show user's order history
-            Swal.fire('My Orders', 'Order history feature will be implemented here.', 'info');
+        async function showOrders() {
+            if (!currentUser) {
+                Swal.fire('Login Required!', 'Please login to view your orders.', 'warning');
+                return;
+            }
+
+            try {
+                const ordersRef = window.firebaseDB.ref(window.database, 'orders');
+                const snapshot = await window.firebaseDB.get(ordersRef);
+                
+                if (!snapshot.exists()) {
+                    Swal.fire('No Orders', 'You haven\'t placed any orders yet.', 'info');
+                    return;
+                }
+
+                const allOrders = Object.entries(snapshot.val()).map(([id, order]) => ({id, ...order}));
+                const userOrders = allOrders.filter(order => order.userId === currentUser.uid);
+
+                if (userOrders.length === 0) {
+                    Swal.fire('No Orders', 'You haven\'t placed any orders yet.', 'info');
+                    return;
+                }
+
+                showOrdersModal(userOrders);
+            } catch (error) {
+                Swal.fire('Error!', 'Failed to load orders: ' + error.message, 'error');
+            }
         }
+
+        function showOrdersModal(orders) {
+            const modal = document.getElementById('ordersModal');
+            const content = document.getElementById('ordersContent');
+            
+            let ordersHTML = '<div class="orders-list">';
+            
+            orders.forEach(order => {
+                const orderDate = new Date(order.createdAt).toLocaleDateString();
+                const statusClass = `status-${order.status}`;
+                
+                ordersHTML += `
+                    <div class="order-card" onclick="viewOrderDetails('${order.id}')">
+                        <div class="order-header">
+                            <div>
+                                <h3>Order #${order.id.substring(0, 8)}</h3>
+                                <p class="order-date">${orderDate}</p>
+                            </div>
+                            <div class="order-status">
+                                <span class="status-badge ${statusClass}">${order.status.toUpperCase()}</span>
+                                <span class="order-total">$${order.total.toFixed(2)}</span>
+                            </div>
+                        </div>
+                        <div class="order-items">
+                            ${order.items.slice(0, 3).map(item => `
+                                <span class="order-item">${item.name} x${item.quantity}</span>
+                            `).join(', ')}
+                            ${order.items.length > 3 ? ` and ${order.items.length - 3} more items` : ''}
+                        </div>
+                        <div class="order-actions">
+                            <button class="btn btn-primary" onclick="event.stopPropagation(); trackOrder('${order.id}')">
+                                <span class="material-icons">local_shipping</span>
+                                Track Order
+                            </button>
+                            ${order.status === 'pending' ? `
+                                <button class="btn btn-secondary" onclick="event.stopPropagation(); cancelOrder('${order.id}')">
+                                    <span class="material-icons">cancel</span>
+                                    Cancel
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            ordersHTML += '</div>';
+            content.innerHTML = ordersHTML;
+            modal.classList.add('show');
+        }
+
+        async function showOrdersDashboard() {
+            if (!isAdmin) return;
+
+            try {
+                const ordersRef = window.firebaseDB.ref(window.database, 'orders');
+                const snapshot = await window.firebaseDB.get(ordersRef);
+                
+                const orders = snapshot.exists() ? 
+                    Object.entries(snapshot.val()).map(([id, order]) => ({id, ...order})) : [];
+
+                loadOrdersDashboard(orders);
+            } catch (error) {
+                Swal.fire('Error!', 'Failed to load orders dashboard: ' + error.message, 'error');
+            }
+        }
+
+        function loadOrdersDashboard(orders) {
+            const modal = document.getElementById('ordersDashboardModal');
+            
+            // Update statistics
+            const totalOrders = orders.length;
+            const pendingOrders = orders.filter(o => o.status === 'pending').length;
+            const completedOrders = orders.filter(o => o.status === 'delivered').length;
+            const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
+
+            document.getElementById('totalOrders').textContent = totalOrders;
+            document.getElementById('pendingOrders').textContent = pendingOrders;
+            document.getElementById('completedOrders').textContent = completedOrders;
+            document.getElementById('totalRevenue').textContent = `$${totalRevenue.toFixed(2)}`;
+
+            // Create orders table
+            const content = document.getElementById('ordersDashboardContent');
+            let tableHTML = `
+                <table class="orders-table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Date</th>
+                            <th>Items</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            orders.forEach(order => {
+                const orderDate = new Date(order.createdAt).toLocaleDateString();
+                const statusClass = `status-${order.status}`;
+                
+                tableHTML += `
+                    <tr>
+                        <td>#${order.id.substring(0, 8)}</td>
+                        <td>
+                            <div>
+                                <strong>${order.customerInfo.name}</strong><br>
+                                <small>${order.userEmail}</small>
+                            </div>
+                        </td>
+                        <td>${orderDate}</td>
+                        <td>${order.items.length} items</td>
+                        <td>$${order.total.toFixed(2)}</td>
+                        <td>
+                            <select class="status-select ${statusClass}" onchange="updateOrderStatus('${order.id}', this.value)">
+                                <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pending</option>
+                                <option value="confirmed" ${order.status === 'confirmed' ? 'selected' : ''}>Confirmed</option>
+                                <option value="shipped" ${order.status === 'shipped' ? 'selected' : ''}>Shipped</option>
+                                <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>Delivered</option>
+                                <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                            </select>
+                        </td>
+                        <td>
+                            <button class="btn btn-secondary" onclick="viewOrderDetailsAdmin('${order.id}')" style="padding: 4px 8px; font-size: 12px;">
+                                <span class="material-icons" style="font-size: 16px;">visibility</span>
+                            </button>
+                            <button class="btn btn-secondary" onclick="deleteOrderAdmin('${order.id}')" style="padding: 4px 8px; font-size: 12px; margin-left: 4px;">
+                                <span class="material-icons" style="font-size: 16px;">delete</span>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += '</tbody></table>';
+            content.innerHTML = tableHTML;
+            modal.classList.add('show');
+        }
+
+        async function updateOrderStatus(orderId, newStatus) {
+            if (!isAdmin) return;
+
+            try {
+                const orderRef = window.firebaseDB.ref(window.database, `orders/${orderId}`);
+                const snapshot = await window.firebaseDB.get(orderRef);
+                
+                if (snapshot.exists()) {
+                    const orderData = snapshot.val();
+                    await window.firebaseDB.set(orderRef, {
+                        ...orderData,
+                        status: newStatus,
+                        updatedAt: Date.now()
+                    });
+                    
+                    Swal.fire('Success!', 'Order status updated successfully', 'success');
+                    showOrdersDashboard(); // Refresh dashboard
+                }
+            } catch (error) {
+                Swal.fire('Error!', 'Failed to update order status: ' + error.message, 'error');
+            }
+        }
+
+        function viewProductDetails(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            const modal = document.getElementById('productModal');
+            const title = document.getElementById('productModalTitle');
+            const content = document.getElementById('productModalContent');
+
+            title.textContent = product.name;
+
+            const mediaElement = product.mediaUrl ? 
+                (product.mediaUrl.includes('.mp4') || product.mediaUrl.includes('video') ? 
+                    `<video class="product-detail-image" src="${product.mediaUrl}" controls></video>` :
+                    `<img class="product-detail-image" src="${product.mediaUrl}" alt="${product.name}">`) :
+                `<div class="product-detail-image" style="display: flex; align-items: center; justify-content: center; background: #f0f0f0;">
+                    <span class="material-icons" style="font-size: 48px; color: #ccc;">image</span>
+                </div>`;
+
+            content.innerHTML = `
+                <div style="text-align: center;">
+                    ${mediaElement}
+                </div>
+                <div class="product-detail-info">
+                    <div class="detail-section">
+                        <h3>Product Information</h3>
+                        <p><strong>Name:</strong> ${product.name}</p>
+                        <p><strong>Category:</strong> ${product.category}</p>
+                        <p><strong>Price:</strong> $${product.price}</p>
+                    </div>
+                    <div class="detail-section">
+                        <h3>Description</h3>
+                        <p>${product.description}</p>
+                    </div>
+                </div>
+                <div style="margin-top: 20px; text-align: center;">
+                    <button class="btn btn-primary" onclick="addToCart('${product.id}'); closeModal('productModal');" style="margin-right: 10px;">
+                        <span class="material-icons">add_shopping_cart</span>
+                        Add to Cart
+                    </button>
+                    <button class="btn btn-secondary" onclick="closeModal('productModal')">
+                        Close
+                    </button>
+                </div>
+            `;
+
+            modal.classList.add('show');
+        }
+
+        function editProductFromHome(productId) {
+            if (!isAdmin) return;
+            
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            const modal = document.getElementById('quickEditModal');
+            
+            document.getElementById('quickEditName').value = product.name;
+            document.getElementById('quickEditPrice').value = product.price;
+            document.getElementById('quickEditDescription').value = product.description;
+            document.getElementById('quickEditCategory').value = product.category;
+
+            const form = document.getElementById('quickEditForm');
+            form.onsubmit = async (e) => {
+                e.preventDefault();
+                await updateProductFromHome(productId);
+            };
+
+            modal.classList.add('show');
+        }
+
+        async function updateProductFromHome(productId) {
+            if (!isAdmin) return;
+
+            const productData = {
+                name: document.getElementById('quickEditName').value,
+                price: parseFloat(document.getElementById('quickEditPrice').value),
+                description: document.getElementById('quickEditDescription').value,
+                category: document.getElementById('quickEditCategory').value,
+                updatedAt: Date.now()
+            };
+
+            try {
+                const productRef = window.firebaseDB.ref(window.database, `products/${productId}`);
+                const snapshot = await window.firebaseDB.get(productRef);
+                
+                if (snapshot.exists()) {
+                    await window.firebaseDB.set(productRef, {...snapshot.val(), ...productData});
+                    Swal.fire('Success!', 'Product updated successfully', 'success');
+                    closeModal('quickEditModal');
+                }
+            } catch (error) {
+                Swal.fire('Error!', 'Failed to update product: ' + error.message, 'error');
+            }
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.remove('show');
+        }
+
+        function trackOrder(orderId) {
+            // This would integrate with shipping APIs in a real application
+            Swal.fire({
+                title: 'Order Tracking',
+                html: `
+                    <div style="text-align: left;">
+                        <h4>Order #${orderId.substring(0, 8)}</h4>
+                        <div style="margin: 20px 0;">
+                            <div style="display: flex; align-items: center; margin: 10px 0;">
+                                <span class="material-icons" style="color: green; margin-right: 10px;">check_circle</span>
+                                Order Placed
+                            </div>
+                            <div style="display: flex; align-items: center; margin: 10px 0;">
+                                <span class="material-icons" style="color: orange; margin-right: 10px;">schedule</span>
+                                Processing
+                            </div>
+                            <div style="display: flex; align-items: center; margin: 10px 0;">
+                                <span class="material-icons" style="color: gray; margin-right: 10px;">local_shipping</span>
+                                Shipped (Estimated 2-3 days)
+                            </div>
+                            <div style="display: flex; align-items: center; margin: 10px 0;">
+                                <span class="material-icons" style="color: gray; margin-right: 10px;">home</span>
+                                Delivered
+                            </div>
+                        </div>
+                    </div>
+                `,
+                confirmButtonText: 'Close'
+            });
+        }
+
+        // Setup modal close handlers
+        document.addEventListener('DOMContentLoaded', function() {
+            // Close modal handlers
+            document.getElementById('closeProductModal')?.addEventListener('click', () => closeModal('productModal'));
+            document.getElementById('closeOrdersModal')?.addEventListener('click', () => closeModal('ordersModal'));
+            document.getElementById('closeOrderDetailsModal')?.addEventListener('click', () => closeModal('orderDetailsModal'));
+            document.getElementById('closeQuickEditModal')?.addEventListener('click', () => closeModal('quickEditModal'));
+            document.getElementById('closePaymentModal')?.addEventListener('click', () => closeModal('paymentModal'));
+            document.getElementById('closeOrdersDashboardModal')?.addEventListener('click', () => closeModal('ordersDashboardModal'));
+            
+            // Close modals when clicking outside
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        modal.classList.remove('show');
+                    }
+                });
+            });
+        });
 
         // Load Sample Products
         async function loadSampleProducts() {
