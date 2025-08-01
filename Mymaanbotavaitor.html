@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Chat Support</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -11,6 +11,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
@@ -19,28 +20,38 @@
             color: #ffffff;
             height: 100vh;
             overflow: hidden;
+            width: 100vw;
+            position: fixed;
         }
 
+        /* Mobile-First Design for 1080x720 */
         .container {
             height: 100vh;
+            width: 100vw;
             display: flex;
             flex-direction: column;
+            position: relative;
         }
 
         .header {
             background: #1f1f1f;
-            padding: 16px;
+            padding: 12px 16px;
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.3);
             z-index: 100;
+            min-height: 56px;
+            flex-shrink: 0;
         }
 
         .header h1 {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 500;
             flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .header .material-icons {
@@ -49,6 +60,7 @@
             padding: 8px;
             border-radius: 50%;
             transition: background 0.2s;
+            font-size: 24px;
         }
 
         .header .material-icons:hover {
@@ -58,8 +70,8 @@
         .status-indicator {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 14px;
+            gap: 6px;
+            font-size: 12px;
             color: #888;
         }
 
@@ -77,19 +89,22 @@
         .chat-area {
             flex: 1;
             overflow-y: auto;
-            padding: 16px;
+            padding: 12px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 8px;
+            -webkit-overflow-scrolling: touch;
         }
 
         .message {
-            max-width: 70%;
-            padding: 12px 16px;
-            border-radius: 18px;
+            max-width: 85%;
+            padding: 10px 14px;
+            border-radius: 16px;
             word-wrap: break-word;
             position: relative;
             animation: messageSlide 0.3s ease-out;
+            font-size: 14px;
+            line-height: 1.4;
         }
 
         @keyframes messageSlide {
@@ -118,7 +133,7 @@
         }
 
         .message-time {
-            font-size: 12px;
+            font-size: 11px;
             color: rgba(255,255,255,0.7);
             margin-top: 4px;
             display: flex;
@@ -133,7 +148,7 @@
         }
 
         .tick {
-            font-size: 14px;
+            font-size: 12px;
             color: rgba(255,255,255,0.5);
         }
 
@@ -154,9 +169,10 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 12px 16px;
+            padding: 10px 14px;
             color: #888;
             font-style: italic;
+            font-size: 13px;
         }
 
         .typing-dots {
@@ -185,27 +201,30 @@
                 transform: translateY(0);
             }
             30% {
-                transform: translateY(-10px);
+                transform: translateY(-8px);
             }
         }
 
         .input-area {
             background: #1f1f1f;
-            padding: 16px;
+            padding: 12px;
             display: flex;
-            gap: 12px;
+            gap: 10px;
             align-items: center;
+            flex-shrink: 0;
         }
 
         .input-field {
             flex: 1;
             background: #2c2c2c;
             border: none;
-            border-radius: 24px;
-            padding: 12px 20px;
+            border-radius: 20px;
+            padding: 10px 16px;
             color: white;
             font-size: 14px;
             outline: none;
+            min-height: 40px;
+            resize: none;
         }
 
         .input-field::placeholder {
@@ -216,13 +235,14 @@
             background: #FF3B30;
             border: none;
             border-radius: 50%;
-            width: 48px;
-            height: 48px;
+            width: 44px;
+            height: 44px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: all 0.2s;
+            flex-shrink: 0;
         }
 
         .send-btn:hover {
@@ -232,34 +252,45 @@
 
         .send-btn .material-icons {
             color: white;
+            font-size: 20px;
         }
 
-        /* Modal Styles */
+        /* Modal Styles - Mobile Optimized */
         .modal {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.9);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 1000;
+            padding: 20px;
         }
 
         .modal-content {
             background: #1f1f1f;
-            padding: 32px;
+            padding: 24px;
             border-radius: 16px;
+            width: 100%;
             max-width: 400px;
-            width: 90%;
             text-align: center;
+            max-height: 80vh;
+            overflow-y: auto;
         }
 
         .modal h2 {
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             color: #FF3B30;
+            font-size: 20px;
+        }
+
+        .modal p {
+            margin-bottom: 16px;
+            color: #ccc;
+            font-size: 14px;
         }
 
         .modal input {
@@ -269,20 +300,23 @@
             border-radius: 8px;
             padding: 12px;
             color: white;
-            margin: 8px 0;
+            margin: 6px 0;
             font-size: 16px;
+            outline: none;
         }
 
         .modal button {
             background: #FF3B30;
             border: none;
             border-radius: 8px;
-            padding: 12px 24px;
+            padding: 12px 20px;
             color: white;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 14px;
+            font-weight: 500;
             transition: background 0.2s;
-            margin: 8px;
+            margin: 6px;
+            min-width: 100px;
         }
 
         .modal button:hover {
@@ -305,33 +339,56 @@
             background: #c82333;
         }
 
-        /* Admin Panel Styles */
+        /* Admin Panel - Mobile Layout */
         .admin-panel {
             display: none;
             height: 100vh;
+            width: 100vw;
+            flex-direction: column;
         }
 
         .admin-panel.active {
             display: flex;
         }
 
-        .users-list {
-            width: 350px;
+        .admin-header {
             background: #1f1f1f;
-            border-right: 1px solid #333;
-            overflow-y: auto;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            z-index: 100;
+            min-height: 56px;
+        }
+
+        .admin-header h1 {
+            font-size: 18px;
+            font-weight: 500;
+            flex: 1;
+        }
+
+        .admin-main {
+            flex: 1;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
+        }
+
+        .users-section {
+            background: #1f1f1f;
+            border-bottom: 1px solid #333;
+            flex-shrink: 0;
         }
 
         .search-section {
-            padding: 16px;
+            padding: 12px;
             border-bottom: 1px solid #333;
         }
 
         .search-box {
             position: relative;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
         }
 
         .search-box input {
@@ -342,6 +399,7 @@
             padding: 10px 40px 10px 12px;
             color: white;
             font-size: 14px;
+            outline: none;
         }
 
         .search-box .material-icons {
@@ -361,22 +419,24 @@
             padding: 10px 12px;
             color: white;
             font-size: 14px;
+            outline: none;
         }
 
         .users-container {
-            flex: 1;
+            max-height: 200px;
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         .user-item {
-            padding: 16px;
+            padding: 12px;
             border-bottom: 1px solid #333;
             cursor: pointer;
             transition: background 0.2s;
             position: relative;
         }
 
-        .user-item:hover {
+        .user-item:hover, .user-item:active {
             background: #2c2c2c;
         }
 
@@ -384,34 +444,39 @@
             background: #FF3B30;
         }
 
+        .user-item.active * {
+            color: white !important;
+        }
+
         .user-name {
             font-weight: 500;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
+            font-size: 14px;
         }
 
         .user-phone {
-            font-size: 12px;
+            font-size: 11px;
             color: #888;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
         }
 
         .user-preview {
-            font-size: 12px;
+            font-size: 11px;
             color: #888;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
         }
 
         .user-status-info {
             display: flex;
             align-items: center;
             gap: 4px;
-            font-size: 11px;
+            font-size: 10px;
         }
 
         .user-status-dot {
@@ -428,7 +493,7 @@
         .unread-count {
             background: #FF3B30;
             color: white;
-            border-radius: 10px;
+            border-radius: 8px;
             padding: 2px 6px;
             font-size: 10px;
             font-weight: bold;
@@ -436,9 +501,9 @@
         }
 
         .user-time {
-            font-size: 11px;
+            font-size: 10px;
             color: #666;
-            margin-top: 4px;
+            margin-top: 3px;
         }
 
         .user-actions {
@@ -457,8 +522,8 @@
             background: rgba(255, 59, 48, 0.8);
             border: none;
             border-radius: 4px;
-            width: 24px;
-            height: 24px;
+            width: 20px;
+            height: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -472,7 +537,7 @@
         }
 
         .action-btn .material-icons {
-            font-size: 16px;
+            font-size: 14px;
             color: white;
         }
 
@@ -488,6 +553,7 @@
             flex: 1;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
         }
 
         .no-chat {
@@ -496,27 +562,47 @@
             align-items: center;
             justify-content: center;
             color: #888;
-            font-size: 18px;
+            font-size: 16px;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .chat-header {
+            background: #1f1f1f;
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #333;
+            min-height: 50px;
+        }
+
+        .chat-header h2 {
+            font-size: 14px;
+            font-weight: 500;
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .chat-actions {
             display: flex;
-            gap: 8px;
-            margin-left: auto;
+            gap: 6px;
         }
 
         .chat-action-btn {
             background: #666;
             border: none;
-            border-radius: 6px;
-            padding: 6px 12px;
+            border-radius: 4px;
+            padding: 4px 8px;
             color: white;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 10px;
             transition: all 0.2s;
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 3px;
         }
 
         .chat-action-btn:hover {
@@ -531,25 +617,53 @@
             background: #c82333;
         }
 
+        .chat-action-btn .material-icons {
+            font-size: 12px;
+        }
+
         .hidden {
             display: none !important;
         }
 
-        /* History Modal */
+        .empty-state {
+            padding: 30px 20px;
+            text-align: center;
+            color: #888;
+        }
+
+        .empty-state .material-icons {
+            font-size: 36px;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        .empty-state-text {
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+
+        .empty-state-subtext {
+            font-size: 11px;
+            opacity: 0.7;
+        }
+
+        /* History Modal - Mobile Optimized */
         .history-preview {
-            max-height: 300px;
+            max-height: 250px;
             overflow-y: auto;
             background: #2c2c2c;
             border-radius: 8px;
             padding: 12px;
-            margin: 16px 0;
+            margin: 12px 0;
+            -webkit-overflow-scrolling: touch;
         }
 
         .history-message {
-            padding: 8px 12px;
-            margin: 4px 0;
-            border-radius: 12px;
+            padding: 6px 10px;
+            margin: 3px 0;
+            border-radius: 10px;
             max-width: 80%;
+            font-size: 13px;
         }
 
         .history-message.user {
@@ -566,41 +680,69 @@
         }
 
         .history-time {
-            font-size: 11px;
+            font-size: 10px;
             opacity: 0.7;
-            margin-top: 4px;
+            margin-top: 3px;
         }
 
-        .empty-state {
-            padding: 40px 20px;
-            text-align: center;
+        /* Loading State */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
             color: #888;
+            font-size: 14px;
         }
 
-        .empty-state .material-icons {
-            font-size: 48px;
-            margin-bottom: 16px;
-            opacity: 0.5;
+        .loading .material-icons {
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
         }
 
-        /* Mobile Responsive */
-        @media (max-width: 768px) {
-            .users-list {
-                width: 100%;
-                position: absolute;
-                height: 100%;
-                z-index: 200;
-                transform: translateX(-100%);
-                transition: transform 0.3s;
-            }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
 
-            .users-list.mobile-open {
-                transform: translateX(0);
+        /* Responsive adjustments */
+        @media (max-height: 600px) {
+            .users-container {
+                max-height: 150px;
             }
+            
+            .modal-content {
+                padding: 20px;
+            }
+            
+            .header, .admin-header, .chat-header {
+                padding: 8px 12px;
+                min-height: 48px;
+            }
+        }
 
-            .message {
-                max-width: 85%;
-            }
+        /* Touch improvements */
+        .user-item, .send-btn, .action-btn, .chat-action-btn {
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        /* Scrollbar styling for mobile */
+        ::-webkit-scrollbar {
+            width: 3px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #666;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #888;
         }
     </style>
 </head>
@@ -639,81 +781,82 @@
 
     <!-- Admin Panel -->
     <div id="adminPanel" class="admin-panel">
-        <div class="users-list">
-            <div class="header">
-                <h1>Admin Panel</h1>
-                <span class="material-icons" onclick="exitAdmin()">close</span>
-            </div>
-            
-            <div class="search-section">
-                <div class="search-box">
-                    <input type="text" id="userSearch" placeholder="Search users..." onkeyup="searchUsers()">
-                    <span class="material-icons">search</span>
-                </div>
-                <div class="filter-options">
-                    <select id="statusFilter" onchange="filterUsers()">
-                        <option value="all">All Users</option>
-                        <option value="online">Online</option>
-                        <option value="offline">Offline</option>
-                        <option value="unread">Unread Messages</option>
-                    </select>
-                </div>
-            </div>
-            
-            <div class="users-container" id="usersContainer">
-                <div class="empty-state">
-                    <div class="material-icons">people</div>
-                    <div>No users found</div>
-                    <div style="font-size: 12px; margin-top: 8px;">Users will appear here after they register</div>
-                </div>
-            </div>
+        <div class="admin-header">
+            <h1>Admin Panel</h1>
+            <span class="material-icons" onclick="exitAdmin()">close</span>
         </div>
 
-        <div class="chat-panel">
-            <div class="no-chat" id="noChatSelected">
-                <div>
-                    <div class="material-icons" style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;">chat</div>
-                    <div>Select a user to start chatting</div>
+        <div class="admin-main">
+            <div class="users-section">
+                <div class="search-section">
+                    <div class="search-box">
+                        <input type="text" id="userSearch" placeholder="Search users..." onkeyup="searchUsers()">
+                        <span class="material-icons">search</span>
+                    </div>
+                    <div class="filter-options">
+                        <select id="statusFilter" onchange="filterUsers()">
+                            <option value="all">All Users</option>
+                            <option value="online">Online</option>
+                            <option value="offline">Offline</option>
+                            <option value="unread">Unread Messages</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="users-container" id="usersContainer">
+                    <div class="loading">
+                        <span class="material-icons">refresh</span>
+                        Loading users...
+                    </div>
                 </div>
             </div>
-            
-            <div class="container hidden" id="adminChatContainer">
-                <div class="header">
-                    <h1 id="selectedUserName">User Chat</h1>
-                    <div class="chat-actions">
-                        <button class="chat-action-btn" onclick="clearChatHistory()">
-                            <span class="material-icons" style="font-size: 16px;">clear_all</span>
-                            Clear History
+
+            <div class="chat-panel">
+                <div class="no-chat" id="noChatSelected">
+                    <div>
+                        <div class="material-icons" style="font-size: 36px; margin-bottom: 12px; opacity: 0.5;">chat</div>
+                        <div>Select a user to start chatting</div>
+                    </div>
+                </div>
+                
+                <div class="container hidden" id="adminChatContainer">
+                    <div class="chat-header">
+                        <h2 id="selectedUserName">User Chat</h2>
+                        <div class="chat-actions">
+                            <button class="chat-action-btn" onclick="clearChatHistory()">
+                                <span class="material-icons">clear_all</span>
+                                Clear
+                            </button>
+                            <button class="chat-action-btn danger" onclick="deleteUser()">
+                                <span class="material-icons">delete</span>
+                                Delete
+                            </button>
+                        </div>
+                        <div class="status-indicator">
+                            <div class="status-dot" id="userStatus"></div>
+                            <span id="userStatusText">Offline</span>
+                        </div>
+                    </div>
+
+                    <div class="chat-area" id="adminChatArea">
+                        <!-- Admin chat messages -->
+                    </div>
+
+                    <div class="typing-indicator hidden" id="adminTypingIndicator">
+                        <span id="typingUserName">User is typing</span>
+                        <div class="typing-dots">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
+
+                    <div class="input-area">
+                        <input type="text" class="input-field" id="adminMessageInput" placeholder="Type your message..." maxlength="500">
+                        <button class="send-btn" onclick="sendAdminMessage()">
+                            <span class="material-icons">send</span>
                         </button>
-                        <button class="chat-action-btn danger" onclick="deleteUser()">
-                            <span class="material-icons" style="font-size: 16px;">delete</span>
-                            Delete User
-                        </button>
                     </div>
-                    <div class="status-indicator">
-                        <div class="status-dot" id="userStatus"></div>
-                        <span id="userStatusText">User Offline</span>
-                    </div>
-                </div>
-
-                <div class="chat-area" id="adminChatArea">
-                    <!-- Admin chat messages -->
-                </div>
-
-                <div class="typing-indicator hidden" id="adminTypingIndicator">
-                    <span id="typingUserName">User is typing</span>
-                    <div class="typing-dots">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </div>
-                </div>
-
-                <div class="input-area">
-                    <input type="text" class="input-field" id="adminMessageInput" placeholder="Type your message..." maxlength="500">
-                    <button class="send-btn" onclick="sendAdminMessage()">
-                        <span class="material-icons">send</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -732,7 +875,7 @@
 
     <!-- History Modal -->
     <div id="historyModal" class="modal hidden">
-        <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-content">
             <h2>Welcome Back!</h2>
             <p id="welcomeText">We found your previous chat history:</p>
             <div class="history-preview" id="historyPreview">
@@ -784,19 +927,21 @@
         let typingTimeout = null;
         let adminTypingTimeout = null;
         let confirmCallback = null;
+        let usersListener = null;
+        let allUsers = {};
 
         // Secret admin phrase
         const ADMIN_SECRET = "aviator2025adminmaan";
 
         // Initialize App
         function initApp() {
-            console.log('Initializing app...');
+            console.log('🚀 Initializing Chat Support App...');
             
             // Check if user is admin
             isAdmin = localStorage.getItem("isAdmin") === "true";
             
             if (isAdmin) {
-                console.log('Admin mode detected');
+                console.log('👑 Admin mode detected');
                 showAdminPanel();
                 return;
             }
@@ -808,12 +953,12 @@
                 currentUser = user.name;
                 currentUserPhone = user.phone;
                 currentUserKey = `${user.name}_${user.phone}`;
-                console.log('Existing user found:', currentUserKey);
+                console.log('👤 Existing user found:', currentUserKey);
                 
                 // Check if user has chat history
                 checkUserHistory();
             } else {
-                console.log('New user, showing modal');
+                console.log('🆕 New user, showing registration modal');
                 showUserModal();
             }
 
@@ -855,7 +1000,9 @@
 
         function showUserModal() {
             document.getElementById('userModal').classList.remove('hidden');
-            document.getElementById('nameInput').focus();
+            setTimeout(() => {
+                document.getElementById('nameInput').focus();
+            }, 100);
         }
 
         function setUserDetails() {
@@ -867,46 +1014,65 @@
                 return;
             }
 
+            if (name.length < 2) {
+                alert('Name must be at least 2 characters long');
+                return;
+            }
+
+            if (phone.length < 10) {
+                alert('Please enter a valid phone number');
+                return;
+            }
+
             currentUser = name;
             currentUserPhone = phone;
             currentUserKey = `${name}_${phone}`;
 
-            console.log('Setting user details:', currentUserKey);
+            console.log('💾 Setting user details:', currentUserKey);
 
             // Save user data
             const userData = {
                 name: name,
                 phone: phone,
-                joinDate: Date.now()
+                joinDate: Date.now(),
+                lastActive: Date.now()
             };
             
             localStorage.setItem("userData", JSON.stringify(userData));
             
-            // Save to Firebase
+            // Save to Firebase with forced write
             database.ref(`users/${currentUserKey}`).set(userData).then(() => {
-                console.log('User saved to Firebase:', currentUserKey);
+                console.log('✅ User saved to Firebase:', currentUserKey);
+                // Force update the user status as well
+                database.ref(`user_status/${currentUserKey}`).set({
+                    last_seen: Date.now(),
+                    typing: false,
+                    online: true
+                });
             }).catch((error) => {
-                console.error('Error saving user:', error);
+                console.error('❌ Error saving user:', error);
             });
 
             document.getElementById('userModal').classList.add('hidden');
             
             // Check if user has previous chat history
-            checkUserHistory();
+            setTimeout(() => {
+                checkUserHistory();
+            }, 500);
         }
 
         function checkUserHistory() {
-            console.log('Checking user history for:', currentUserKey);
+            console.log('🔍 Checking user history for:', currentUserKey);
             database.ref(`chats/${currentUserKey}`).once('value', (snapshot) => {
                 if (snapshot.exists() && snapshot.val()) {
                     const messages = Object.values(snapshot.val());
                     if (messages.length > 0) {
-                        console.log('Found chat history, showing modal');
+                        console.log('📜 Found chat history, showing modal');
                         showHistoryModal(messages);
                         return;
                     }
                 }
-                console.log('No history found, starting fresh chat');
+                console.log('🆕 No history found, starting fresh chat');
                 startUserChat();
             });
         }
@@ -951,7 +1117,7 @@
         }
 
         function startUserChat() {
-            console.log('Starting user chat for:', currentUser);
+            console.log('💬 Starting user chat for:', currentUser);
             document.getElementById('userChat').style.display = 'flex';
             document.getElementById('chatTitle').textContent = `Chat - ${currentUser}`;
             
@@ -967,7 +1133,9 @@
             // Update user status
             updateUserStatus();
             
-            document.getElementById('messageInput').focus();
+            setTimeout(() => {
+                document.getElementById('messageInput').focus();
+            }, 100);
         }
 
         function sendMessage() {
@@ -983,7 +1151,7 @@
                 return;
             }
 
-            console.log('Sending message:', message);
+            console.log('📤 Sending message:', message);
 
             // Send message
             const messageData = {
@@ -995,9 +1163,9 @@
             };
 
             database.ref(`chats/${currentUserKey}`).push(messageData).then(() => {
-                console.log('Message sent successfully');
+                console.log('✅ Message sent successfully');
             }).catch((error) => {
-                console.error('Error sending message:', error);
+                console.error('❌ Error sending message:', error);
             });
             
             input.value = '';
@@ -1011,7 +1179,7 @@
         }
 
         function loadUserMessages() {
-            console.log('Loading messages for:', currentUserKey);
+            console.log('📥 Loading messages for:', currentUserKey);
             database.ref(`chats/${currentUserKey}`).on('value', (snapshot) => {
                 const messages = snapshot.val();
                 displayMessages(messages, 'chatArea');
@@ -1033,7 +1201,9 @@
             }
 
             if (wasAtBottom) {
-                container.scrollTop = container.scrollHeight;
+                setTimeout(() => {
+                    container.scrollTop = container.scrollHeight;
+                }, 100);
             }
         }
 
@@ -1121,44 +1291,70 @@
 
         function updateUserStatus() {
             if (currentUserKey) {
-                database.ref(`user_status/${currentUserKey}/last_seen`).set(Date.now());
+                const statusData = {
+                    last_seen: Date.now(),
+                    online: true,
+                    typing: false
+                };
+                database.ref(`user_status/${currentUserKey}`).set(statusData);
                 database.ref(`user_status/${currentUserKey}/typing`).onDisconnect().set(false);
+                database.ref(`user_status/${currentUserKey}/online`).onDisconnect().set(false);
             }
         }
 
         // Admin Functions
         function showAdminPanel() {
-            console.log('Showing admin panel');
+            console.log('👑 Showing admin panel');
             document.getElementById('userChat').style.display = 'none';
             document.getElementById('adminPanel').classList.add('active');
             
             // Set admin as online
-            database.ref('admin_status/online').set(true);
-            database.ref('admin_status/last_seen').set(Date.now());
+            database.ref('admin_status').set({
+                online: true,
+                last_seen: Date.now(),
+                typing: false
+            });
             
             loadUsersList();
         }
 
         function loadUsersList() {
-            console.log('Loading users list');
+            console.log('👥 Loading users list...');
             
-            // Listen for users
-            database.ref('users').on('value', (usersSnapshot) => {
+            // Clear any existing listener
+            if (usersListener) {
+                database.ref('users').off('value', usersListener);
+            }
+            
+            // Show loading state
+            document.getElementById('usersContainer').innerHTML = `
+                <div class="loading">
+                    <span class="material-icons">refresh</span>
+                    Loading users...
+                </div>
+            `;
+            
+            // Listen for all users - FORCE REFRESH
+            usersListener = database.ref('users').on('value', (usersSnapshot) => {
+                console.log('📊 Users data received');
                 const users = usersSnapshot.val();
-                console.log('Users loaded:', users);
+                allUsers = users || {};
+                
+                console.log('👥 Total users found:', Object.keys(allUsers).length);
+                console.log('📋 Users data:', allUsers);
                 
                 if (!users || Object.keys(users).length === 0) {
                     document.getElementById('usersContainer').innerHTML = `
                         <div class="empty-state">
                             <div class="material-icons">people</div>
-                            <div>No users found</div>
-                            <div style="font-size: 12px; margin-top: 8px;">Users will appear here after they register</div>
+                            <div class="empty-state-text">No users found</div>
+                            <div class="empty-state-subtext">Users will appear here after they register</div>
                         </div>
                     `;
                     return;
                 }
                 
-                // Load chats and status for existing users
+                // Load additional data for users
                 Promise.all([
                     database.ref('chats').once('value'),
                     database.ref('user_status').once('value')
@@ -1166,8 +1362,24 @@
                     const chats = chatsSnapshot.val() || {};
                     const statuses = statusSnapshot.val() || {};
                     
+                    console.log('💬 Chats loaded:', Object.keys(chats).length);
+                    console.log('📊 Statuses loaded:', Object.keys(statuses).length);
+                    
                     displayUsersList(users, chats, statuses);
+                }).catch(error => {
+                    console.error('❌ Error loading additional data:', error);
+                    // Still show users even if additional data fails
+                    displayUsersList(users, {}, {});
                 });
+            }, (error) => {
+                console.error('❌ Error loading users:', error);
+                document.getElementById('usersContainer').innerHTML = `
+                    <div class="empty-state">
+                        <div class="material-icons">error</div>
+                        <div class="empty-state-text">Error loading users</div>
+                        <div class="empty-state-subtext">Please refresh the page</div>
+                    </div>
+                `;
             });
 
             // Listen for real-time status updates
@@ -1177,11 +1389,11 @@
         }
 
         function displayUsersList(users, chats, statuses) {
-            console.log('Displaying users list');
+            console.log('🖥️ Displaying users list');
             const container = document.getElementById('usersContainer');
             container.innerHTML = '';
 
-            // Create user items
+            // Create user items array
             const userItems = [];
             Object.entries(users).forEach(([userKey, userData]) => {
                 const messages = chats[userKey] ? Object.values(chats[userKey]) : [];
@@ -1192,8 +1404,8 @@
                 };
                 const unreadCount = messages.filter(msg => msg.from === 'user' && !msg.read).length;
                 
-                const userStatus = statuses[userKey] || { last_seen: userData.joinDate || 0, typing: false };
-                const isOnline = userStatus.last_seen && (Date.now() - userStatus.last_seen < 300000);
+                const userStatus = statuses[userKey] || { last_seen: userData.joinDate || 0, typing: false, online: false };
+                const isOnline = userStatus.online || (userStatus.last_seen && (Date.now() - userStatus.last_seen < 300000));
                 
                 userItems.push({
                     userKey,
@@ -1201,19 +1413,20 @@
                     lastMessage,
                     unreadCount,
                     isOnline,
-                    totalMessages: messages.length
+                    totalMessages: messages.length,
+                    lastActivity: lastMessage.time
                 });
             });
 
-            // Sort by last activity
-            userItems.sort((a, b) => b.lastMessage.time - a.lastMessage.time);
+            // Sort by last activity (most recent first)
+            userItems.sort((a, b) => b.lastActivity - a.lastActivity);
 
             // Create DOM elements
             userItems.forEach(item => {
                 createUserItem(item);
             });
 
-            console.log(`Displayed ${userItems.length} users`);
+            console.log(`✅ Displayed ${userItems.length} users`);
         }
 
         function createUserItem({ userKey, userData, lastMessage, unreadCount, isOnline, totalMessages }) {
@@ -1225,8 +1438,8 @@
             userDiv.onclick = () => selectUser(userKey, userData);
             
             const time = new Date(lastMessage.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            const preview = lastMessage.from === 'system' ? lastMessage.text : (lastMessage.text.substring(0, 40) + (lastMessage.text.length > 40 ? '...' : ''));
-            const statusText = isOnline ? 'Online' : (lastMessage.from === 'system' ? 'New User' : `Last seen: ${new Date(lastMessage.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`);
+            const preview = lastMessage.from === 'system' ? lastMessage.text : (lastMessage.text.substring(0, 30) + (lastMessage.text.length > 30 ? '...' : ''));
+            const statusText = isOnline ? 'Online' : (lastMessage.from === 'system' ? 'New User' : `Last: ${time}`);
             
             userDiv.innerHTML = `
                 <div class="user-actions">
@@ -1247,7 +1460,7 @@
                     <div class="user-status-dot ${isOnline ? '' : 'offline'}"></div>
                     <span>${statusText}</span>
                 </div>
-                <div class="user-time">${time} ${totalMessages > 0 ? `(${totalMessages} msgs)` : '(New)'}</div>
+                <div class="user-time">${totalMessages > 0 ? `${totalMessages} msgs` : 'New'}</div>
             `;
             
             if (selectedAdminUser === userKey) {
@@ -1258,7 +1471,7 @@
         }
 
         function selectUser(userKey, userData) {
-            console.log('Selecting user:', userKey);
+            console.log('👤 Selecting user:', userKey);
             selectedAdminUser = userKey;
             selectedUserData = userData;
             
@@ -1283,11 +1496,13 @@
             // Listen for user status
             listenForUserStatus(userKey);
             
-            document.getElementById('adminMessageInput').focus();
+            setTimeout(() => {
+                document.getElementById('adminMessageInput').focus();
+            }, 100);
         }
 
         function loadAdminChat(userKey) {
-            console.log('Loading admin chat for:', userKey);
+            console.log('💬 Loading admin chat for:', userKey);
             database.ref(`chats/${userKey}`).on('value', (snapshot) => {
                 const messages = snapshot.val();
                 displayMessages(messages, 'adminChatArea');
@@ -1302,7 +1517,7 @@
             
             if (!message) return;
 
-            console.log('Sending admin message:', message);
+            console.log('📤 Sending admin message:', message);
 
             const messageData = {
                 from: 'admin',
@@ -1313,9 +1528,9 @@
             };
 
             database.ref(`chats/${selectedAdminUser}`).push(messageData).then(() => {
-                console.log('Admin message sent successfully');
+                console.log('✅ Admin message sent successfully');
             }).catch((error) => {
-                console.error('Error sending admin message:', error);
+                console.error('❌ Error sending admin message:', error);
             });
             
             input.value = '';
@@ -1363,7 +1578,7 @@
                     typingIndicator.classList.add('hidden');
                 }
                 
-                const isOnline = status.last_seen && (Date.now() - status.last_seen < 300000);
+                const isOnline = status.online || (status.last_seen && (Date.now() - status.last_seen < 300000));
                 if (isOnline) {
                     statusDot.classList.remove('offline');
                     statusText.textContent = `${userName} Online`;
@@ -1386,9 +1601,15 @@
                 const statusInfo = item.querySelector('.user-status-info span');
                 
                 if (status && statusDot && statusInfo) {
-                    const isOnline = status.last_seen && (Date.now() - status.last_seen < 300000);
+                    const isOnline = status.online || (status.last_seen && (Date.now() - status.last_seen < 300000));
                     statusDot.className = `user-status-dot ${isOnline ? '' : 'offline'}`;
-                    statusInfo.textContent = isOnline ? 'Online' : `Last seen: ${new Date(status.last_seen).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+                    
+                    if (isOnline) {
+                        statusInfo.textContent = 'Online';
+                    } else {
+                        const lastSeen = new Date(status.last_seen).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                        statusInfo.textContent = `Last: ${lastSeen}`;
+                    }
                 }
             });
         }
@@ -1412,13 +1633,13 @@
                 'Clear History',
                 () => {
                     database.ref(`chats/${selectedAdminUser}`).remove().then(() => {
-                        console.log('Chat history cleared for:', selectedAdminUser);
+                        console.log('🗑️ Chat history cleared for:', selectedAdminUser);
                         // Refresh the chat area
                         document.getElementById('adminChatArea').innerHTML = '';
                         // Refresh user list
                         loadUsersList();
                     }).catch((error) => {
-                        console.error('Error clearing chat history:', error);
+                        console.error('❌ Error clearing chat history:', error);
                         alert('Error clearing chat history. Please try again.');
                     });
                 }
@@ -1438,7 +1659,7 @@
                         database.ref(`chats/${selectedAdminUser}`).remove(),
                         database.ref(`user_status/${selectedAdminUser}`).remove()
                     ]).then(() => {
-                        console.log('User deleted:', selectedAdminUser);
+                        console.log('🗑️ User deleted:', selectedAdminUser);
                         // Reset selected user
                         selectedAdminUser = null;
                         selectedUserData = null;
@@ -1448,7 +1669,7 @@
                         // Refresh user list
                         loadUsersList();
                     }).catch((error) => {
-                        console.error('Error deleting user:', error);
+                        console.error('❌ Error deleting user:', error);
                         alert('Error deleting user. Please try again.');
                     });
                 }
@@ -1465,7 +1686,7 @@
                         'Clear History',
                         () => {
                             database.ref(`chats/${userKey}`).remove().then(() => {
-                                console.log('User history cleared:', userKey);
+                                console.log('🗑️ User history cleared:', userKey);
                                 loadUsersList();
                             });
                         }
@@ -1485,7 +1706,7 @@
                         database.ref(`chats/${userKey}`).remove(),
                         database.ref(`user_status/${userKey}`).remove()
                     ]).then(() => {
-                        console.log('User deleted:', userKey);
+                        console.log('🗑️ User deleted:', userKey);
                         if (selectedAdminUser === userKey) {
                             selectedAdminUser = null;
                             selectedUserData = null;
@@ -1545,7 +1766,11 @@
         }
 
         function exitAdmin() {
-            database.ref('admin_status/online').set(false);
+            database.ref('admin_status').set({
+                online: false,
+                last_seen: Date.now(),
+                typing: false
+            });
             localStorage.removeItem("isAdmin");
             location.reload();
         }
@@ -1565,11 +1790,32 @@
         // Handle page unload
         window.addEventListener('beforeunload', function() {
             if (currentUserKey) {
-                database.ref(`user_status/${currentUserKey}/typing`).set(false);
+                database.ref(`user_status/${currentUserKey}`).update({
+                    typing: false,
+                    online: false
+                });
             }
             if (isAdmin) {
-                database.ref('admin_status/typing').set(false);
-                database.ref('admin_status/online').set(false);
+                database.ref('admin_status').update({
+                    typing: false,
+                    online: false
+                });
+            }
+        });
+
+        // Handle visibility change
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                if (currentUserKey) {
+                    database.ref(`user_status/${currentUserKey}/online`).set(false);
+                }
+            } else {
+                if (currentUserKey) {
+                    database.ref(`user_status/${currentUserKey}/online`).set(true);
+                }
+                if (isAdmin) {
+                    database.ref('admin_status/online').set(true);
+                }
             }
         });
 
@@ -1577,6 +1823,22 @@
         if ('Notification' in window && Notification.permission === 'default') {
             Notification.requestPermission();
         }
+
+        // Prevent zoom on mobile
+        document.addEventListener('touchstart', function(event) {
+            if (event.touches.length > 1) {
+                event.preventDefault();
+            }
+        });
+
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function(event) {
+            const now = (new Date()).getTime();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
     </script>
 </body>
 </html>
