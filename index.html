@@ -44,20 +44,57 @@
     
     <style>
         :root {
-            --md-sys-color-primary: #ff1744;
-            --md-sys-color-on-primary: #ffffff;
-            --md-sys-color-primary-container: #ffdad6;
-            --md-sys-color-on-primary-container: #410002;
-            --md-sys-color-surface: #1a1a1a;
-            --md-sys-color-on-surface: #e6e1e5;
-            --md-sys-color-surface-variant: #49454f;
-            --md-sys-color-on-surface-variant: #cac4d0;
-            --md-sys-color-outline: #938f99;
-            --md-sys-color-background: #121212;
-            --md-sys-color-on-background: #e6e1e5;
-            --md-sys-color-surface-container: #211f26;
-            --md-sys-color-surface-container-high: #2b2930;
-            --md-sys-color-surface-container-highest: #36343b;
+            /* E-commerce Primary Colors */
+            --primary-blue: #2874f0;
+            --primary-orange: #ff9f00;
+            --amazon-orange: #ff9900;
+            --success-green: #26a541;
+            --error-red: #e53e3e;
+            --warning-yellow: #f5a623;
+            
+            /* Surface Colors - Clean & Professional */
+            --surface-primary: #ffffff;
+            --surface-secondary: #f8f9fa;
+            --surface-elevated: #ffffff;
+            --surface-container: #f1f3f4;
+            --surface-variant: #e8eaed;
+            
+            /* Text Colors */
+            --text-primary: #1a1a1a;
+            --text-secondary: #5f6368;
+            --text-tertiary: #80868b;
+            --text-inverse: #ffffff;
+            
+            /* Border & Outline */
+            --border-light: #e0e0e0;
+            --border-medium: #d1d5db;
+            --border-strong: #9aa0a6;
+            
+            /* Interactive States */
+            --hover-overlay: rgba(40, 116, 240, 0.08);
+            --focus-ring: rgba(40, 116, 240, 0.2);
+            --pressed-overlay: rgba(40, 116, 240, 0.12);
+            
+            /* Shadows - Apple-inspired */
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
+            
+            /* Spacing - Apple 8pt grid */
+            --space-xs: 4px;
+            --space-sm: 8px;
+            --space-md: 16px;
+            --space-lg: 24px;
+            --space-xl: 32px;
+            --space-2xl: 48px;
+            
+            /* Border Radius */
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --radius-full: 9999px;
         }
         
         * {
@@ -67,26 +104,30 @@
         }
         
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: var(--md-sys-color-background);
-            color: var(--md-sys-color-on-background);
-            line-height: 1.6;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--surface-secondary);
+            color: var(--text-primary);
+            line-height: 1.5;
+            font-size: 14px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
         
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 16px;
+            padding: 0 var(--space-md);
         }
         
         /* Header */
         .header {
-            background-color: var(--md-sys-color-surface-container);
-            padding: 16px 0;
+            background-color: var(--surface-primary);
+            padding: var(--space-md) 0;
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            box-shadow: var(--shadow-sm);
+            border-bottom: 1px solid var(--border-light);
         }
         
         .nav {
@@ -94,14 +135,17 @@
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 16px;
+            gap: var(--space-lg);
         }
         
         .logo {
             font-size: 24px;
             font-weight: 700;
-            color: var(--md-sys-color-primary);
+            color: var(--primary-blue);
             text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
         }
         
         .nav-links {
