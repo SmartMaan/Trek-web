@@ -751,7 +751,13 @@
             };
             
             localStorage.setItem("userData", JSON.stringify(userData));
-            database.ref(`users/${currentUserKey}`).set(userData);
+            
+            // Save to Firebase with success callback
+            database.ref(`users/${currentUserKey}`).set(userData).then(() => {
+                console.log('User saved successfully:', currentUserKey, userData);
+            }).catch((error) => {
+                console.error('Error saving user:', error);
+            });
 
             document.getElementById('userModal').classList.add('hidden');
             
@@ -987,22 +993,38 @@
             database.ref('admin_status/online').set(true);
             database.ref('admin_status/last_seen').set(Date.now());
             
+            // Debug: Check if users exist
+            database.ref('users').once('value', (snapshot) => {
+                const users = snapshot.val();
+                console.log('Users in database:', users);
+                if (!users || Object.keys(users).length === 0) {
+                    document.getElementById('usersContainer').innerHTML = '<div style="padding: 20px; text-align: center; color: #888;">No users found. Users will appear here after they register.</div>';
+                }
+            });
+            
             loadUsersList();
         }
 
         function loadUsersList() {
-            // Load users and their chat data
-            database.ref('chats').on('value', (snapshot) => {
-                const chats = snapshot.val() || {};
+            // First load all users, then get their chat data
+            database.ref('users').on('value', (usersSnapshot) => {
+                const users = usersSnapshot.val() || {};
                 
+                if (Object.keys(users).length === 0) {
+                    // No users yet, show empty state
+                    document.getElementById('usersContainer').innerHTML = '<div style="padding: 20px; text-align: center; color: #888;">No users yet</div>';
+                    return;
+                }
+                
+                // Load chats and status for existing users
                 Promise.all([
-                    database.ref('users').once('value'),
+                    database.ref('chats').once('value'),
                     database.ref('user_status').once('value')
-                ]).then(([usersSnapshot, statusSnapshot]) => {
-                    const users = usersSnapshot.val() || {};
+                ]).then(([chatsSnapshot, statusSnapshot]) => {
+                    const chats = chatsSnapshot.val() || {};
                     const statuses = statusSnapshot.val() || {};
                     
-                    displayUsersList(chats, users, statuses);
+                    displayUsersList(users, chats, statuses);
                 });
             });
 
@@ -1010,26 +1032,49 @@
             database.ref('user_status').on('value', (snapshot) => {
                 updateAllUserStatuses(snapshot.val() || {});
             });
+            
+            // Listen for new messages and refresh user list
+            database.ref('chats').on('value', () => {
+                // Small delay to ensure data is updated
+                setTimeout(() => {
+                    const currentUsers = document.getElementById('usersContainer').children.length;
+                    if (currentUsers === 0) {
+                        loadUsersList();
+                    }
+                }, 200);
+            });
         }
 
-        function displayUsersList(chats, users, statuses) {
+        function displayUsersList(users, chats, statuses) {
             const container = document.getElementById('usersContainer');
             container.innerHTML = '';
 
-            Object.entries(chats).forEach(([userKey, messages]) => {
-                const messageArray = Object.values(messages);
-                const lastMessage = messageArray[messageArray.length - 1];
-                const unreadCount = messageArray.filter(msg => msg.from === 'user' && !msg.read).length;
-                
-                const userData = users[userKey] || { 
-                    name: userKey.split('_')[0], 
-                    phone: userKey.split('_')[1] || 'N/A' 
+            // Show all users, even if they don't have messages yet
+            Object.entries(users).forEach(([userKey, userData]) => {
+                const messages = chats[userKey] ? Object.values(chats[userKey]) : [];
+                const lastMessage = messages.length > 0 ? messages[messages.length - 1] : {
+                    text: 'No messages yet',
+                    time: userData.joinDate || Date.now(),
+                    from: 'system'
                 };
-                const userStatus = statuses[userKey] || { last_seen: 0, typing: false };
+                const unreadCount = messages.filter(msg => msg.from === 'user' && !msg.read).length;
+                
+                const userStatus = statuses[userKey] || { last_seen: userData.joinDate || 0, typing: false };
                 const isOnline = userStatus.last_seen && (Date.now() - userStatus.last_seen < 300000);
                 
-                createUserItem(userKey, userData, lastMessage, unreadCount, isOnline, messageArray.length);
+                createUserItem(userKey, userData, lastMessage, unreadCount, isOnline, messages.length);
             });
+            
+            // Sort users by last activity
+            const userItems = Array.from(container.children);
+            userItems.sort((a, b) => {
+                const aTime = parseInt(a.dataset.lastTime) || 0;
+                const bTime = parseInt(b.dataset.lastTime) || 0;
+                return bTime - aTime;
+            });
+            
+            container.innerHTML = '';
+            userItems.forEach(item => container.appendChild(item));
         }
 
         function createUserItem(userKey, userData, lastMessage, unreadCount, isOnline, totalMessages) {
@@ -1038,11 +1083,12 @@
             const userDiv = document.createElement('div');
             userDiv.className = 'user-item';
             userDiv.dataset.userKey = userKey;
+            userDiv.dataset.lastTime = lastMessage.time;
             userDiv.onclick = () => selectUser(userKey, userData);
             
             const time = new Date(lastMessage.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            const preview = lastMessage.text.substring(0, 40) + (lastMessage.text.length > 40 ? '...' : '');
-            const statusText = isOnline ? 'Online' : `Last seen: ${new Date(lastMessage.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+            const preview = lastMessage.from === 'system' ? lastMessage.text : (lastMessage.text.substring(0, 40) + (lastMessage.text.length > 40 ? '...' : ''));
+            const statusText = isOnline ? 'Online' : (lastMessage.from === 'system' ? 'New User' : `Last seen: ${new Date(lastMessage.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`);
             
             userDiv.innerHTML = `
                 <div class="user-name">
@@ -1050,12 +1096,12 @@
                     ${unreadCount > 0 ? `<span class="unread-count">${unreadCount}</span>` : ''}
                 </div>
                 <div class="user-phone">${userData.phone}</div>
-                <div class="user-preview">${preview}</div>
+                <div class="user-preview" style="${lastMessage.from === 'system' ? 'font-style: italic; color: #666;' : ''}">${preview}</div>
                 <div class="user-status-info">
                     <div class="user-status-dot ${isOnline ? '' : 'offline'}"></div>
                     <span>${statusText}</span>
                 </div>
-                <div class="user-time">${time} (${totalMessages} msgs)</div>
+                <div class="user-time">${time} ${totalMessages > 0 ? `(${totalMessages} msgs)` : '(New)'}</div>
             `;
             
             if (selectedAdminUser === userKey) {
@@ -1075,7 +1121,10 @@
             
             // Update active user
             document.querySelectorAll('.user-item').forEach(item => item.classList.remove('active'));
-            document.querySelector(`[data-user-key="${userKey}"]`).classList.add('active');
+            const selectedItem = document.querySelector(`[data-user-key="${userKey}"]`);
+            if (selectedItem) {
+                selectedItem.classList.add('active');
+            }
             
             // Load chat
             loadAdminChat(userKey);
