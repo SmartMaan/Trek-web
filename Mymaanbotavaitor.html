@@ -123,7 +123,7 @@
             margin-top: 4px;
             display: flex;
             align-items: center;
-            gap: 4px;
+            justify-content: space-between;
         }
 
         .message-status {
@@ -133,9 +133,8 @@
         }
 
         .tick {
-            width: 12px;
-            height: 12px;
-            color: rgba(255,255,255,0.7);
+            font-size: 14px;
+            color: rgba(255,255,255,0.5);
         }
 
         .tick.delivered {
@@ -146,15 +145,9 @@
             color: #4CAF50;
         }
 
-        .double-tick {
-            position: relative;
-        }
-
         .double-tick::after {
             content: '✓';
-            position: absolute;
-            left: 4px;
-            color: inherit;
+            margin-left: -2px;
         }
 
         .typing-indicator {
@@ -276,7 +269,7 @@
             border-radius: 8px;
             padding: 12px;
             color: white;
-            margin: 16px 0;
+            margin: 8px 0;
             font-size: 16px;
         }
 
@@ -289,10 +282,19 @@
             cursor: pointer;
             font-size: 16px;
             transition: background 0.2s;
+            margin: 8px;
         }
 
         .modal button:hover {
             background: #e5342a;
+        }
+
+        .modal button.secondary {
+            background: #666;
+        }
+
+        .modal button.secondary:hover {
+            background: #777;
         }
 
         /* Admin Panel Styles */
@@ -306,44 +308,12 @@
         }
 
         .users-list {
-            width: 300px;
+            width: 320px;
             background: #1f1f1f;
             border-right: 1px solid #333;
             overflow-y: auto;
-        }
-
-        .user-item {
-            padding: 16px;
-            border-bottom: 1px solid #333;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .user-item:hover {
-            background: #2c2c2c;
-        }
-
-        .user-item.active {
-            background: #FF3B30;
-        }
-
-        .user-name {
-            font-weight: 500;
-            margin-bottom: 4px;
-        }
-
-        .user-preview {
-            font-size: 12px;
-            color: #888;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .user-time {
-            font-size: 11px;
-            color: #666;
-            margin-top: 4px;
+            display: flex;
+            flex-direction: column;
         }
 
         .search-section {
@@ -385,9 +355,48 @@
             font-size: 14px;
         }
 
-        .filter-options select option {
+        .users-container {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .user-item {
+            padding: 16px;
+            border-bottom: 1px solid #333;
+            cursor: pointer;
+            transition: background 0.2s;
+            position: relative;
+        }
+
+        .user-item:hover {
             background: #2c2c2c;
-            color: white;
+        }
+
+        .user-item.active {
+            background: #FF3B30;
+        }
+
+        .user-name {
+            font-weight: 500;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .user-phone {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 4px;
+        }
+
+        .user-preview {
+            font-size: 12px;
+            color: #888;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 4px;
         }
 
         .user-status-info {
@@ -395,7 +404,6 @@
             align-items: center;
             gap: 4px;
             font-size: 11px;
-            margin-top: 4px;
         }
 
         .user-status-dot {
@@ -419,10 +427,10 @@
             margin-left: auto;
         }
 
-        .user-phone {
+        .user-time {
             font-size: 11px;
             color: #666;
-            margin-top: 2px;
+            margin-top: 4px;
         }
 
         .chat-panel {
@@ -438,6 +446,46 @@
             justify-content: center;
             color: #888;
             font-size: 18px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* History Modal */
+        .history-preview {
+            max-height: 300px;
+            overflow-y: auto;
+            background: #2c2c2c;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 16px 0;
+        }
+
+        .history-message {
+            padding: 8px 12px;
+            margin: 4px 0;
+            border-radius: 12px;
+            max-width: 80%;
+        }
+
+        .history-message.user {
+            background: #FF3B30;
+            color: white;
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .history-message.admin {
+            background: #444;
+            color: white;
+            margin-right: auto;
+        }
+
+        .history-time {
+            font-size: 11px;
+            opacity: 0.7;
+            margin-top: 4px;
         }
 
         /* Mobile Responsive */
@@ -459,22 +507,6 @@
                 max-width: 85%;
             }
         }
-
-        /* Notification Permission Button */
-        .notification-prompt {
-            background: #FF3B30;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            margin: 8px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-
-        .hidden {
-            display: none !important;
-        }
     </style>
 </head>
 <body>
@@ -488,10 +520,6 @@
             </div>
             <span class="material-icons" onclick="logout()">logout</span>
         </div>
-
-        <button id="notificationBtn" class="notification-prompt hidden" onclick="requestNotificationPermission()">
-            Enable Notifications
-        </button>
 
         <div class="chat-area" id="chatArea">
             <!-- Messages will be inserted here -->
@@ -516,13 +544,12 @@
 
     <!-- Admin Panel -->
     <div id="adminPanel" class="admin-panel">
-        <div class="users-list" id="usersList">
+        <div class="users-list">
             <div class="header">
                 <h1>Admin Panel</h1>
                 <span class="material-icons" onclick="exitAdmin()">close</span>
             </div>
             
-            <!-- Search and Filter -->
             <div class="search-section">
                 <div class="search-box">
                     <input type="text" id="userSearch" placeholder="Search users..." onkeyup="searchUsers()">
@@ -538,7 +565,7 @@
                 </div>
             </div>
             
-            <div id="usersContainer">
+            <div class="users-container" id="usersContainer">
                 <!-- Users will be listed here -->
             </div>
         </div>
@@ -550,7 +577,6 @@
             
             <div class="container hidden" id="adminChatContainer">
                 <div class="header">
-                    <span class="material-icons" onclick="showUsersList()" style="display: none;">menu</span>
                     <h1 id="selectedUserName">User Chat</h1>
                     <div class="status-indicator">
                         <div class="status-dot" id="userStatus"></div>
@@ -581,33 +607,27 @@
         </div>
     </div>
 
-    <!-- User Details Input Modal -->
-    <div id="nameModal" class="modal">
+    <!-- User Details Modal -->
+    <div id="userModal" class="modal hidden">
         <div class="modal-content">
             <h2>Welcome to Support Chat</h2>
             <p>Please enter your details to start chatting:</p>
             <input type="text" id="nameInput" placeholder="Your name" maxlength="30">
             <input type="tel" id="phoneInput" placeholder="Your phone number" maxlength="15">
-            <br>
             <button onclick="setUserDetails()">Start Chatting</button>
         </div>
     </div>
 
-    <!-- User History Modal -->
-    <div id="userHistoryModal" class="modal hidden">
-        <div class="modal-content" style="max-width: 500px; max-height: 70vh;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                <h2>Welcome Back!</h2>
-                <span class="material-icons" onclick="closeHistoryModal()" style="cursor: pointer;">close</span>
-            </div>
-            <p id="welcomeBackText">We found your previous chat history:</p>
-            <div id="historyPreview" style="max-height: 300px; overflow-y: auto; background: #2c2c2c; border-radius: 8px; padding: 12px; margin: 16px 0;">
+    <!-- History Modal -->
+    <div id="historyModal" class="modal hidden">
+        <div class="modal-content" style="max-width: 500px;">
+            <h2>Welcome Back!</h2>
+            <p id="welcomeText">We found your previous chat history:</p>
+            <div class="history-preview" id="historyPreview">
                 <!-- Chat history will be shown here -->
             </div>
-            <div style="display: flex; gap: 12px;">
-                <button onclick="continueWithHistory()" style="flex: 1; background: #FF3B30;">Continue Chat</button>
-                <button onclick="startNewChat()" style="flex: 1; background: #666;">Start New Chat</button>
-            </div>
+            <button onclick="continueChat()">Continue Chat</button>
+            <button onclick="startNewChat()" class="secondary">Start New Chat</button>
         </div>
     </div>
 
@@ -635,11 +655,12 @@
         // Global Variables
         let currentUser = null;
         let currentUserPhone = null;
-        let currentUserData = null;
+        let currentUserKey = null;
         let isAdmin = false;
         let selectedAdminUser = null;
         let typingTimeout = null;
         let adminTypingTimeout = null;
+        let messageListeners = {};
 
         // Secret admin phrase
         const ADMIN_SECRET = "aviator2025adminmaan";
@@ -651,27 +672,23 @@
             
             if (isAdmin) {
                 showAdminPanel();
+                return;
+            }
+
+            // Check for existing user data
+            const userData = localStorage.getItem("userData");
+            if (userData) {
+                const user = JSON.parse(userData);
+                currentUser = user.name;
+                currentUserPhone = user.phone;
+                currentUserKey = `${user.name}_${user.phone}`;
+                
+                // Check if user has chat history
+                checkUserHistory();
             } else {
-                // Check if user data exists locally
-                const userData = localStorage.getItem("userData");
-                if (userData) {
-                    currentUserData = JSON.parse(userData);
-                    currentUser = currentUserData.name;
-                    currentUserPhone = currentUserData.phone;
-                    
-                    // Check if user exists in Firebase and load history
-                    checkUserInFirebase();
-                } else {
-                    showNameModal();
-                }
+                showUserModal();
             }
 
-            // Request notification permission
-            if ('Notification' in window && Notification.permission === 'default') {
-                document.getElementById('notificationBtn').classList.remove('hidden');
-            }
-
-            // Add event listeners
             setupEventListeners();
         }
 
@@ -694,7 +711,7 @@
             document.getElementById('messageInput').addEventListener('input', handleUserTyping);
             document.getElementById('adminMessageInput').addEventListener('input', handleAdminTyping);
 
-            // Name and phone input enter key
+            // User details inputs
             document.getElementById('nameInput').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
                     document.getElementById('phoneInput').focus();
@@ -708,8 +725,8 @@
             });
         }
 
-        function showNameModal() {
-            document.getElementById('nameModal').style.display = 'flex';
+        function showUserModal() {
+            document.getElementById('userModal').classList.remove('hidden');
             document.getElementById('nameInput').focus();
         }
 
@@ -717,121 +734,88 @@
             const name = document.getElementById('nameInput').value.trim();
             const phone = document.getElementById('phoneInput').value.trim();
             
-            if (name && name.length > 0 && phone && phone.length > 0) {
-                currentUser = name;
-                currentUserPhone = phone;
-                
-                // Create user data object
-                currentUserData = {
-                    name: name,
-                    phone: phone,
-                    joinDate: Date.now()
-                };
-                
-                // Save to localStorage
-                localStorage.setItem("userData", JSON.stringify(currentUserData));
-                
-                // Save to Firebase and check if user exists
-                saveUserToFirebase();
-                
-                document.getElementById('nameModal').style.display = 'none';
-            } else {
+            if (!name || !phone) {
                 alert('Please enter both name and phone number');
+                return;
             }
-        }
-        
-        function checkUserInFirebase() {
-            const userKey = `${currentUser}_${currentUserPhone}`;
+
+            currentUser = name;
+            currentUserPhone = phone;
+            currentUserKey = `${name}_${phone}`;
+
+            // Save user data
+            const userData = {
+                name: name,
+                phone: phone,
+                joinDate: Date.now()
+            };
             
-            // Check if user exists and has chat history
-            Promise.all([
-                database.ref(`users/${userKey}`).once('value'),
-                database.ref(`chats/${userKey}`).once('value')
-            ]).then(([userSnapshot, chatSnapshot]) => {
-                const userData = userSnapshot.val();
-                const chatData = chatSnapshot.val();
-                
-                if (userData && chatData) {
-                    // User exists with chat history - show history modal
-                    currentUserData = userData;
-                    showUserHistoryModal(chatData);
-                } else if (userData) {
-                    // User exists but no chat history
-                    currentUserData = userData;
-                    startUserChat();
-                } else {
-                    // New user
-                    saveUserToFirebase();
-                    startUserChat();
+            localStorage.setItem("userData", JSON.stringify(userData));
+            database.ref(`users/${currentUserKey}`).set(userData);
+
+            document.getElementById('userModal').classList.add('hidden');
+            
+            // Check if user has previous chat history
+            checkUserHistory();
+        }
+
+        function checkUserHistory() {
+            database.ref(`chats/${currentUserKey}`).once('value', (snapshot) => {
+                if (snapshot.exists() && snapshot.val()) {
+                    const messages = Object.values(snapshot.val());
+                    if (messages.length > 0) {
+                        showHistoryModal(messages);
+                        return;
+                    }
                 }
+                startUserChat();
             });
         }
-        
-        function showUserHistoryModal(chatData) {
-            const modal = document.getElementById('userHistoryModal');
-            const historyPreview = document.getElementById('historyPreview');
-            const welcomeText = document.getElementById('welcomeBackText');
+
+        function showHistoryModal(messages) {
+            const modal = document.getElementById('historyModal');
+            const preview = document.getElementById('historyPreview');
+            const welcomeText = document.getElementById('welcomeText');
             
             welcomeText.textContent = `Welcome back, ${currentUser}! We found your previous chat history:`;
             
-            // Show last 5 messages as preview
-            const messages = Object.values(chatData).sort((a, b) => a.time - b.time).slice(-5);
-            historyPreview.innerHTML = '';
+            // Show last 5 messages
+            const recentMessages = messages.sort((a, b) => a.time - b.time).slice(-5);
+            preview.innerHTML = '';
             
-            messages.forEach(message => {
+            recentMessages.forEach(message => {
                 const messageDiv = document.createElement('div');
-                messageDiv.style.cssText = `
-                    padding: 8px 12px;
-                    margin: 4px 0;
-                    border-radius: 12px;
-                    max-width: 80%;
-                    ${message.from === 'user' ? 
-                        'background: #FF3B30; color: white; margin-left: auto; text-align: right;' : 
-                        'background: #444; color: white; margin-right: auto;'
-                    }
-                `;
+                messageDiv.className = `history-message ${message.from}`;
                 
                 const time = new Date(message.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
                 messageDiv.innerHTML = `
                     <div>${message.text}</div>
-                    <div style="font-size: 11px; opacity: 0.7; margin-top: 4px;">${time}</div>
+                    <div class="history-time">${time}</div>
                 `;
-                historyPreview.appendChild(messageDiv);
+                preview.appendChild(messageDiv);
             });
             
             modal.classList.remove('hidden');
         }
-        
-        function continueWithHistory() {
-            document.getElementById('userHistoryModal').classList.add('hidden');
+
+        function continueChat() {
+            document.getElementById('historyModal').classList.add('hidden');
             startUserChat();
         }
-        
+
         function startNewChat() {
-            const userKey = `${currentUser}_${currentUserPhone}`;
-            // Clear existing chat history
-            database.ref(`chats/${userKey}`).remove().then(() => {
-                document.getElementById('userHistoryModal').classList.add('hidden');
+            // Clear chat history
+            database.ref(`chats/${currentUserKey}`).remove().then(() => {
+                document.getElementById('historyModal').classList.add('hidden');
                 startUserChat();
             });
-        }
-        
-        function closeHistoryModal() {
-            document.getElementById('userHistoryModal').classList.add('hidden');
-            // Go back to name input
-            showNameModal();
-        }
-        
-        function saveUserToFirebase() {
-            const userKey = `${currentUser}_${currentUserPhone}`;
-            database.ref(`users/${userKey}`).set(currentUserData);
         }
 
         function startUserChat() {
             document.getElementById('userChat').style.display = 'flex';
             document.getElementById('chatTitle').textContent = `Chat - ${currentUser}`;
             
-            // Load chat history using unique user key
+            // Load messages
             loadUserMessages();
             
             // Listen for admin messages
@@ -843,7 +827,6 @@
             // Update user status
             updateUserStatus();
             
-            // Focus message input
             document.getElementById('messageInput').focus();
         }
 
@@ -860,8 +843,7 @@
                 return;
             }
 
-            // Send regular message
-            const userKey = `${currentUser}_${currentUserPhone}`;
+            // Send message
             const messageData = {
                 from: 'user',
                 text: message,
@@ -870,7 +852,7 @@
                 read: false
             };
 
-            database.ref(`chats/${userKey}`).push(messageData);
+            database.ref(`chats/${currentUserKey}`).push(messageData);
             input.value = '';
             
             // Update user status
@@ -878,48 +860,41 @@
             
             // Stop typing indicator
             clearTimeout(typingTimeout);
-            database.ref(`user_status/${userKey}/typing`).set(false);
-
-            // Show notification to admin if they're not active
-            sendNotificationToAdmin(message);
+            database.ref(`user_status/${currentUserKey}/typing`).set(false);
         }
 
         function loadUserMessages() {
-            const userKey = `${currentUser}_${currentUserPhone}`;
-            database.ref(`chats/${userKey}`).on('value', (snapshot) => {
+            database.ref(`chats/${currentUserKey}`).on('value', (snapshot) => {
                 const messages = snapshot.val();
-                displayUserMessages(messages);
+                displayMessages(messages, 'chatArea');
             });
         }
 
-        function displayUserMessages(messages) {
-            const chatArea = document.getElementById('chatArea');
-            const previousScrollHeight = chatArea.scrollHeight;
-            const wasScrolledToBottom = chatArea.scrollTop >= chatArea.scrollHeight - chatArea.clientHeight - 10;
+        function displayMessages(messages, containerId) {
+            const container = document.getElementById(containerId);
+            const wasAtBottom = container.scrollTop >= container.scrollHeight - container.clientHeight - 10;
             
-            chatArea.innerHTML = '';
+            container.innerHTML = '';
 
             if (messages) {
                 Object.entries(messages)
                     .sort(([,a], [,b]) => a.time - b.time)
                     .forEach(([id, message]) => {
-                        addMessageToChat(message, chatArea);
+                        addMessageToContainer(message, container);
                     });
             }
 
-            // Auto-scroll only if user was at bottom or new message
-            if (wasScrolledToBottom || chatArea.scrollHeight > previousScrollHeight) {
-                chatArea.scrollTop = chatArea.scrollHeight;
+            if (wasAtBottom) {
+                container.scrollTop = container.scrollHeight;
             }
         }
 
-        function addMessageToChat(message, container) {
+        function addMessageToContainer(message, container) {
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${message.from}`;
             
             const time = new Date(message.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
             
-            // Create status indicator for user messages
             let statusHtml = '';
             if (message.from === 'user') {
                 if (message.read) {
@@ -943,25 +918,20 @@
         }
 
         function listenForAdminMessages() {
-            const userKey = `${currentUser}_${currentUserPhone}`;
-            let lastMessageTime = 0;
-            
-            database.ref(`chats/${userKey}`).on('child_added', (snapshot) => {
+            database.ref(`chats/${currentUserKey}`).on('child_added', (snapshot) => {
                 const message = snapshot.val();
-                
-                // Only show notification for new messages (not when loading history)
-                if (message.from === 'admin' && message.time > lastMessageTime) {
-                    // Mark admin message as read immediately when user sees it
-                    database.ref(`chats/${userKey}/${snapshot.key}/read`).set(true);
+                if (message.from === 'admin' && message.time > (Date.now() - 5000)) {
+                    // Mark as read immediately
+                    database.ref(`chats/${currentUserKey}/${snapshot.key}/read`).set(true);
                     
-                    // Show notification for new admin message
-                    showNotification('New message from Admin', message.text);
-                    
-                    // Play notification sound
-                    playNotificationSound();
+                    // Show notification
+                    if ('Notification' in window && Notification.permission === 'granted') {
+                        new Notification('New message from Admin', {
+                            body: message.text,
+                            icon: '/favicon.ico'
+                        });
+                    }
                 }
-                
-                lastMessageTime = Math.max(lastMessageTime, message.time);
             });
         }
 
@@ -977,23 +947,14 @@
             const statusText = document.getElementById('adminStatusText');
             const typingIndicator = document.getElementById('typingIndicator');
 
-            if (status) {
+            if (status && status.online) {
                 if (status.typing) {
                     typingIndicator.classList.remove('hidden');
-                    statusDot.classList.remove('offline');
-                    statusText.textContent = 'Admin Online';
                 } else {
                     typingIndicator.classList.add('hidden');
-                    // Check if admin panel is open (admin is truly online)
-                    const isAdminOnline = status.online && (Date.now() - status.last_seen < 300000); // 5 minutes
-                    if (isAdminOnline) {
-                        statusDot.classList.remove('offline');
-                        statusText.textContent = 'Admin Online';
-                    } else {
-                        statusDot.classList.add('offline');
-                        statusText.textContent = 'Admin Offline';
-                    }
                 }
+                statusDot.classList.remove('offline');
+                statusText.textContent = 'Admin Online';
             } else {
                 statusDot.classList.add('offline');
                 statusText.textContent = 'Admin Offline';
@@ -1002,232 +963,106 @@
         }
 
         function handleUserTyping() {
-            const userKey = `${currentUser}_${currentUserPhone}`;
-            database.ref(`user_status/${userKey}/typing`).set(true);
+            database.ref(`user_status/${currentUserKey}/typing`).set(true);
             
             clearTimeout(typingTimeout);
             typingTimeout = setTimeout(() => {
-                database.ref(`user_status/${userKey}/typing`).set(false);
+                database.ref(`user_status/${currentUserKey}/typing`).set(false);
             }, 3000);
         }
 
         function updateUserStatus() {
-            if (currentUser && currentUserPhone) {
-                const userKey = `${currentUser}_${currentUserPhone}`;
-                database.ref(`user_status/${userKey}/last_seen`).set(Date.now());
-                
-                // Set user as offline when page unloads
-                database.ref(`user_status/${userKey}/typing`).onDisconnect().set(false);
+            if (currentUserKey) {
+                database.ref(`user_status/${currentUserKey}/last_seen`).set(Date.now());
+                database.ref(`user_status/${currentUserKey}/typing`).onDisconnect().set(false);
             }
         }
 
-        // Admin Panel Functions
+        // Admin Functions
         function showAdminPanel() {
             document.getElementById('userChat').style.display = 'none';
             document.getElementById('adminPanel').classList.add('active');
-            loadUsersList();
-            updateAdminStatus();
             
-            // Set admin as online when panel is open
+            // Set admin as online
             database.ref('admin_status/online').set(true);
             database.ref('admin_status/last_seen').set(Date.now());
+            
+            loadUsersList();
         }
 
         function loadUsersList() {
-            // Load both chats and users data
-            Promise.all([
-                database.ref('chats').once('value'),
-                database.ref('users').once('value'),
-                database.ref('user_status').once('value')
-            ]).then(([chatsSnapshot, usersSnapshot, statusSnapshot]) => {
-                const chats = chatsSnapshot.val() || {};
-                const users = usersSnapshot.val() || {};
-                const statuses = statusSnapshot.val() || {};
+            // Load users and their chat data
+            database.ref('chats').on('value', (snapshot) => {
+                const chats = snapshot.val() || {};
                 
-                displayUsersList(chats, users, statuses);
-            });
-            
-            // Listen for real-time updates
-            database.ref('user_status').on('value', (snapshot) => {
-                updateUserStatuses(snapshot.val() || {});
-            });
-            
-            // Listen for real-time chat updates to show new messages
-            database.ref('chats').on('child_changed', (snapshot) => {
-                const userKey = snapshot.key;
-                const messages = snapshot.val();
-                
-                // Update unread count for this user
-                if (messages) {
-                    const unreadCount = Object.values(messages).filter(msg => msg.from === 'user' && !msg.read).length;
-                    updateUserUnreadCount(userKey, unreadCount);
+                Promise.all([
+                    database.ref('users').once('value'),
+                    database.ref('user_status').once('value')
+                ]).then(([usersSnapshot, statusSnapshot]) => {
+                    const users = usersSnapshot.val() || {};
+                    const statuses = statusSnapshot.val() || {};
                     
-                    // Show notification for new user messages
-                    const lastMessage = Object.values(messages).sort((a, b) => b.time - a.time)[0];
-                    if (lastMessage && lastMessage.from === 'user' && !lastMessage.read && selectedAdminUser !== userKey) {
-                        showNotification(`New message from ${userKey.split('_')[0]}`, lastMessage.text);
-                        playNotificationSound();
-                    }
-                }
+                    displayUsersList(chats, users, statuses);
+                });
+            });
+
+            // Listen for real-time status updates
+            database.ref('user_status').on('value', (snapshot) => {
+                updateAllUserStatuses(snapshot.val() || {});
             });
         }
-        
-        function updateUserUnreadCount(userKey, unreadCount) {
-            const userDiv = document.querySelector(`[data-user-key="${userKey}"]`);
-            if (userDiv) {
-                const userNameDiv = userDiv.querySelector('.user-name');
-                const existingBadge = userNameDiv.querySelector('.unread-count');
-                
-                if (existingBadge) {
-                    existingBadge.remove();
-                }
-                
-                if (unreadCount > 0) {
-                    const badge = document.createElement('span');
-                    badge.className = 'unread-count';
-                    badge.textContent = unreadCount;
-                    userNameDiv.appendChild(badge);
-                }
-            }
-        }
-
-        let allUsersData = [];
 
         function displayUsersList(chats, users, statuses) {
-            const usersContainer = document.getElementById('usersContainer');
-            usersContainer.innerHTML = '';
-            
-            allUsersData = [];
+            const container = document.getElementById('usersContainer');
+            container.innerHTML = '';
 
-            if (chats && Object.keys(chats).length > 0) {
-                Object.entries(chats)
-                    .map(([userKey, messages]) => {
-                        const messageArray = Object.values(messages);
-                        const lastMessage = messageArray[messageArray.length - 1];
-                        const unreadCount = messageArray.filter(msg => msg.from === 'user' && !msg.read).length;
-                        
-                        // Get user data
-                        const userData = users[userKey] || { name: userKey.split('_')[0], phone: userKey.split('_')[1] || 'N/A' };
-                        const userStatus = statuses[userKey] || { last_seen: 0, typing: false };
-                        
-                        const isOnline = userStatus.last_seen && (Date.now() - userStatus.last_seen < 300000); // 5 minutes
-                        
-                        return { 
-                            userKey, 
-                            userData, 
-                            userStatus,
-                            lastMessage, 
-                            messageCount: messageArray.length,
-                            unreadCount,
-                            isOnline
-                        };
-                    })
-                    .sort((a, b) => b.lastMessage.time - a.lastMessage.time)
-                    .forEach((userInfo) => {
-                        allUsersData.push(userInfo);
-                        createUserItem(userInfo);
-                    });
-            }
+            Object.entries(chats).forEach(([userKey, messages]) => {
+                const messageArray = Object.values(messages);
+                const lastMessage = messageArray[messageArray.length - 1];
+                const unreadCount = messageArray.filter(msg => msg.from === 'user' && !msg.read).length;
+                
+                const userData = users[userKey] || { 
+                    name: userKey.split('_')[0], 
+                    phone: userKey.split('_')[1] || 'N/A' 
+                };
+                const userStatus = statuses[userKey] || { last_seen: 0, typing: false };
+                const isOnline = userStatus.last_seen && (Date.now() - userStatus.last_seen < 300000);
+                
+                createUserItem(userKey, userData, lastMessage, unreadCount, isOnline, messageArray.length);
+            });
         }
-        
-        function createUserItem(userInfo) {
-            const { userKey, userData, userStatus, lastMessage, messageCount, unreadCount, isOnline } = userInfo;
-            const usersContainer = document.getElementById('usersContainer');
+
+        function createUserItem(userKey, userData, lastMessage, unreadCount, isOnline, totalMessages) {
+            const container = document.getElementById('usersContainer');
             
             const userDiv = document.createElement('div');
             userDiv.className = 'user-item';
-            userDiv.onclick = () => selectUser(userKey, userData);
             userDiv.dataset.userKey = userKey;
+            userDiv.onclick = () => selectUser(userKey, userData);
             
             const time = new Date(lastMessage.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
             const preview = lastMessage.text.substring(0, 40) + (lastMessage.text.length > 40 ? '...' : '');
-            const lastSeenText = isOnline ? 'Online' : `Last seen: ${new Date(userStatus.last_seen).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+            const statusText = isOnline ? 'Online' : `Last seen: ${new Date(lastMessage.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
             
             userDiv.innerHTML = `
-                <div class="user-name">${userData.name} ${unreadCount > 0 ? `<span class="unread-count">${unreadCount}</span>` : ''}</div>
+                <div class="user-name">
+                    ${userData.name}
+                    ${unreadCount > 0 ? `<span class="unread-count">${unreadCount}</span>` : ''}
+                </div>
                 <div class="user-phone">${userData.phone}</div>
                 <div class="user-preview">${preview}</div>
                 <div class="user-status-info">
                     <div class="user-status-dot ${isOnline ? '' : 'offline'}"></div>
-                    <span>${lastSeenText}</span>
+                    <span>${statusText}</span>
                 </div>
-                <div class="user-time">${time} (${messageCount} msgs)</div>
+                <div class="user-time">${time} (${totalMessages} msgs)</div>
             `;
             
             if (selectedAdminUser === userKey) {
                 userDiv.classList.add('active');
             }
             
-            usersContainer.appendChild(userDiv);
-        }
-        
-        function updateUserStatuses(statuses) {
-            allUsersData.forEach(userInfo => {
-                const userStatus = statuses[userInfo.userKey] || { last_seen: 0, typing: false };
-                const isOnline = userStatus.last_seen && (Date.now() - userStatus.last_seen < 300000);
-                
-                const userDiv = document.querySelector(`[data-user-key="${userInfo.userKey}"]`);
-                if (userDiv) {
-                    const statusDot = userDiv.querySelector('.user-status-dot');
-                    const statusInfo = userDiv.querySelector('.user-status-info span');
-                    
-                    if (statusDot) {
-                        statusDot.className = `user-status-dot ${isOnline ? '' : 'offline'}`;
-                    }
-                    
-                    if (statusInfo) {
-                        const lastSeenText = isOnline ? 'Online' : `Last seen: ${new Date(userStatus.last_seen).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
-                        statusInfo.textContent = lastSeenText;
-                    }
-                }
-            });
-        }
-        
-        function searchUsers() {
-            const searchTerm = document.getElementById('userSearch').value.toLowerCase();
-            const userItems = document.querySelectorAll('.user-item');
-            
-            userItems.forEach(item => {
-                const userName = item.querySelector('.user-name').textContent.toLowerCase();
-                const userPhone = item.querySelector('.user-phone').textContent.toLowerCase();
-                const preview = item.querySelector('.user-preview').textContent.toLowerCase();
-                
-                if (userName.includes(searchTerm) || userPhone.includes(searchTerm) || preview.includes(searchTerm)) {
-                    item.style.display = 'block';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-        }
-        
-        function filterUsers() {
-            const filter = document.getElementById('statusFilter').value;
-            const userItems = document.querySelectorAll('.user-item');
-            
-            userItems.forEach(item => {
-                const statusDot = item.querySelector('.user-status-dot');
-                const unreadCount = item.querySelector('.unread-count');
-                const isOnline = !statusDot.classList.contains('offline');
-                const hasUnread = unreadCount !== null;
-                
-                let show = true;
-                
-                switch(filter) {
-                    case 'online':
-                        show = isOnline;
-                        break;
-                    case 'offline':
-                        show = !isOnline;
-                        break;
-                    case 'unread':
-                        show = hasUnread;
-                        break;
-                    default:
-                        show = true;
-                }
-                
-                item.style.display = show ? 'block' : 'none';
-            });
+            container.appendChild(userDiv);
         }
 
         function selectUser(userKey, userData) {
@@ -1236,69 +1071,37 @@
             // Update UI
             document.getElementById('noChatSelected').style.display = 'none';
             document.getElementById('adminChatContainer').classList.remove('hidden');
-            document.getElementById('selectedUserName').textContent = `Chat with ${userData.name} (${userData.phone})`;
+            document.getElementById('selectedUserName').textContent = `${userData.name} (${userData.phone})`;
             
-            // Update active user in list
+            // Update active user
             document.querySelectorAll('.user-item').forEach(item => item.classList.remove('active'));
-            event.currentTarget.classList.add('active');
+            document.querySelector(`[data-user-key="${userKey}"]`).classList.add('active');
             
-            // Load chat history
+            // Load chat
             loadAdminChat(userKey);
-            
-            // Listen for user status
-            listenForUserStatus(userKey);
             
             // Mark messages as read
             markMessagesAsRead(userKey);
             
-            // Focus admin input
+            // Listen for user status
+            listenForUserStatus(userKey);
+            
             document.getElementById('adminMessageInput').focus();
-        }
-        
-        function markMessagesAsRead(userKey) {
-            database.ref(`chats/${userKey}`).once('value', (snapshot) => {
-                const messages = snapshot.val();
-                if (messages) {
-                    Object.entries(messages).forEach(([msgId, message]) => {
-                        if (message.from === 'user' && !message.read) {
-                            database.ref(`chats/${userKey}/${msgId}/read`).set(true);
-                        }
-                    });
-                }
-                
-                // Refresh user list to update unread counts
-                setTimeout(() => {
-                    loadUsersList();
-                }, 500);
-            });
         }
 
         function loadAdminChat(userKey) {
-            database.ref(`chats/${userKey}`).on('value', (snapshot) => {
-                const messages = snapshot.val();
-                displayAdminMessages(messages);
-            });
-        }
-
-        function displayAdminMessages(messages) {
-            const chatArea = document.getElementById('adminChatArea');
-            const previousScrollHeight = chatArea.scrollHeight;
-            const wasScrolledToBottom = chatArea.scrollTop >= chatArea.scrollHeight - chatArea.clientHeight - 10;
+            // Clear previous listener
+            if (messageListeners[userKey]) {
+                database.ref(`chats/${userKey}`).off('value', messageListeners[userKey]);
+            }
             
-            chatArea.innerHTML = '';
-
-            if (messages) {
-                Object.entries(messages)
-                    .sort(([,a], [,b]) => a.time - b.time)
-                    .forEach(([id, message]) => {
-                        addMessageToChat(message, chatArea);
-                    });
-            }
-
-            // Auto-scroll only if admin was at bottom or new message
-            if (wasScrolledToBottom || chatArea.scrollHeight > previousScrollHeight) {
-                chatArea.scrollTop = chatArea.scrollHeight;
-            }
+            // Set new listener
+            messageListeners[userKey] = (snapshot) => {
+                const messages = snapshot.val();
+                displayMessages(messages, 'adminChatArea');
+            };
+            
+            database.ref(`chats/${userKey}`).on('value', messageListeners[userKey]);
         }
 
         function sendAdminMessage() {
@@ -1321,52 +1124,76 @@
             input.value = '';
             
             // Update admin status
-            updateAdminStatus();
+            database.ref('admin_status/last_seen').set(Date.now());
             
-            // Stop typing indicator
+            // Stop typing
             clearTimeout(adminTypingTimeout);
             database.ref('admin_status/typing').set(false);
-            
-            // Refresh user list to update last message
-            loadUsersList();
+        }
+
+        function markMessagesAsRead(userKey) {
+            database.ref(`chats/${userKey}`).once('value', (snapshot) => {
+                const messages = snapshot.val();
+                if (messages) {
+                    Object.entries(messages).forEach(([msgId, message]) => {
+                        if (message.from === 'user' && !message.read) {
+                            database.ref(`chats/${userKey}/${msgId}/read`).set(true);
+                        }
+                    });
+                }
+            });
         }
 
         function listenForUserStatus(userKey) {
             database.ref(`user_status/${userKey}`).on('value', (snapshot) => {
                 const status = snapshot.val();
-                const userName = userKey.split('_')[0];
-                updateUserStatusUI(status, userName);
+                updateSelectedUserStatus(status, userKey);
             });
         }
 
-        function updateUserStatusUI(status, username) {
+        function updateSelectedUserStatus(status, userKey) {
             const statusDot = document.getElementById('userStatus');
             const statusText = document.getElementById('userStatusText');
             const typingIndicator = document.getElementById('adminTypingIndicator');
-            const typingUserName = document.getElementById('typingUserName');
-
+            
+            const userName = userKey.split('_')[0];
+            
             if (status) {
                 if (status.typing) {
                     typingIndicator.classList.remove('hidden');
-                    typingUserName.textContent = `${username} is typing`;
-                    statusDot.classList.remove('offline');
-                    statusText.textContent = `${username} Online`;
+                    document.getElementById('typingUserName').textContent = `${userName} is typing`;
                 } else {
                     typingIndicator.classList.add('hidden');
-                    const lastSeen = status.last_seen;
-                    if (lastSeen && Date.now() - lastSeen < 300000) { // 5 minutes
-                        statusDot.classList.remove('offline');
-                        statusText.textContent = `${username} Online`;
-                    } else {
-                        statusDot.classList.add('offline');
-                        statusText.textContent = `${username} Offline`;
-                    }
+                }
+                
+                const isOnline = status.last_seen && (Date.now() - status.last_seen < 300000);
+                if (isOnline) {
+                    statusDot.classList.remove('offline');
+                    statusText.textContent = `${userName} Online`;
+                } else {
+                    statusDot.classList.add('offline');
+                    statusText.textContent = `${userName} Offline`;
                 }
             } else {
                 statusDot.classList.add('offline');
-                statusText.textContent = `${username} Offline`;
+                statusText.textContent = `${userName} Offline`;
                 typingIndicator.classList.add('hidden');
             }
+        }
+
+        function updateAllUserStatuses(statuses) {
+            document.querySelectorAll('.user-item').forEach(item => {
+                const userKey = item.dataset.userKey;
+                const status = statuses[userKey];
+                const statusDot = item.querySelector('.user-status-dot');
+                const statusInfo = item.querySelector('.user-status-info span');
+                
+                if (status && statusDot && statusInfo) {
+                    const isOnline = status.last_seen && (Date.now() - status.last_seen < 300000);
+                    statusDot.className = `user-status-dot ${isOnline ? '' : 'offline'}`;
+                    statusInfo.textContent = isOnline ? 'Online' : `Last seen: ${new Date(status.last_seen).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+                }
+            });
         }
 
         function handleAdminTyping() {
@@ -1378,16 +1205,33 @@
             }, 3000);
         }
 
-        function updateAdminStatus() {
-            database.ref('admin_status/last_seen').set(Date.now());
-            database.ref('admin_status/typing').onDisconnect().set(false);
+        function searchUsers() {
+            const searchTerm = document.getElementById('userSearch').value.toLowerCase();
+            document.querySelectorAll('.user-item').forEach(item => {
+                const text = item.textContent.toLowerCase();
+                item.style.display = text.includes(searchTerm) ? 'block' : 'none';
+            });
+        }
+
+        function filterUsers() {
+            const filter = document.getElementById('statusFilter').value;
+            document.querySelectorAll('.user-item').forEach(item => {
+                const isOnline = !item.querySelector('.user-status-dot').classList.contains('offline');
+                const hasUnread = item.querySelector('.unread-count') !== null;
+                
+                let show = true;
+                switch(filter) {
+                    case 'online': show = isOnline; break;
+                    case 'offline': show = !isOnline; break;
+                    case 'unread': show = hasUnread; break;
+                }
+                
+                item.style.display = show ? 'block' : 'none';
+            });
         }
 
         function exitAdmin() {
-            // Set admin as offline when exiting
             database.ref('admin_status/online').set(false);
-            database.ref('admin_status/last_seen').set(Date.now());
-            
             localStorage.removeItem("isAdmin");
             location.reload();
         }
@@ -1401,79 +1245,24 @@
             }
         }
 
-        // Notification Functions
-        function requestNotificationPermission() {
-            if ('Notification' in window) {
-                Notification.requestPermission().then(function(permission) {
-                    if (permission === 'granted') {
-                        document.getElementById('notificationBtn').classList.add('hidden');
-                    }
-                });
-            }
-        }
-
-        function showNotification(title, body) {
-            if ('Notification' in window && Notification.permission === 'granted') {
-                new Notification(title, {
-                    body: body,
-                    icon: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI0ZGM0IzMCI+PHBhdGggZD0iTTEyIDJDMTMuMSAyIDE0IDIuOSAxNCA0VjUuMzNDMTYuMTIgNi42MyAxNy41IDguNjcgMTcuNSAxMVYxNkwyMCAxOVY0SDRWMTlMNi41IDE2VjExQzYuNSA4LjY3IDcuODggNi42MyAxMCA1LjMzVjRDMTAgMi45IDEwLjkgMiAxMiAyWk0yMSAyMEgyVjE5TDMgMThIMjFMMjIgMTlWMjBaIi8+PC9zdmc+',
-                    badge: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI0ZGM0IzMCI+PHBhdGggZD0iTTEyIDJDMTMuMSAyIDE0IDIuOSAxNCA0VjUuMzNDMTYuMTIgNi42MyAxNy41IDguNjcgMTcuNSAxMVYxNkwyMCAxOVY0SDRWMTlMNi41IDE2VjExQzYuNSA4LjY3IDcuODggNi42MyAxMCA1LjMzVjRDMTAgMi45IDEwLjkgMiAxMiAyWk0yMSAyMEgyVjE5TDMgMThIMjFMMjIgMTlWMjBaIi8+PC9zdmc+'
-                });
-            }
-        }
-
-        function sendNotificationToAdmin(message) {
-            // This would send a push notification to admin
-            // In a real implementation, you'd use FCM or similar service
-            console.log('Notification to admin:', message);
-        }
-
-        function playNotificationSound() {
-            // Create a simple notification sound
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            
-            oscillator.frequency.value = 800;
-            oscillator.type = 'sine';
-            
-            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-            
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + 0.5);
-        }
-
-        // Mobile Functions
-        function showUsersList() {
-            document.getElementById('usersList').classList.add('mobile-open');
-        }
-
-        // Initialize the app when page loads
+        // Initialize app
         window.addEventListener('load', initApp);
 
-        // Update status on page visibility change
-        document.addEventListener('visibilitychange', function() {
-            if (!document.hidden) {
-                if (currentUser) updateUserStatus();
-                if (isAdmin) updateAdminStatus();
-            }
-        });
-
-        // Update status before page unload
+        // Handle page unload
         window.addEventListener('beforeunload', function() {
-            if (currentUser && currentUserPhone) {
-                const userKey = `${currentUser}_${currentUserPhone}`;
-                database.ref(`user_status/${userKey}/typing`).set(false);
+            if (currentUserKey) {
+                database.ref(`user_status/${currentUserKey}/typing`).set(false);
             }
             if (isAdmin) {
                 database.ref('admin_status/typing').set(false);
                 database.ref('admin_status/online').set(false);
             }
         });
+
+        // Request notification permission
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
     </script>
 </body>
 </html>
