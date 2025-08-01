@@ -378,12 +378,15 @@
         .users-section {
             background: #1f1f1f;
             border-bottom: 1px solid #333;
-            flex-shrink: 0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
 
         .search-section {
             padding: 12px;
             border-bottom: 1px solid #333;
+            flex-shrink: 0;
         }
 
         .search-box {
@@ -423,7 +426,7 @@
         }
 
         .users-container {
-            max-height: 200px;
+            flex: 1;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
         }
@@ -551,9 +554,13 @@
 
         .chat-panel {
             flex: 1;
-            display: flex;
+            display: none;
             flex-direction: column;
             overflow: hidden;
+        }
+
+        .chat-panel.active {
+            display: flex;
         }
 
         .no-chat {
@@ -721,8 +728,60 @@
             }
         }
 
+        /* User Statistics Section */
+        .user-stats {
+            padding: 12px;
+            background: #2c2c2c;
+            border-bottom: 1px solid #333;
+            display: flex;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        .stat-item {
+            flex: 1;
+            text-align: center;
+            padding: 8px;
+            border-radius: 8px;
+            background: #1f1f1f;
+        }
+
+        .stat-number {
+            font-size: 18px;
+            font-weight: 700;
+            color: #FF3B30;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #888;
+            margin-top: 2px;
+        }
+
+        /* Back Button */
+        .back-btn {
+            background: none;
+            border: none;
+            color: #FF3B30;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 59, 48, 0.1);
+        }
+
+        .back-btn .material-icons {
+            font-size: 24px;
+        }
+
         /* Touch improvements */
-        .user-item, .send-btn, .action-btn, .chat-action-btn {
+        .user-item, .send-btn, .action-btn, .chat-action-btn, .back-btn {
             -webkit-tap-highlight-color: transparent;
             touch-action: manipulation;
         }
@@ -787,7 +846,26 @@
         </div>
 
         <div class="admin-main">
-            <div class="users-section">
+            <div class="users-section" id="usersSection">
+                <div class="user-stats" id="userStats">
+                    <div class="stat-item">
+                        <div class="stat-number" id="totalUsers">0</div>
+                        <div class="stat-label">Total Users</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="onlineUsers">0</div>
+                        <div class="stat-label">Online</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="newUsers">0</div>
+                        <div class="stat-label">New Today</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="unreadMessages">0</div>
+                        <div class="stat-label">Unread</div>
+                    </div>
+                </div>
+                
                 <div class="search-section">
                     <div class="search-box">
                         <input type="text" id="userSearch" placeholder="Search users..." onkeyup="searchUsers()">
@@ -811,16 +889,12 @@
                 </div>
             </div>
 
-            <div class="chat-panel">
-                <div class="no-chat" id="noChatSelected">
-                    <div>
-                        <div class="material-icons" style="font-size: 36px; margin-bottom: 12px; opacity: 0.5;">chat</div>
-                        <div>Select a user to start chatting</div>
-                    </div>
-                </div>
-                
-                <div class="container hidden" id="adminChatContainer">
+            <div class="chat-panel" id="chatPanel">
+                <div class="container" id="adminChatContainer">
                     <div class="chat-header">
+                        <button class="back-btn" onclick="goBackToUserList()">
+                            <span class="material-icons">arrow_back</span>
+                        </button>
                         <h2 id="selectedUserName">User Chat</h2>
                         <div class="chat-actions">
                             <button class="chat-action-btn" onclick="clearChatHistory()">
@@ -1393,8 +1467,15 @@
             const container = document.getElementById('usersContainer');
             container.innerHTML = '';
 
-            // Create user items array
+            // Create user items array and calculate statistics
             const userItems = [];
+            let totalUsers = 0;
+            let onlineUsers = 0;
+            let newUsersToday = 0;
+            let totalUnreadMessages = 0;
+            
+            const today = new Date().toDateString();
+            
             Object.entries(users).forEach(([userKey, userData]) => {
                 const messages = chats[userKey] ? Object.values(chats[userKey]) : [];
                 const lastMessage = messages.length > 0 ? messages[messages.length - 1] : {
@@ -1407,6 +1488,12 @@
                 const userStatus = statuses[userKey] || { last_seen: userData.joinDate || 0, typing: false, online: false };
                 const isOnline = userStatus.online || (userStatus.last_seen && (Date.now() - userStatus.last_seen < 300000));
                 
+                // Calculate statistics
+                totalUsers++;
+                if (isOnline) onlineUsers++;
+                if (userData.joinDate && new Date(userData.joinDate).toDateString() === today) newUsersToday++;
+                totalUnreadMessages += unreadCount;
+                
                 userItems.push({
                     userKey,
                     userData,
@@ -1418,8 +1505,15 @@
                 });
             });
 
-            // Sort by last activity (most recent first)
-            userItems.sort((a, b) => b.lastActivity - a.lastActivity);
+            // Update statistics display
+            updateUserStatistics(totalUsers, onlineUsers, newUsersToday, totalUnreadMessages);
+
+            // Sort by priority: online users first, then by last activity
+            userItems.sort((a, b) => {
+                if (a.isOnline && !b.isOnline) return -1;
+                if (!a.isOnline && b.isOnline) return 1;
+                return b.lastActivity - a.lastActivity;
+            });
 
             // Create DOM elements
             userItems.forEach(item => {
@@ -1427,6 +1521,13 @@
             });
 
             console.log(`✅ Displayed ${userItems.length} users`);
+        }
+
+        function updateUserStatistics(total, online, newToday, unread) {
+            document.getElementById('totalUsers').textContent = total;
+            document.getElementById('onlineUsers').textContent = online;
+            document.getElementById('newUsers').textContent = newToday;
+            document.getElementById('unreadMessages').textContent = unread;
         }
 
         function createUserItem({ userKey, userData, lastMessage, unreadCount, isOnline, totalMessages }) {
@@ -1475,9 +1576,9 @@
             selectedAdminUser = userKey;
             selectedUserData = userData;
             
-            // Update UI
-            document.getElementById('noChatSelected').style.display = 'none';
-            document.getElementById('adminChatContainer').classList.remove('hidden');
+            // Hide users section and show chat panel
+            document.getElementById('usersSection').style.display = 'none';
+            document.getElementById('chatPanel').classList.add('active');
             document.getElementById('selectedUserName').textContent = `${userData.name} (${userData.phone})`;
             
             // Update active user
@@ -1499,6 +1600,24 @@
             setTimeout(() => {
                 document.getElementById('adminMessageInput').focus();
             }, 100);
+        }
+
+        function goBackToUserList() {
+            console.log('🔙 Going back to user list');
+            
+            // Show users section and hide chat panel
+            document.getElementById('usersSection').style.display = 'flex';
+            document.getElementById('chatPanel').classList.remove('active');
+            
+            // Clear selected user
+            selectedAdminUser = null;
+            selectedUserData = null;
+            
+            // Update active user
+            document.querySelectorAll('.user-item').forEach(item => item.classList.remove('active'));
+            
+            // Refresh user list to update stats
+            loadUsersList();
         }
 
         function loadAdminChat(userKey) {
@@ -1660,14 +1779,10 @@
                         database.ref(`user_status/${selectedAdminUser}`).remove()
                     ]).then(() => {
                         console.log('🗑️ User deleted:', selectedAdminUser);
-                        // Reset selected user
+                        // Reset selected user and go back to user list
                         selectedAdminUser = null;
                         selectedUserData = null;
-                        // Show no chat selected
-                        document.getElementById('noChatSelected').style.display = 'flex';
-                        document.getElementById('adminChatContainer').classList.add('hidden');
-                        // Refresh user list
-                        loadUsersList();
+                        goBackToUserList();
                     }).catch((error) => {
                         console.error('❌ Error deleting user:', error);
                         alert('Error deleting user. Please try again.');
@@ -1710,10 +1825,10 @@
                         if (selectedAdminUser === userKey) {
                             selectedAdminUser = null;
                             selectedUserData = null;
-                            document.getElementById('noChatSelected').style.display = 'flex';
-                            document.getElementById('adminChatContainer').classList.add('hidden');
+                            goBackToUserList();
+                        } else {
+                            loadUsersList();
                         }
-                        loadUsersList();
                     });
                 }
             );
