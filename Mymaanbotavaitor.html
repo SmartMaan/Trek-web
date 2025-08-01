@@ -297,6 +297,14 @@
             background: #777;
         }
 
+        .modal button.danger {
+            background: #dc3545;
+        }
+
+        .modal button.danger:hover {
+            background: #c82333;
+        }
+
         /* Admin Panel Styles */
         .admin-panel {
             display: none;
@@ -308,7 +316,7 @@
         }
 
         .users-list {
-            width: 320px;
+            width: 350px;
             background: #1f1f1f;
             border-right: 1px solid #333;
             overflow-y: auto;
@@ -433,6 +441,49 @@
             margin-top: 4px;
         }
 
+        .user-actions {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            display: none;
+            gap: 4px;
+        }
+
+        .user-item:hover .user-actions {
+            display: flex;
+        }
+
+        .action-btn {
+            background: rgba(255, 59, 48, 0.8);
+            border: none;
+            border-radius: 4px;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            background: #FF3B30;
+            transform: scale(1.1);
+        }
+
+        .action-btn .material-icons {
+            font-size: 16px;
+            color: white;
+        }
+
+        .action-btn.danger {
+            background: rgba(220, 53, 69, 0.8);
+        }
+
+        .action-btn.danger:hover {
+            background: #dc3545;
+        }
+
         .chat-panel {
             flex: 1;
             display: flex;
@@ -446,6 +497,38 @@
             justify-content: center;
             color: #888;
             font-size: 18px;
+        }
+
+        .chat-actions {
+            display: flex;
+            gap: 8px;
+            margin-left: auto;
+        }
+
+        .chat-action-btn {
+            background: #666;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            color: white;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .chat-action-btn:hover {
+            background: #777;
+        }
+
+        .chat-action-btn.danger {
+            background: #dc3545;
+        }
+
+        .chat-action-btn.danger:hover {
+            background: #c82333;
         }
 
         .hidden {
@@ -486,6 +569,18 @@
             font-size: 11px;
             opacity: 0.7;
             margin-top: 4px;
+        }
+
+        .empty-state {
+            padding: 40px 20px;
+            text-align: center;
+            color: #888;
+        }
+
+        .empty-state .material-icons {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
         }
 
         /* Mobile Responsive */
@@ -566,18 +661,35 @@
             </div>
             
             <div class="users-container" id="usersContainer">
-                <!-- Users will be listed here -->
+                <div class="empty-state">
+                    <div class="material-icons">people</div>
+                    <div>No users found</div>
+                    <div style="font-size: 12px; margin-top: 8px;">Users will appear here after they register</div>
+                </div>
             </div>
         </div>
 
         <div class="chat-panel">
             <div class="no-chat" id="noChatSelected">
-                Select a user to start chatting
+                <div>
+                    <div class="material-icons" style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;">chat</div>
+                    <div>Select a user to start chatting</div>
+                </div>
             </div>
             
             <div class="container hidden" id="adminChatContainer">
                 <div class="header">
                     <h1 id="selectedUserName">User Chat</h1>
+                    <div class="chat-actions">
+                        <button class="chat-action-btn" onclick="clearChatHistory()">
+                            <span class="material-icons" style="font-size: 16px;">clear_all</span>
+                            Clear History
+                        </button>
+                        <button class="chat-action-btn danger" onclick="deleteUser()">
+                            <span class="material-icons" style="font-size: 16px;">delete</span>
+                            Delete User
+                        </button>
+                    </div>
                     <div class="status-indicator">
                         <div class="status-dot" id="userStatus"></div>
                         <span id="userStatusText">User Offline</span>
@@ -610,7 +722,7 @@
     <!-- User Details Modal -->
     <div id="userModal" class="modal hidden">
         <div class="modal-content">
-            <h2>Welcome to Support Chat</h2>
+            <h2>Welcome to Chat Support</h2>
             <p>Please enter your details to start chatting:</p>
             <input type="text" id="nameInput" placeholder="Your name" maxlength="30">
             <input type="tel" id="phoneInput" placeholder="Your phone number" maxlength="15">
@@ -628,6 +740,16 @@
             </div>
             <button onclick="continueChat()">Continue Chat</button>
             <button onclick="startNewChat()" class="secondary">Start New Chat</button>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmModal" class="modal hidden">
+        <div class="modal-content">
+            <h2 id="confirmTitle">Confirm Action</h2>
+            <p id="confirmMessage">Are you sure you want to proceed?</p>
+            <button onclick="confirmAction()" class="danger" id="confirmBtn">Yes, Delete</button>
+            <button onclick="closeConfirmModal()" class="secondary">Cancel</button>
         </div>
     </div>
 
@@ -658,19 +780,23 @@
         let currentUserKey = null;
         let isAdmin = false;
         let selectedAdminUser = null;
+        let selectedUserData = null;
         let typingTimeout = null;
         let adminTypingTimeout = null;
-        let messageListeners = {};
+        let confirmCallback = null;
 
         // Secret admin phrase
         const ADMIN_SECRET = "aviator2025adminmaan";
 
         // Initialize App
         function initApp() {
+            console.log('Initializing app...');
+            
             // Check if user is admin
             isAdmin = localStorage.getItem("isAdmin") === "true";
             
             if (isAdmin) {
+                console.log('Admin mode detected');
                 showAdminPanel();
                 return;
             }
@@ -682,10 +808,12 @@
                 currentUser = user.name;
                 currentUserPhone = user.phone;
                 currentUserKey = `${user.name}_${user.phone}`;
+                console.log('Existing user found:', currentUserKey);
                 
                 // Check if user has chat history
                 checkUserHistory();
             } else {
+                console.log('New user, showing modal');
                 showUserModal();
             }
 
@@ -743,6 +871,8 @@
             currentUserPhone = phone;
             currentUserKey = `${name}_${phone}`;
 
+            console.log('Setting user details:', currentUserKey);
+
             // Save user data
             const userData = {
                 name: name,
@@ -752,9 +882,9 @@
             
             localStorage.setItem("userData", JSON.stringify(userData));
             
-            // Save to Firebase with success callback
+            // Save to Firebase
             database.ref(`users/${currentUserKey}`).set(userData).then(() => {
-                console.log('User saved successfully:', currentUserKey, userData);
+                console.log('User saved to Firebase:', currentUserKey);
             }).catch((error) => {
                 console.error('Error saving user:', error);
             });
@@ -766,14 +896,17 @@
         }
 
         function checkUserHistory() {
+            console.log('Checking user history for:', currentUserKey);
             database.ref(`chats/${currentUserKey}`).once('value', (snapshot) => {
                 if (snapshot.exists() && snapshot.val()) {
                     const messages = Object.values(snapshot.val());
                     if (messages.length > 0) {
+                        console.log('Found chat history, showing modal');
                         showHistoryModal(messages);
                         return;
                     }
                 }
+                console.log('No history found, starting fresh chat');
                 startUserChat();
             });
         }
@@ -818,6 +951,7 @@
         }
 
         function startUserChat() {
+            console.log('Starting user chat for:', currentUser);
             document.getElementById('userChat').style.display = 'flex';
             document.getElementById('chatTitle').textContent = `Chat - ${currentUser}`;
             
@@ -849,6 +983,8 @@
                 return;
             }
 
+            console.log('Sending message:', message);
+
             // Send message
             const messageData = {
                 from: 'user',
@@ -858,7 +994,12 @@
                 read: false
             };
 
-            database.ref(`chats/${currentUserKey}`).push(messageData);
+            database.ref(`chats/${currentUserKey}`).push(messageData).then(() => {
+                console.log('Message sent successfully');
+            }).catch((error) => {
+                console.error('Error sending message:', error);
+            });
+            
             input.value = '';
             
             // Update user status
@@ -870,6 +1011,7 @@
         }
 
         function loadUserMessages() {
+            console.log('Loading messages for:', currentUserKey);
             database.ref(`chats/${currentUserKey}`).on('value', (snapshot) => {
                 const messages = snapshot.val();
                 displayMessages(messages, 'chatArea');
@@ -986,6 +1128,7 @@
 
         // Admin Functions
         function showAdminPanel() {
+            console.log('Showing admin panel');
             document.getElementById('userChat').style.display = 'none';
             document.getElementById('adminPanel').classList.add('active');
             
@@ -993,26 +1136,25 @@
             database.ref('admin_status/online').set(true);
             database.ref('admin_status/last_seen').set(Date.now());
             
-            // Debug: Check if users exist
-            database.ref('users').once('value', (snapshot) => {
-                const users = snapshot.val();
-                console.log('Users in database:', users);
-                if (!users || Object.keys(users).length === 0) {
-                    document.getElementById('usersContainer').innerHTML = '<div style="padding: 20px; text-align: center; color: #888;">No users found. Users will appear here after they register.</div>';
-                }
-            });
-            
             loadUsersList();
         }
 
         function loadUsersList() {
-            // First load all users, then get their chat data
+            console.log('Loading users list');
+            
+            // Listen for users
             database.ref('users').on('value', (usersSnapshot) => {
-                const users = usersSnapshot.val() || {};
+                const users = usersSnapshot.val();
+                console.log('Users loaded:', users);
                 
-                if (Object.keys(users).length === 0) {
-                    // No users yet, show empty state
-                    document.getElementById('usersContainer').innerHTML = '<div style="padding: 20px; text-align: center; color: #888;">No users yet</div>';
+                if (!users || Object.keys(users).length === 0) {
+                    document.getElementById('usersContainer').innerHTML = `
+                        <div class="empty-state">
+                            <div class="material-icons">people</div>
+                            <div>No users found</div>
+                            <div style="font-size: 12px; margin-top: 8px;">Users will appear here after they register</div>
+                        </div>
+                    `;
                     return;
                 }
                 
@@ -1032,24 +1174,15 @@
             database.ref('user_status').on('value', (snapshot) => {
                 updateAllUserStatuses(snapshot.val() || {});
             });
-            
-            // Listen for new messages and refresh user list
-            database.ref('chats').on('value', () => {
-                // Small delay to ensure data is updated
-                setTimeout(() => {
-                    const currentUsers = document.getElementById('usersContainer').children.length;
-                    if (currentUsers === 0) {
-                        loadUsersList();
-                    }
-                }, 200);
-            });
         }
 
         function displayUsersList(users, chats, statuses) {
+            console.log('Displaying users list');
             const container = document.getElementById('usersContainer');
             container.innerHTML = '';
 
-            // Show all users, even if they don't have messages yet
+            // Create user items
+            const userItems = [];
             Object.entries(users).forEach(([userKey, userData]) => {
                 const messages = chats[userKey] ? Object.values(chats[userKey]) : [];
                 const lastMessage = messages.length > 0 ? messages[messages.length - 1] : {
@@ -1062,28 +1195,33 @@
                 const userStatus = statuses[userKey] || { last_seen: userData.joinDate || 0, typing: false };
                 const isOnline = userStatus.last_seen && (Date.now() - userStatus.last_seen < 300000);
                 
-                createUserItem(userKey, userData, lastMessage, unreadCount, isOnline, messages.length);
+                userItems.push({
+                    userKey,
+                    userData,
+                    lastMessage,
+                    unreadCount,
+                    isOnline,
+                    totalMessages: messages.length
+                });
             });
-            
-            // Sort users by last activity
-            const userItems = Array.from(container.children);
-            userItems.sort((a, b) => {
-                const aTime = parseInt(a.dataset.lastTime) || 0;
-                const bTime = parseInt(b.dataset.lastTime) || 0;
-                return bTime - aTime;
+
+            // Sort by last activity
+            userItems.sort((a, b) => b.lastMessage.time - a.lastMessage.time);
+
+            // Create DOM elements
+            userItems.forEach(item => {
+                createUserItem(item);
             });
-            
-            container.innerHTML = '';
-            userItems.forEach(item => container.appendChild(item));
+
+            console.log(`Displayed ${userItems.length} users`);
         }
 
-        function createUserItem(userKey, userData, lastMessage, unreadCount, isOnline, totalMessages) {
+        function createUserItem({ userKey, userData, lastMessage, unreadCount, isOnline, totalMessages }) {
             const container = document.getElementById('usersContainer');
             
             const userDiv = document.createElement('div');
             userDiv.className = 'user-item';
             userDiv.dataset.userKey = userKey;
-            userDiv.dataset.lastTime = lastMessage.time;
             userDiv.onclick = () => selectUser(userKey, userData);
             
             const time = new Date(lastMessage.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
@@ -1091,6 +1229,14 @@
             const statusText = isOnline ? 'Online' : (lastMessage.from === 'system' ? 'New User' : `Last seen: ${new Date(lastMessage.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`);
             
             userDiv.innerHTML = `
+                <div class="user-actions">
+                    <button class="action-btn" onclick="event.stopPropagation(); clearUserHistory('${userKey}')" title="Clear History">
+                        <span class="material-icons">clear_all</span>
+                    </button>
+                    <button class="action-btn danger" onclick="event.stopPropagation(); deleteUserConfirm('${userKey}', '${userData.name}')" title="Delete User">
+                        <span class="material-icons">delete</span>
+                    </button>
+                </div>
                 <div class="user-name">
                     ${userData.name}
                     ${unreadCount > 0 ? `<span class="unread-count">${unreadCount}</span>` : ''}
@@ -1112,7 +1258,9 @@
         }
 
         function selectUser(userKey, userData) {
+            console.log('Selecting user:', userKey);
             selectedAdminUser = userKey;
+            selectedUserData = userData;
             
             // Update UI
             document.getElementById('noChatSelected').style.display = 'none';
@@ -1139,18 +1287,11 @@
         }
 
         function loadAdminChat(userKey) {
-            // Clear previous listener
-            if (messageListeners[userKey]) {
-                database.ref(`chats/${userKey}`).off('value', messageListeners[userKey]);
-            }
-            
-            // Set new listener
-            messageListeners[userKey] = (snapshot) => {
+            console.log('Loading admin chat for:', userKey);
+            database.ref(`chats/${userKey}`).on('value', (snapshot) => {
                 const messages = snapshot.val();
                 displayMessages(messages, 'adminChatArea');
-            };
-            
-            database.ref(`chats/${userKey}`).on('value', messageListeners[userKey]);
+            });
         }
 
         function sendAdminMessage() {
@@ -1161,6 +1302,8 @@
             
             if (!message) return;
 
+            console.log('Sending admin message:', message);
+
             const messageData = {
                 from: 'admin',
                 text: message,
@@ -1169,7 +1312,12 @@
                 read: false
             };
 
-            database.ref(`chats/${selectedAdminUser}`).push(messageData);
+            database.ref(`chats/${selectedAdminUser}`).push(messageData).then(() => {
+                console.log('Admin message sent successfully');
+            }).catch((error) => {
+                console.error('Error sending admin message:', error);
+            });
+            
             input.value = '';
             
             // Update admin status
@@ -1252,6 +1400,123 @@
             adminTypingTimeout = setTimeout(() => {
                 database.ref('admin_status/typing').set(false);
             }, 3000);
+        }
+
+        // User Management Functions
+        function clearChatHistory() {
+            if (!selectedAdminUser || !selectedUserData) return;
+            
+            showConfirmModal(
+                'Clear Chat History',
+                `Are you sure you want to clear all chat history with ${selectedUserData.name}? This action cannot be undone.`,
+                'Clear History',
+                () => {
+                    database.ref(`chats/${selectedAdminUser}`).remove().then(() => {
+                        console.log('Chat history cleared for:', selectedAdminUser);
+                        // Refresh the chat area
+                        document.getElementById('adminChatArea').innerHTML = '';
+                        // Refresh user list
+                        loadUsersList();
+                    }).catch((error) => {
+                        console.error('Error clearing chat history:', error);
+                        alert('Error clearing chat history. Please try again.');
+                    });
+                }
+            );
+        }
+
+        function deleteUser() {
+            if (!selectedAdminUser || !selectedUserData) return;
+            
+            showConfirmModal(
+                'Delete User',
+                `Are you sure you want to permanently delete ${selectedUserData.name} and all their data? This action cannot be undone.`,
+                'Delete User',
+                () => {
+                    Promise.all([
+                        database.ref(`users/${selectedAdminUser}`).remove(),
+                        database.ref(`chats/${selectedAdminUser}`).remove(),
+                        database.ref(`user_status/${selectedAdminUser}`).remove()
+                    ]).then(() => {
+                        console.log('User deleted:', selectedAdminUser);
+                        // Reset selected user
+                        selectedAdminUser = null;
+                        selectedUserData = null;
+                        // Show no chat selected
+                        document.getElementById('noChatSelected').style.display = 'flex';
+                        document.getElementById('adminChatContainer').classList.add('hidden');
+                        // Refresh user list
+                        loadUsersList();
+                    }).catch((error) => {
+                        console.error('Error deleting user:', error);
+                        alert('Error deleting user. Please try again.');
+                    });
+                }
+            );
+        }
+
+        function clearUserHistory(userKey) {
+            database.ref(`users/${userKey}`).once('value', (snapshot) => {
+                const userData = snapshot.val();
+                if (userData) {
+                    showConfirmModal(
+                        'Clear User History',
+                        `Clear all chat history for ${userData.name}?`,
+                        'Clear History',
+                        () => {
+                            database.ref(`chats/${userKey}`).remove().then(() => {
+                                console.log('User history cleared:', userKey);
+                                loadUsersList();
+                            });
+                        }
+                    );
+                }
+            });
+        }
+
+        function deleteUserConfirm(userKey, userName) {
+            showConfirmModal(
+                'Delete User',
+                `Permanently delete ${userName} and all their data?`,
+                'Delete User',
+                () => {
+                    Promise.all([
+                        database.ref(`users/${userKey}`).remove(),
+                        database.ref(`chats/${userKey}`).remove(),
+                        database.ref(`user_status/${userKey}`).remove()
+                    ]).then(() => {
+                        console.log('User deleted:', userKey);
+                        if (selectedAdminUser === userKey) {
+                            selectedAdminUser = null;
+                            selectedUserData = null;
+                            document.getElementById('noChatSelected').style.display = 'flex';
+                            document.getElementById('adminChatContainer').classList.add('hidden');
+                        }
+                        loadUsersList();
+                    });
+                }
+            );
+        }
+
+        function showConfirmModal(title, message, buttonText, callback) {
+            document.getElementById('confirmTitle').textContent = title;
+            document.getElementById('confirmMessage').textContent = message;
+            document.getElementById('confirmBtn').textContent = buttonText;
+            confirmCallback = callback;
+            document.getElementById('confirmModal').classList.remove('hidden');
+        }
+
+        function confirmAction() {
+            if (confirmCallback) {
+                confirmCallback();
+                confirmCallback = null;
+            }
+            closeConfirmModal();
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('confirmModal').classList.add('hidden');
+            confirmCallback = null;
         }
 
         function searchUsers() {
