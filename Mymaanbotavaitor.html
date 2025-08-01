@@ -449,14 +449,15 @@
         </div>
     </div>
 
-    <!-- Name Input Modal -->
+    <!-- User Details Input Modal -->
     <div id="nameModal" class="modal">
         <div class="modal-content">
             <h2>Welcome to Support Chat</h2>
-            <p>Please enter your name to start chatting:</p>
+            <p>Please enter your details to start chatting:</p>
             <input type="text" id="nameInput" placeholder="Your name" maxlength="30">
+            <input type="tel" id="phoneInput" placeholder="Your phone number" maxlength="15">
             <br>
-            <button onclick="setUserName()">Start Chatting</button>
+            <button onclick="setUserDetails()">Start Chatting</button>
         </div>
     </div>
 
@@ -483,6 +484,8 @@
 
         // Global Variables
         let currentUser = null;
+        let currentUserPhone = null;
+        let currentUserData = null;
         let isAdmin = false;
         let selectedAdminUser = null;
         let typingTimeout = null;
@@ -499,11 +502,17 @@
             if (isAdmin) {
                 showAdminPanel();
             } else {
-                currentUser = localStorage.getItem("username");
-                if (!currentUser) {
-                    showNameModal();
+                // Check if user data exists locally
+                const userData = localStorage.getItem("userData");
+                if (userData) {
+                    currentUserData = JSON.parse(userData);
+                    currentUser = currentUserData.name;
+                    currentUserPhone = currentUserData.phone;
+                    
+                    // Check if user exists in Firebase and load history
+                    checkUserInFirebase();
                 } else {
-                    startUserChat();
+                    showNameModal();
                 }
             }
 
@@ -535,10 +544,16 @@
             document.getElementById('messageInput').addEventListener('input', handleUserTyping);
             document.getElementById('adminMessageInput').addEventListener('input', handleAdminTyping);
 
-            // Name input enter key
+            // Name and phone input enter key
             document.getElementById('nameInput').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
-                    setUserName();
+                    document.getElementById('phoneInput').focus();
+                }
+            });
+            
+            document.getElementById('phoneInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    setUserDetails();
                 }
             });
         }
@@ -548,21 +563,59 @@
             document.getElementById('nameInput').focus();
         }
 
-        function setUserName() {
+        function setUserDetails() {
             const name = document.getElementById('nameInput').value.trim();
-            if (name && name.length > 0) {
+            const phone = document.getElementById('phoneInput').value.trim();
+            
+            if (name && name.length > 0 && phone && phone.length > 0) {
                 currentUser = name;
-                localStorage.setItem("username", currentUser);
+                currentUserPhone = phone;
+                
+                // Create user data object
+                currentUserData = {
+                    name: name,
+                    phone: phone,
+                    joinDate: Date.now()
+                };
+                
+                // Save to localStorage
+                localStorage.setItem("userData", JSON.stringify(currentUserData));
+                
+                // Save to Firebase and check if user exists
+                saveUserToFirebase();
+                
                 document.getElementById('nameModal').style.display = 'none';
-                startUserChat();
+            } else {
+                alert('Please enter both name and phone number');
             }
+        }
+        
+        function checkUserInFirebase() {
+            const userKey = `${currentUser}_${currentUserPhone}`;
+            database.ref(`users/${userKey}`).once('value', (snapshot) => {
+                if (snapshot.exists()) {
+                    // User exists, load their data and start chat
+                    const userData = snapshot.val();
+                    currentUserData = userData;
+                    startUserChat();
+                } else {
+                    // New user, save to Firebase
+                    saveUserToFirebase();
+                    startUserChat();
+                }
+            });
+        }
+        
+        function saveUserToFirebase() {
+            const userKey = `${currentUser}_${currentUserPhone}`;
+            database.ref(`users/${userKey}`).set(currentUserData);
         }
 
         function startUserChat() {
             document.getElementById('userChat').style.display = 'flex';
             document.getElementById('chatTitle').textContent = `Chat - ${currentUser}`;
             
-            // Load chat history
+            // Load chat history using unique user key
             loadUserMessages();
             
             // Listen for admin messages
@@ -613,7 +666,8 @@
         }
 
         function loadUserMessages() {
-            database.ref(`chats/${currentUser}`).on('value', (snapshot) => {
+            const userKey = `${currentUser}_${currentUserPhone}`;
+            database.ref(`chats/${userKey}`).on('value', (snapshot) => {
                 const messages = snapshot.val();
                 displayUserMessages(messages);
             });
@@ -649,7 +703,8 @@
         }
 
         function listenForAdminMessages() {
-            database.ref(`chats/${currentUser}`).on('child_added', (snapshot) => {
+            const userKey = `${currentUser}_${currentUserPhone}`;
+            database.ref(`chats/${userKey}`).on('child_added', (snapshot) => {
                 const message = snapshot.val();
                 if (message.from === 'admin') {
                     // Show notification for new admin message
